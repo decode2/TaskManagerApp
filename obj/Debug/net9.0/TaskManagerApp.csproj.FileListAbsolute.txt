@@ -154,7 +154,6 @@ C:\Users\devel\OneDrive\Escritorio\TaskManagerApp\obj\Debug\net9.0\compressed\tp
 C:\Users\devel\OneDrive\Escritorio\TaskManagerApp\obj\Debug\net9.0\compressed\t0qo7o574p-dd6z7egasc.gz
 C:\Users\devel\OneDrive\Escritorio\TaskManagerApp\obj\Debug\net9.0\compressed\b9lhb08218-5pze98is44.gz
 C:\Users\devel\OneDrive\Escritorio\TaskManagerApp\obj\Debug\net9.0\compressed\yfc7ypekbg-mlv21k5csn.gz
-C:\Users\devel\OneDrive\Escritorio\TaskManagerApp\obj\Debug\net9.0\compressed\7y2dotgbtg-b9sayid5wm.gz
 C:\Users\devel\OneDrive\Escritorio\TaskManagerApp\obj\Debug\net9.0\compressed\tjc6q48vco-61n19gt1b8.gz
 C:\Users\devel\OneDrive\Escritorio\TaskManagerApp\obj\Debug\net9.0\compressed\8upm8q2rcf-xtxxf3hu2r.gz
 C:\Users\devel\OneDrive\Escritorio\TaskManagerApp\obj\Debug\net9.0\compressed\r2bwbckrtz-bqjiyaj88i.gz
@@ -233,3 +232,5 @@ C:\Users\devel\OneDrive\Escritorio\TaskManagerApp\obj\Debug\net9.0\refint\TaskMa
 C:\Users\devel\OneDrive\Escritorio\TaskManagerApp\obj\Debug\net9.0\TaskManagerApp.pdb
 C:\Users\devel\OneDrive\Escritorio\TaskManagerApp\obj\Debug\net9.0\TaskManagerApp.genruntimeconfig.cache
 C:\Users\devel\OneDrive\Escritorio\TaskManagerApp\obj\Debug\net9.0\ref\TaskManagerApp.dll
+C:\Users\devel\OneDrive\Escritorio\TaskManagerApp\obj\Debug\net9.0\TaskManagerApp.sourcelink.json
+C:\Users\devel\OneDrive\Escritorio\TaskManagerApp\obj\Debug\net9.0\compressed\7y2dotgbtg-apynvqjcph.gz
