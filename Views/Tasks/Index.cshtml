@@ -1,7 +1,7 @@
-@model IEnumerable<TaskManagerApp.Models.TaskModel>
+@model TaskManagerApp.ViewModels.WeeklyTaskViewModel
 
 @{
-    ViewData["Title"] = "Task Manager";
+    ViewData["Title"] = "Task Manager - Weekly View";
 }
 
 <!DOCTYPE html>
@@ -23,26 +23,30 @@
 </head>
 <body>
     <div class="container mt-5">
-        <h1 class="text-center mb-4">Task Manager</h1>
+        <h1 class="text-center mb-4">Task Manager - Weekly View</h1>
         <div class="row">
             <div class="col-md-8 offset-md-2">
-                @foreach (var task in Model)
+                @foreach (var dailyTasks in Model.WeeklyTasks)
                 {
-                    <div class="card task-card animate__animated animate__fadeInUp">
-                        <div class="card-body">
-                            <h5 class="card-title">@task.Title</h5>
-                            <p class="card-text">Due: @task.Date.ToShortDateString()</p>
-                            <p class="card-text">Completed: @(task.IsCompleted ? "Yes" : "No")</p>
-                            <button class="btn btn-success">Complete</button>
-                            <button class="btn btn-primary">Edit</button>
-                            <button class="btn btn-danger">Delete</button>
+                    <h3>@dailyTasks.Date.ToString("dddd, MMMM dd")</h3>
+                    @foreach (var task in dailyTasks.Tasks)
+                    {
+                        <div class="card task-card animate__animated animate__fadeInUp">
+                            <div class="card-body">
+                                <h5 class="card-title">@task.Title</h5>
+                                <p class="card-text">Due: @task.Date.ToShortDateString()</p>
+                                <p class="card-text">Completed: @(task.IsCompleted ? "Yes" : "No")</p>
+                                <button class="btn btn-success">Complete</button>
+                                <button class="btn btn-primary">Edit</button>
+                                <button class="btn btn-danger">Delete</button>
+                            </div>
                         </div>
-                    </div>
+                    }
                 }
             </div>
         </div>
         <div class="text-center mt-4">
-            <button class="btn btn-primary">Create New Task</button>
+            <a asp-action="Create" class="btn btn-primary">Create New Task</a>
         </div>
     </div>
 

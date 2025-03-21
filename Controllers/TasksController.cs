@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using TaskManagerApp.Data;
 using TaskManagerApp.Models;
+using TaskManagerApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 using System.Linq;
@@ -26,7 +27,26 @@ namespace TaskManagerApp.Controllers
         {
             var userId = _userManager.GetUserId(User);
             var tasks = await _context.Tasks.Where(t => t.UserId == userId).ToListAsync();
-            return View(tasks);
+
+            var today = DateTime.Today;
+            var startOfWeek = today.AddDays(-3);
+            var endOfWeek = today.AddDays(3);
+
+            var weeklyTasks = tasks.Where(t => t.Date.Date >= startOfWeek && t.Date.Date <= endOfWeek)
+                                .GroupBy(t => t.Date.Date)
+                                .OrderBy(g => g.Key)
+                                .ToList();
+
+            var model = new WeeklyTaskViewModel
+            {
+                WeeklyTasks = weeklyTasks.Select(g => new DailyTaskViewModel
+                {
+                    Date = g.Key,
+                    Tasks = g.ToList()
+                }).ToList()
+            };
+
+            return View(model);
         }
 
         // GET: Tasks/Create
