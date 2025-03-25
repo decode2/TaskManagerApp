@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\devel\\OneDrive\\Escritorio\\TaskManagerApp\\TaskManagerApp.csproj": {}
+    "C:\\Users\\Matias\\Desktop\\TaskManagerApp\\TaskManagerApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\devel\\OneDrive\\Escritorio\\TaskManagerApp\\TaskManagerApp.csproj": {
+    "C:\\Users\\Matias\\Desktop\\TaskManagerApp\\TaskManagerApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\devel\\OneDrive\\Escritorio\\TaskManagerApp\\TaskManagerApp.csproj",
+        "projectUniqueName": "C:\\Users\\Matias\\Desktop\\TaskManagerApp\\TaskManagerApp.csproj",
         "projectName": "TaskManagerApp",
-        "projectPath": "C:\\Users\\devel\\OneDrive\\Escritorio\\TaskManagerApp\\TaskManagerApp.csproj",
-        "packagesPath": "C:\\Users\\devel\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\devel\\OneDrive\\Escritorio\\TaskManagerApp\\obj\\",
+        "projectPath": "C:\\Users\\Matias\\Desktop\\TaskManagerApp\\TaskManagerApp.csproj",
+        "packagesPath": "C:\\Users\\Matias\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Matias\\Desktop\\TaskManagerApp\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\devel\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Matias\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -50,6 +50,10 @@
         "net9.0": {
           "targetAlias": "net9.0",
           "dependencies": {
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[9.0.3, )"
+            },
             "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.3, )"
@@ -89,6 +93,10 @@
             "Pomelo.EntityFrameworkCore.MySql": {
               "target": "Package",
               "version": "[8.0.3, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.7.0, )"
             }
           },
           "imports": [
