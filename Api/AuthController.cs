@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TaskManagerApp.Models;
 using TaskManagerApp.Services;
 using System.Threading.Tasks;
+using TaskManagerApp.Dtos;
 
 namespace TaskManagerApp.Api
 {
@@ -38,20 +39,8 @@ namespace TaskManagerApp.Api
             if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
                 return Unauthorized("Invalid credentials");
 
-            var token = _jwtService.GenerateToken(user.Id, user.Email);
+            var token = _jwtService.GenerateToken(user.Id, user.Email!);
             return Ok(new { token });
         }
-    }
-
-    public class RegisterDto
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
-    }
-
-    public class LoginDto
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
     }
 }

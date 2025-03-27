@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using TaskManagerApp.Data;
 using TaskManagerApp.Models;
+using TaskManagerApp.Dtos;
+using TaskManagerApp.ViewModels;
 
 namespace TaskManagerApp.Api
 {
@@ -27,11 +29,23 @@ namespace TaskManagerApp.Api
         }
 
         [HttpPost]
-        public async Task<ActionResult<TaskModel>> CreateTask(TaskModel task)
+        public async Task<ActionResult<TaskModel>> CreateTask(CreateTaskDto dto)
         {
-            task.UserId = GetUserId();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState); // debugging
+            }
+
+            var task = new TaskModel{
+                Title = dto.Title,
+                Date = dto.Date,
+                IsCompleted = false,
+                UserId = GetUserId()
+            };
+
             _context.Tasks.Add(task);
             await _context.SaveChangesAsync();
+
             return CreatedAtAction(nameof(GetTask), new { id = task.Id }, task);
         }
 
@@ -43,10 +57,40 @@ namespace TaskManagerApp.Api
             return task;
         }
 
+        [HttpGet("week")]
+        public async Task<ActionResult<WeeklyTaskViewModel>> GetWeeklyTasks()
+        {
+            var userId = GetUserId();
+
+            var startDate = DateTime.Today;
+            var endDate = startDate.AddDays(7);
+
+            var tasks = await _context.Tasks
+                .Where(t => t.UserId == userId && t.Date >= startDate && t.Date < endDate)
+                .ToListAsync();
+
+            var grouped = tasks
+                .GroupBy(t => t.Date.Date)
+                .Select(g => new DailyTaskViewModel
+                {
+                    Date = g.Key,
+                    Tasks = g.ToList()
+                })
+                .OrderBy(g => g.Date)
+                .ToList();
+
+            return Ok(new WeeklyTaskViewModel
+            {
+                WeeklyTasks = grouped
+            });
+        }
+
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTask(int id, TaskModel updatedTask)
+        public async Task<IActionResult> UpdateTask(int id, UpdateTaskDto updatedTask)
         {
             if (id != updatedTask.Id) return BadRequest();
+            
             var existing = await _context.Tasks.FindAsync(id);
             if (existing == null || existing.UserId != GetUserId()) return NotFound();
 

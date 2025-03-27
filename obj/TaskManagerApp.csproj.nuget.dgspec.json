@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Matias\\Desktop\\TaskManagerApp\\TaskManagerApp.csproj": {}
+    "C:\\Users\\devel\\OneDrive\\Escritorio\\TaskManagerApp\\TaskManagerApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Matias\\Desktop\\TaskManagerApp\\TaskManagerApp.csproj": {
+    "C:\\Users\\devel\\OneDrive\\Escritorio\\TaskManagerApp\\TaskManagerApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Matias\\Desktop\\TaskManagerApp\\TaskManagerApp.csproj",
+        "projectUniqueName": "C:\\Users\\devel\\OneDrive\\Escritorio\\TaskManagerApp\\TaskManagerApp.csproj",
         "projectName": "TaskManagerApp",
-        "projectPath": "C:\\Users\\Matias\\Desktop\\TaskManagerApp\\TaskManagerApp.csproj",
-        "packagesPath": "C:\\Users\\Matias\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Matias\\Desktop\\TaskManagerApp\\obj\\",
+        "projectPath": "C:\\Users\\devel\\OneDrive\\Escritorio\\TaskManagerApp\\TaskManagerApp.csproj",
+        "packagesPath": "C:\\Users\\devel\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\devel\\OneDrive\\Escritorio\\TaskManagerApp\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\Matias\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\devel\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
