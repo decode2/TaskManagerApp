@@ -12,8 +12,8 @@ using TaskManagerApp.Data;
 namespace TaskManagerApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250324045911_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20250328232623_AddRecurrenceFields")]
+    partial class AddRecurrenceFields
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -238,6 +238,18 @@ namespace TaskManagerApp.Migrations
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<int?>("RecurrenceCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RecurrenceIndex")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RecurrenceInterval")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RecurrenceType")
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Title")
                         .IsRequired()

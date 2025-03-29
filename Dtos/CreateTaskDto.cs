@@ -11,5 +11,9 @@ namespace TaskManagerApp.ViewModels
 
         [FutureDate(ErrorMessage = "Date must be in the future")]
         public DateTime Date { get; set; }
+
+        public string? RecurrenceType { get; set; }
+        public int? RecurrenceInterval { get; set; }
+        public int? RecurrenceCount { get; set; }
     }
 }

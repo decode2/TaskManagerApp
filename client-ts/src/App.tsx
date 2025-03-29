@@ -8,29 +8,27 @@ import { ToastContainer } from 'react-toastify';
 
 function App() {
   return (
-    <>
-    
+    <div className="min-h-screen bg-slate-100 text-gray-900 dark:bg-slate-900 dark:text-white transition-colors duration-300">
       <Router>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/login" element={<LoginForm />} />
-
-          {/* Protected Routes */}
           <Route
             path="/dashboard"
             element={
               <ProtectedRoute>
-              <Dashboard />
+                <Dashboard />
               </ProtectedRoute>
             }
           />
         </Routes>
       </Router>
-              
-      <ToastContainer position="top-center" autoClose={3000} />          
-    </>
+
+      <ToastContainer position="top-center" autoClose={3000} />
+    </div>
   );
 }
+
 
 export default App;

@@ -1,9 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: 'class', // Enables class-based dark mode
-  content: [
-    "./src/**/*.{js,ts,jsx,tsx}", // Scans all relevant files
-  ],
+  darkMode: 'class',
+  content: ["./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       keyframes: {
@@ -11,9 +9,19 @@ module.exports = {
           "0%": { opacity: "0", transform: "translateY(-10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
+        fadeIn: {
+          '0%': { opacity: 0, transform: 'translateY(8px)' },
+          '100%': { opacity: 1, transform: 'translateY(0)' },
+        },
+        slideIn: {
+          '0%': { opacity: 0, transform: 'translateX(-10px)' },
+          '100%': { opacity: 1, transform: 'translateX(0)' },
+        },
       },
       animation: {
         "fade-in": "fade-in 0.4s ease-out forwards",
+        fadeIn: "fadeIn 0.3s ease-out",
+        slideIn: "slideIn 0.3s ease-out",
       },
       colors: {
         calendar: {
@@ -22,12 +30,12 @@ module.exports = {
         },
       },
       transitionProperty: {
-        'theme': 'background-color, border-color, color, fill, stroke',
-      }
+        theme: 'background-color, border-color, color, fill, stroke',
+      },
     },
   },
   plugins: [
-    require('@tailwindcss/forms'), // for better form styling
-    require('@tailwindcss/typography'), // optional: for blog-style content
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
   ],
 };

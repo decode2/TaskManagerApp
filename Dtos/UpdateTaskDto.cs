@@ -16,5 +16,9 @@ namespace TaskManagerApp.ViewModels{
 
         [BindRequired]
         public bool IsCompleted { get; set; }
+
+        public string? RecurrenceType { get; set; }
+        public int? RecurrenceInterval { get; set; }
+        public int? RecurrenceCount { get; set; }
     }
 }

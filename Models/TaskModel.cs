@@ -6,13 +6,20 @@ namespace TaskManagerApp.Models{
 
         [Required]
         public required string UserId { get; set; } = "";
+
         [Required(ErrorMessage = "Title is required")]
         public required string Title { get; set; } = "";
+
         [Required(ErrorMessage = "Date is required")]
         public DateTime Date { get; set; }
 
         public bool IsCompleted { get; set; }
 
         public ApplicationUser? User { get; set; }
+
+        public string? RecurrenceType { get; set; }
+        public int? RecurrenceInterval { get; set; }
+        public int? RecurrenceCount { get; set; }
+        public int? RecurrenceIndex { get; set; }
     }
 }

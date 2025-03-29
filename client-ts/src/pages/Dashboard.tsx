@@ -11,12 +11,15 @@ const Dashboard = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [newTaskDate, setNewTaskDate] = useState("");
-
   const [editedTaskId, setEditedTaskId] = useState<number | null>(null);
   const [editedTitle, setEditedTitle] = useState("");
   const [editedDate, setEditedDate] = useState("");
-
   const [isDark, setIsDark] = useDarkMode();
+  const [recurrenceType, setRecurrenceType] = useState<"none" | "daily" | "weekly" | "monthly" | "custom">("none");
+  const [recurrenceInterval, setRecurrenceInterval] = useState<number | null>(null);
+  const [recurrenceCount, setRecurrenceCount] = useState<number | null>(null);
+
+
 
   const fetchTasks = async () => {
     try {
@@ -25,41 +28,36 @@ const Dashboard = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTasks(response.data);
-    } catch (err) {
+    } catch {
       toast.error("Failed to load tasks.", { autoClose: 1500 });
     }
   };
 
   const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.dismiss();
-
-    if (!newTaskTitle.trim()) {
-      toast.error("Task title cannot be empty.", { autoClose: 1500 });
-      return;
-    }
-    if (new Date(newTaskDate) < new Date()) {
-      toast.error("Task date cannot be in the past.", { autoClose: 1500 });
+    if (!newTaskTitle.trim() || new Date(newTaskDate) < new Date()) {
+      toast.error("Invalid task data.", { autoClose: 1500 });
       return;
     }
 
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.post(
-        "https://localhost:7044/api/tasksapi",
-        {
-          title: newTaskTitle,
-          isCompleted: false,
-          date: newTaskDate,
-        },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
+      const response = await axios.post("https://localhost:7044/api/tasksapi", {
+        title: newTaskTitle,
+        isCompleted: false,
+        date: newTaskDate,
+        recurrenceType,
+        recurrenceInterval: recurrenceType === "custom" ? recurrenceInterval : null,
+        recurrenceCount: recurrenceCount || null,
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      
       setTasks((prev) => [...prev, response.data]);
       setNewTaskTitle("");
       setNewTaskDate("");
       toast.success("✅ Task added successfully!", { autoClose: 1500 });
-    } catch (err) {
+    } catch {
       toast.error("❌ Failed to create task.", { autoClose: 1500 });
     }
   };
@@ -68,9 +66,7 @@ const Dashboard = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(`https://localhost:7044/api/tasksapi/${task.id}`, {
-        id: task.id,
-        title: task.title,
-        date: task.date,
+        ...task,
         isCompleted: !task.isCompleted,
       }, {
         headers: { Authorization: `Bearer ${token}` },
@@ -81,11 +77,8 @@ const Dashboard = () => {
           t.id === task.id ? { ...t, isCompleted: !t.isCompleted } : t
         )
       );
-      toast.success(`Task marked as ${task.isCompleted ? "incomplete" : "completed"}!`, {
-        autoClose: 1500,
-      });
     } catch {
-      toast.error("❌ Failed to update task status.", { autoClose: 1500 });
+      toast.error("❌ Failed to update task.", { autoClose: 1500 });
     }
   };
 
@@ -96,12 +89,8 @@ const Dashboard = () => {
   };
 
   const saveTaskEdit = async (id: number) => {
-    if (!editedTitle.trim()) {
-      toast.error("Task title cannot be empty.", { autoClose: 1500 });
-      return;
-    }
-    if (new Date(editedDate) < new Date()) {
-      toast.error("Task date cannot be in the past.", { autoClose: 1500 });
+    if (!editedTitle.trim() || new Date(editedDate) < new Date()) {
+      toast.error("Invalid edit data.", { autoClose: 1500 });
       return;
     }
 
@@ -130,20 +119,17 @@ const Dashboard = () => {
 
   const handleDeleteTask = async (id: number) => {
     if (!window.confirm("Are you sure you want to delete this task?")) return;
-  
     try {
       const token = localStorage.getItem("token");
       await axios.delete(`https://localhost:7044/api/tasksapi/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
       setTasks((prev) => prev.filter((task) => task.id !== id));
       toast.success("🗑️ Task deleted.", { autoClose: 1500 });
     } catch {
       toast.error("Failed to delete task.", { autoClose: 1500 });
     }
   };
-  
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -155,31 +141,32 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className={`min-h-screen transition duration-300 ${isDark ? "bg-slate-900 text-white" : "bg-slate-100 text-gray-800"}`}>
-      {/* Topbar */}
-      <div className="flex justify-between items-center px-6 py-4 shadow-sm bg-white dark:bg-slate-800">
-        <h1 className="text-2xl font-bold">🎯 Your Dashboard</h1>
+    <div className={`min-h-screen transition duration-300 bg-slate-100 text-gray-800 dark:bg-slate-900 dark:text-white`}>
+      {/* Navbar */}
+      <div className="flex justify-between items-center px-6 py-4 shadow bg-white dark:bg-slate-800">
+        <h1 className="text-2xl font-bold flex items-center gap-2">🎯 Your Dashboard</h1>
         <div className="flex items-center gap-4">
           <button
             onClick={() => setIsDark(!isDark)}
-            className="text-sm px-3 py-1 bg-gray-200 dark:bg-gray-700 dark:text-white rounded hover:scale-105 transition"
+            className="text-sm px-3 py-1 bg-gray-200 dark:bg-slate-700 dark:text-white rounded hover:scale-105 transition"
           >
-            {isDark ? "🌙 Dark Mode" : "☀️ Light Mode"}
+            {isDark ? "🌕 Light" : "🌙 Dark"}
           </button>
           <button
             onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition"
+            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition hover:scale-105"
           >
             Log Out
           </button>
         </div>
       </div>
 
+      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Tasks Section */}
         <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg">
           {/* Add Task */}
-          <form onSubmit={handleCreateTask} className="mb-8">
+          <form onSubmit={handleCreateTask} className="mb-8 animate-fade-in">
             <h2 className="text-xl font-semibold mb-4">➕ Add a New Task</h2>
             <div className="flex flex-col md:flex-row gap-4">
               <input
@@ -187,13 +174,13 @@ const Dashboard = () => {
                 value={newTaskTitle}
                 onChange={(e) => setNewTaskTitle(e.target.value)}
                 placeholder="Task title"
-                className="flex-grow px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:bg-slate-700"
+                className="flex-grow px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 bg-white dark:bg-slate-700 text-gray-800 dark:text-white placeholder:text-gray-400"
               />
               <input
                 type="datetime-local"
                 value={newTaskDate}
                 onChange={(e) => setNewTaskDate(e.target.value)}
-                className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 dark:bg-slate-700"
+                className="px-4 py-2 border border-gray-300 dark:border-slate-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 bg-white dark:bg-slate-700 text-gray-800 dark:text-white"
               />
               <button
                 type="submit"
@@ -202,22 +189,58 @@ const Dashboard = () => {
                 Add
               </button>
             </div>
+            {/* Recurrence Settings */}
+            <div className="flex flex-col md:flex-row gap-4">
+              <select
+                value={recurrenceType}
+                onChange={(e) => setRecurrenceType(e.target.value as any)}
+                className="px-4 py-2 border rounded dark:bg-slate-700 dark:text-white"
+              >
+                <option value="none">Does not repeat</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+                <option value="custom">Custom Interval</option>
+              </select>
+
+              {recurrenceType === "custom" && (
+                <input
+                  type="number"
+                  placeholder="Every X days"
+                  min={1}
+                  value={recurrenceInterval || ""}
+                  onChange={(e) => setRecurrenceInterval(Number(e.target.value))}
+                  className="px-4 py-2 border rounded dark:bg-slate-700 dark:text-white"
+                />
+              )}
+
+              <input
+                type="number"
+                placeholder="Repeat X times (optional)"
+                min={1}
+                value={recurrenceCount || ""}
+                onChange={(e) => setRecurrenceCount(Number(e.target.value))}
+                className="px-4 py-2 border rounded dark:bg-slate-700 dark:text-white"
+              />
+            </div>
+
           </form>
 
-          {/* Tasks List */}
+          {/* Task List */}
           <h2 className="text-xl font-semibold mb-4">📋 Your Tasks</h2>
           <ul className="space-y-4">
             {tasks.map((task) => (
               <li
                 key={task.id}
-                className={`group flex flex-col md:flex-row items-start md:items-center justify-between p-4 rounded-lg border transition-shadow hover:shadow-md ${
-                  editedTaskId === task.id
-                    ? "bg-white dark:bg-slate-700"
+                className={`group animate-slideIn flex flex-col md:flex-row items-start md:items-center justify-between p-4 rounded-lg border transition-shadow hover:shadow-md
+                  ${editedTaskId === task.id
+                    ? "bg-white dark:bg-slate-700 border-gray-200 dark:border-slate-600"
                     : task.isCompleted
-                    ? "bg-green-50 border-green-200 text-green-800 dark:bg-green-900 dark:text-green-100 dark:border-green-700"
-                    : "bg-gray-50 border-gray-200 dark:bg-slate-700 dark:border-slate-600"
-                }`}
+                      ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100 border-green-300 dark:border-green-700"
+                      : "bg-gray-100 dark:bg-slate-800 text-gray-800 dark:text-white border-gray-200 dark:border-slate-600"
+                  }`}
               >
+            
                 <div className="flex items-start md:items-center gap-3 w-full">
                   <input
                     type="checkbox"
@@ -225,72 +248,48 @@ const Dashboard = () => {
                     onChange={() => toggleTaskCompletion(task)}
                     className="w-5 h-5 accent-blue-600"
                   />
-
                   {editedTaskId === task.id ? (
                     <div className="flex flex-col md:flex-row md:items-center gap-2 flex-grow">
                       <input
                         type="text"
                         value={editedTitle}
                         onChange={(e) => setEditedTitle(e.target.value)}
-                        className="flex-grow px-3 py-2 border border-gray-300 dark:border-slate-600 rounded focus:ring-2 focus:ring-blue-500 dark:bg-slate-800"
+                        className="flex-grow px-3 py-2 border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-800 dark:text-white"
                       />
                       <input
                         type="datetime-local"
                         value={editedDate}
                         onChange={(e) => setEditedDate(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-slate-600 rounded focus:ring-2 focus:ring-blue-500 dark:bg-slate-800"
+                        className="px-3 py-2 border border-gray-300 dark:border-slate-600 rounded bg-white dark:bg-slate-700 text-gray-800 dark:text-white"
                       />
-                      <button
-                        onClick={() => saveTaskEdit(task.id)}
-                        className="bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600 transition"
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={() => setEditedTaskId(null)}
-                        className="bg-gray-300 dark:bg-slate-600 text-gray-800 dark:text-white px-4 py-1 rounded hover:bg-gray-400 dark:hover:bg-slate-500 transition"
-                      >
-                        Cancel
-                      </button>
+                      <button onClick={() => saveTaskEdit(editedTaskId)} className="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded">Save</button>
+                      <button onClick={() => setEditedTaskId(null)} className="bg-gray-300 dark:bg-slate-600 text-gray-800 dark:text-white px-4 py-1 rounded hover:bg-gray-400 dark:hover:bg-slate-500">Cancel</button>
                     </div>
                   ) : (
-                    <div className="flex-grow text-sm md:text-base">
-                      <span className={`${task.isCompleted ? "line-through" : ""} font-medium`}>
+                    <div className="flex-grow text-sm md:text-base flex items-center gap-2">
+                      {task.isCompleted && <span className="text-green-500">✅</span>}
+                      <span className={`${task.isCompleted ? "line-through text-green-700 dark:text-green-300" : ""} font-medium`}>
                         {task.title}
                       </span>
-                      <span className="block md:inline ml-2 text-gray-500 dark:text-gray-300">
-                        ({new Date(task.date).toLocaleString()})
-                      </span>
+                      <span className="ml-2 text-gray-500 dark:text-gray-400 text-sm">({new Date(task.date).toLocaleString()})</span>
                     </div>
                   )}
                 </div>
-
                 {editedTaskId !== task.id && (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => startEditing(task)}
-                      className="text-blue-600 hover:underline text-sm"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteTask(task.id)}
-                      className="text-red-500 hover:underline text-sm"
-                    >
-                      Delete
-                    </button>
+                  <div className="flex gap-2 text-sm mt-2 md:mt-0">
+                    <button onClick={() => startEditing(task)} className="text-blue-600 dark:text-blue-400 hover:underline">Edit</button>
+                    <button onClick={() => handleDeleteTask(task.id)} className="text-red-600 dark:text-red-400 hover:underline">Delete</button>
                   </div>
                 )}
-
               </li>
             ))}
           </ul>
         </div>
 
         {/* Calendar Section */}
-        <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg h-fit">
+        <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-lg h-fit animate-fadeIn">
           <h2 className="text-xl font-semibold mb-4">🗓️ Calendar</h2>
-          <CalendarView tasks={tasks}/>
+          <CalendarView tasks={tasks} />
         </div>
       </div>
     </div>
