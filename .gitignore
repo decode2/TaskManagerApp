@@ -1,14 +1,21 @@
-# Node.js
+# Node / TypeScript
 node_modules/
+dist/
+.env
+.env.*.local
 
-# .NET
+# .NET build
 bin/
 obj/
 app.db
 
-# IDEs
+# VS Code
 .vscode/
 
-# Build output
-dist/
-build/
+# System
+*.DS_Store
+Thumbs.db
+
+# Misc
+ScaffoldingReadMe.txt
+
