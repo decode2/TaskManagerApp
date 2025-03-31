@@ -12,8 +12,8 @@ using TaskManagerApp.Data;
 namespace TaskManagerApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250328232623_AddRecurrenceFields")]
-    partial class AddRecurrenceFields
+    [Migration("20250330041704_Recurrence")]
+    partial class Recurrence
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

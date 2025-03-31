@@ -97,6 +97,10 @@ namespace TaskManagerApp.Api
             existing.Title = updatedTask.Title;
             existing.IsCompleted = updatedTask.IsCompleted;
             existing.Date = updatedTask.Date;
+            existing.RecurrenceType = updatedTask.RecurrenceType;
+            existing.RecurrenceInterval = updatedTask.RecurrenceInterval;
+            existing.RecurrenceCount = updatedTask.RecurrenceCount;
+            existing.RecurrenceIndex = updatedTask.RecurrenceIndex;
 
             await _context.SaveChangesAsync();
             return NoContent();

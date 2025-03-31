@@ -5,24 +5,28 @@ const useDarkMode = () => {
     const saved = localStorage.getItem('theme');
     if (saved === 'dark') return true;
     if (saved === 'light') return false;
-
-    // Fallback: check system preference
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   };
 
-  const [isDark, setIsDark] = useState(getInitialTheme);
+  const [isDark, setIsDark] = useState<boolean>(getInitialTheme);
 
   useEffect(() => {
-    const root = window.document.documentElement;
-
+    const root = document.documentElement;
     if (isDark) {
-      root.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
+      root.classList.add("dark");
+      localStorage.setItem("theme", "dark");
     } else {
-      root.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
+      root.classList.remove("dark");
+      localStorage.setItem("theme", "light");
     }
   }, [isDark]);
+  
+  // Sync React state with initial class (if user manually toggled theme before)
+  useEffect(() => {
+    const classDark = document.documentElement.classList.contains("dark");
+    setIsDark(classDark);
+  }, []);
+  
 
   return [isDark, setIsDark] as const;
 };

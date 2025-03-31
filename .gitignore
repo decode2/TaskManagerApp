@@ -1,1 +1,14 @@
-/appsettings.json
+# Node.js
+node_modules/
+
+# .NET
+bin/
+obj/
+app.db
+
+# IDEs
+.vscode/
+
+# Build output
+dist/
+build/
