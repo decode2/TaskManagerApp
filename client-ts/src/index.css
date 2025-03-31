@@ -1,7 +1,8 @@
-html {
-    transition: background-color 0.3s, color 0.3s;
-}
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html, body {
+  @apply min-h-screen bg-white text-black transition-colors duration-300;
+  @apply dark:bg-slate-900 dark:text-white;
+}
