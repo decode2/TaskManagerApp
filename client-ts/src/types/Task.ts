@@ -1,11 +1,13 @@
-export interface Task{
-    id: number;
-    title: string;
-    isCompleted: boolean;
-    date: string;
+export type RecurrenceType = "None" | "Daily" | "Weekly" | "Monthly" | "Custom";
 
-    recurrenceType?: "none" | "daily" | "weekly" | "monthly" | "custom";
-    recurrenceInterval?: number;
-    recurrenceCount?: number;
-    recurrenceIndex?: number;
+export interface Task {
+  id: number;
+  userId: string;
+  title: string;
+  date: string;
+  isCompleted: boolean;
+  recurrenceType: RecurrenceType;
+  recurrenceInterval?: number;
+  recurrenceCount?: number;
+  recurrenceIndex?: number;
 }

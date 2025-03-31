@@ -1,6 +1,16 @@
 using System.ComponentModel.DataAnnotations;
 
 namespace TaskManagerApp.Models{
+
+    public enum RecurrenceType
+    {
+        None,
+        Daily,
+        Weekly,
+        Monthly,
+        Custom
+    }
+
     public class TaskModel{
         public int Id { get; set; }
 
@@ -17,7 +27,7 @@ namespace TaskManagerApp.Models{
 
         public ApplicationUser? User { get; set; }
 
-        public string? RecurrenceType { get; set; }
+        public RecurrenceType RecurrenceType { get; set; }
         public int? RecurrenceInterval { get; set; }
         public int? RecurrenceCount { get; set; }
         public int? RecurrenceIndex { get; set; }
