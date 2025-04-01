@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
 import { Task } from "../types/Task";
 import { format } from "date-fns";
 
