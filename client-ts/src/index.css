@@ -2,7 +2,29 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom gradient utilities */
+@layer utilities {
+  .bg-light-gradient {
+    @apply bg-gradient-to-b from-blue-100 via-blue-200 to-blue-300;
+  }
+
+  .bg-dark-gradient {
+    @apply bg-gradient-to-b from-slate-900 via-slate-800 to-slate-700;
+  }
+
+  .bg-animated-gradient {
+    @apply bg-gradient-to-r from-blue-500 via-purple-500 to-yellow-400;
+    background-size: 400% 400%;
+    animation: gradient-x 6s ease infinite;
+  }
+}
+
 html, body {
   @apply min-h-screen bg-white text-black transition-colors duration-300;
   @apply dark:bg-slate-900 dark:text-white;
+}
+
+/* You can use this class on the wrapper div */
+.app-background {
+  @apply min-h-screen text-gray-900 dark:text-white transition-colors duration-300;
 }

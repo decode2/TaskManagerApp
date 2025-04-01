@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import CenteredFormLayout from "./CenteredFormLayout";
+import CenteredFormLayout from "./layouts/CenteredFormLayout";
 import useDarkMode from "../hooks/useDarkMode";
 
 export default function LoginForm() {
