@@ -1,3 +1,4 @@
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
   content: ["./src/**/*.{js,ts,jsx,tsx}"],
@@ -5,15 +6,13 @@ module.exports = {
     extend: {
       keyframes: {
         'gradient-x': {
-          '0%, 100%': { backgroundPosition: '0% 50%' },
+          '0%': { backgroundPosition: '0% 50%' },
           '50%': { backgroundPosition: '100% 50%' },
+          '100%': { backgroundPosition: '0% 50%' },
         },
       },
       animation: {
-        'gradient-x': 'gradient-x 6s ease infinite',
-      },
-      backgroundSize: {
-        '400': '400% 400%',
+        'gradient-x': 'gradient-x 12s ease infinite',
       },
     },
   },
