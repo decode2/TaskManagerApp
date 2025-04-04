@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TaskManagerApp.Migrations
 {
     /// <inheritdoc />
-    public partial class Recurrence : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -208,8 +208,7 @@ namespace TaskManagerApp.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Date = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     IsCompleted = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    RecurrenceType = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    RecurrenceType = table.Column<int>(type: "int", nullable: false),
                     RecurrenceInterval = table.Column<int>(type: "int", nullable: true),
                     RecurrenceCount = table.Column<int>(type: "int", nullable: true),
                     RecurrenceIndex = table.Column<int>(type: "int", nullable: true)

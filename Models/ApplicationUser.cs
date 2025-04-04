@@ -1,7 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 
-public class ApplicationUser : IdentityUser{
-
-    public ICollection<TaskManagerApp.Models.TaskModel> Tasks { get; set; } = new List<TaskManagerApp.Models.TaskModel>();
+namespace TaskManagerApp.Models
+{
+    public class ApplicationUser : IdentityUser
+    {
+        public ICollection<TaskModel> Tasks { get; set; } = new List<TaskModel>();
+        public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+    }
 }
+

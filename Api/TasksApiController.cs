@@ -16,8 +16,19 @@ namespace TaskManagerApp.Api
     {
         private readonly ApplicationDbContext _context = context;
 
-        private string GetUserId() =>
-            User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User is not authenticated");
+        private string GetUserId()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                Console.WriteLine("⚠️  No userId in JWT claims!");
+                throw new InvalidOperationException("User is not authenticated");
+            }
+
+            Console.WriteLine($"✅ Authenticated user: {userId}");
+            return userId;
+        }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TaskModel>>> GetTasks()
