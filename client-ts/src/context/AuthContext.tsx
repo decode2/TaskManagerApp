@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getCurrentUser, login, logout, register } from "../services/authService";
+import { login, logout, register } from "../services/authService";
+import { jwtDecode } from "jwt-decode";
 
 interface User {
   email: string;
@@ -12,29 +13,45 @@ interface AuthContextType {
   logout: () => Promise<void>;
 }
 
+interface DecodedToken {
+  email: string;
+  userId: string;
+  exp: number;
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    getCurrentUser().then(setUser).catch(() => setUser(null));
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      try {
+        const decoded = jwtDecode<DecodedToken>(token);
+        setUser({ email: decoded.email });
+      } catch (err) {
+        console.error("Invalid token:", err);
+        setUser(null);
+      }
+    }
   }, []);
 
   const handleLogin = async (email: string, password: string) => {
-    await login(email, password);
-    const currentUser = await getCurrentUser();
-    setUser(currentUser);
+    const token = await login(email, password);
+    const decoded = jwtDecode<DecodedToken>(token);
+    setUser({ email: decoded.email });
   };
 
   const handleRegister = async (email: string, password: string) => {
     await register(email, password);
-    const currentUser = await getCurrentUser();
-    setUser(currentUser);
+    await handleLogin(email, password); // log in right after register
   };
 
   const handleLogout = async () => {
     await logout();
+    localStorage.removeItem("token");
     setUser(null);
   };
 

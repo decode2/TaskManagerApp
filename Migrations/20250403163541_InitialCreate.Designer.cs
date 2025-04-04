@@ -12,8 +12,8 @@ using TaskManagerApp.Data;
 namespace TaskManagerApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250330043655_ConvertRecurrenceTypeToEnum")]
-    partial class ConvertRecurrenceTypeToEnum
+    [Migration("20250403163541_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

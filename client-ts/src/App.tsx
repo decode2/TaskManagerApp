@@ -7,6 +7,8 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
 import UserMenu from "./components/UserMenu";
+import Dashboard from "./pages/Dashboard";
+import SuccessAnimation from "./components/SuccessAnimation";
 
 function App() {
   return (
@@ -17,7 +19,8 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/" element={<PrivateRoute><Home /></PrivateRoute>} />
+            <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+            <Route path="/success" element={<SuccessAnimation />} />
           </Routes>
         </AuthProvider>
       </ErrorBoundary>
