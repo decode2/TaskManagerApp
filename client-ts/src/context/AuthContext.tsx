@@ -1,3 +1,4 @@
+// src/context/AuthContext.tsx
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { login, logout, register } from "../services/authService";
 import { jwtDecode } from "jwt-decode";
@@ -11,6 +12,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  loadingUser: boolean;
 }
 
 interface DecodedToken {
@@ -23,10 +25,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loadingUser, setLoadingUser] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-
     if (token) {
       try {
         const decoded = jwtDecode<DecodedToken>(token);
@@ -36,6 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(null);
       }
     }
+    setLoadingUser(false);
   }, []);
 
   const handleLogin = async (email: string, password: string) => {
@@ -46,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const handleRegister = async (email: string, password: string) => {
     await register(email, password);
-    await handleLogin(email, password); // log in right after register
+    await handleLogin(email, password); // Auto-login after register
   };
 
   const handleLogout = async () => {
@@ -57,7 +60,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <AuthContext.Provider
-      value={{ user, login: handleLogin, register: handleRegister, logout: handleLogout }}
+      value={{ user, login: handleLogin, register: handleRegister, logout: handleLogout, loadingUser }}
     >
       {children}
     </AuthContext.Provider>

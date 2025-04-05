@@ -10,6 +10,8 @@ import UserMenu from "./components/UserMenu";
 import Dashboard from "./pages/Dashboard";
 import SuccessAnimation from "./components/SuccessAnimation";
 
+import { Navigate } from "react-router-dom";
+
 function App() {
   return (
     <Router>
@@ -19,8 +21,11 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+            
             <Route path="/success" element={<SuccessAnimation />} />
+
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
           </Routes>
         </AuthProvider>
       </ErrorBoundary>
