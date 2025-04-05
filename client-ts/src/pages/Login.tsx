@@ -13,21 +13,15 @@ const Login = () => {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  useEffect(() => {
-    if (user) navigate("/");
-  }, [user, navigate]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsLoggingIn(true);
+
     try {
       await login(email, password);
       setShowSuccess(true);
-      setTimeout(() => {
-        setShowSuccess(false);
-        navigate("/");
-      }, 2000);
+      setTimeout(() => navigate("/dashboard"), 2200);
     } catch (error) {
       setError("Invalid email or password.");
       setIsLoggingIn(false);
@@ -36,14 +30,14 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-gray-900 via-purple-900 to-indigo-900 dark:from-black dark:via-gray-800 dark:to-gray-900 transition-all duration-700">
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {!showSuccess ? (
           <motion.form
             key="form"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.3 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.4, ease: "easeInOut" }}
             onSubmit={handleSubmit}
             className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-md w-full max-w-sm"
           >
@@ -80,10 +74,11 @@ const Login = () => {
         ) : (
           <motion.div
             key="success"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            className="text-center text-white text-2xl font-bold"
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="text-center text-white text-3xl font-bold animate-pulse"
           >
             Welcome back! 🎉
           </motion.div>

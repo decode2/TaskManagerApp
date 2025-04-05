@@ -1,4 +1,10 @@
-export type RecurrenceType = "None" | "Daily" | "Weekly" | "Monthly" | "Custom";
+export enum RecurrenceType {
+  None = 0,
+  Daily = 1,
+  Weekly = 2,
+  Monthly = 3,
+  Custom = 4,
+}
 
 export interface Task {
   id: number;
