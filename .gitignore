@@ -18,3 +18,5 @@ Thumbs.db
 
 # Misc
 ScaffoldingReadMe.txt
+appsettings.json
+Migrations/

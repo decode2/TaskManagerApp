@@ -1,3 +1,5 @@
+// --- src/types/Task.ts ---
+
 export enum RecurrenceType {
   None = 0,
   Daily = 1,
@@ -17,3 +19,11 @@ export interface Task {
   recurrenceCount?: number;
   recurrenceIndex?: number;
 }
+
+export const RecurrenceTypeLabelMap: Record<RecurrenceType, string> = {
+  [RecurrenceType.None]: "None",
+  [RecurrenceType.Daily]: "Daily",
+  [RecurrenceType.Weekly]: "Weekly",
+  [RecurrenceType.Monthly]: "Monthly",
+  [RecurrenceType.Custom]: "Custom",
+};
