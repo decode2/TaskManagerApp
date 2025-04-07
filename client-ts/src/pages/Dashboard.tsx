@@ -61,26 +61,23 @@ const Dashboard = () => {
     setEditTask(null);
   };
 
-  const handleDelete = async (id: number) => {
+  const confirmDelete = async () => {
+    if (!taskToDelete) return;
+
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`https://localhost:7044/api/tasksapi/${id}` ,{
+      await axios.delete(`https://localhost:7044/api/tasksapi/${taskToDelete.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.success("Task deleted");
       fetchTasks();
     } catch {
       toast.error("Failed to delete task");
+    } finally {
+      setShowDeleteModal(false);
+      setTaskToDelete(null);
     }
   };
-
-  if (loadingUser) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-white">
-        Loading dashboard...
-      </div>
-    );
-  }
 
   return (
     <AnimatePresence>
@@ -142,8 +139,11 @@ const Dashboard = () => {
                           Edit
                         </button>
                         <button
-                          className="text-sm px-3 py-1 bg-red-600 hover:bg-red-700 rounded"
-                          onClick={() => handleDelete(task.id)}
+                          onClick={() => {
+                            setTaskToDelete(task);
+                            setShowDeleteModal(true);
+                          }}
+                          className="ml-2 text-sm px-3 py-1 bg-red-600 hover:bg-red-700 rounded"
                         >
                           Delete
                         </button>
@@ -164,10 +164,7 @@ const Dashboard = () => {
             <ConfirmDeleteModal
               isOpen={showDeleteModal}
               onClose={() => setShowDeleteModal(false)}
-              onConfirm={() => {
-                handleDelete(taskToDelete.id);
-                setShowDeleteModal(false);
-              }}
+              onConfirm={confirmDelete}
               taskTitle={taskToDelete.title}
             />
           )}
