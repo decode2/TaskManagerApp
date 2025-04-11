@@ -44,7 +44,7 @@ namespace TaskManagerApp.Api
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState); // debugging
+                return BadRequest(ModelState);
             }
 
             var task = new TaskModel{
@@ -96,7 +96,6 @@ namespace TaskManagerApp.Api
             });
         }
 
-
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTask(int id, UpdateTaskDto updatedTask)
         {
@@ -115,6 +114,18 @@ namespace TaskManagerApp.Api
 
             await _context.SaveChangesAsync();
             return NoContent();
+        }
+
+        [HttpPatch("{id}/toggle-completion")]
+        public async Task<IActionResult> ToggleCompletion(int id)
+        {
+            var task = await _context.Tasks.FindAsync(id);
+            if (task == null || task.UserId != GetUserId()) return NotFound();
+
+            task.IsCompleted = !task.IsCompleted;
+            await _context.SaveChangesAsync();
+
+            return Ok(task);
         }
 
         [HttpDelete("{id}")]

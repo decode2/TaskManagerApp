@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import CreateTaskModal from "../components/CreateTaskModal";
 import EditTaskModal from "../components/EditTaskModal";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+import { CheckCircle, Circle } from "lucide-react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -23,6 +24,8 @@ const Dashboard = () => {
   const [editTask, setEditTask] = useState<Task | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
+
+  const [filter, setFilter] = useState<'all' | 'completed' | 'pending'>('all');
 
   const fetchTasks = async () => {
     try {
@@ -79,6 +82,27 @@ const Dashboard = () => {
     }
   };
 
+  const toggleCompletion = async (task: Task) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.put(`https://localhost:7044/api/tasksapi/${task.id}`, {
+        ...task,
+        isCompleted: !task.isCompleted
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchTasks();
+    } catch {
+      toast.error("Failed to update task status");
+    }
+  };
+
+  const filteredTasks = tasks.filter((t) => {
+    if (filter === 'completed') return t.isCompleted;
+    if (filter === 'pending') return !t.isCompleted;
+    return true;
+  });
+
   return (
     <AnimatePresence>
       <motion.div
@@ -111,25 +135,57 @@ const Dashboard = () => {
             <div className="md:col-span-2 bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-xl">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-semibold">📋 Today's Tasks</h2>
-                <button
-                  onClick={() => setShowModal(true)}
-                  className="text-sm px-3 py-1 bg-green-600 hover:bg-green-700 rounded"
-                >
-                  + Add Task
-                </button>
+                <div className="flex gap-3">
+                  <select
+                    value={filter}
+                    onChange={(e) => setFilter(e.target.value as any)}
+                    className="text-sm px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded"
+                  >
+                    <option value="all">All</option>
+                    <option value="completed">Completed</option>
+                    <option value="pending">Pending</option>
+                  </select>
+                  <button
+                    onClick={() => setShowModal(true)}
+                    className="text-sm px-3 py-1 bg-green-600 hover:bg-green-700 rounded"
+                  >
+                    + Add Task
+                  </button>
+                </div>
               </div>
-              {tasks.length === 0 ? (
-                <p className="text-gray-300">No tasks yet. Add one to get started!</p>
+              {filteredTasks.length === 0 ? (
+                <p className="text-gray-300">No tasks to show with this filter.</p>
               ) : (
                 <ul className="space-y-4">
-                  {tasks.map((task) => (
-                    <li
+                  {filteredTasks.map((task) => (
+                    <motion.li
                       key={task.id}
                       className="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-3 flex justify-between items-center"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.25 }}
                     >
-                      <div>
-                        <span className={task.isCompleted ? "line-through text-green-400" : ""}>{task.title}</span>
-                        <div className="text-sm opacity-70">{new Date(task.date).toLocaleString()}</div>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => toggleCompletion(task)}
+                          className="focus:outline-none"
+                          aria-label="Toggle task completion"
+                        >
+                          {task.isCompleted ? (
+                            <CheckCircle className="text-green-400 w-6 h-6 transition-all duration-300" />
+                          ) : (
+                            <Circle className="text-white/70 w-6 h-6 hover:text-white transition-all duration-300" />
+                          )}
+                        </button>
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <span className={task.isCompleted ? "line-through text-green-400" : ""}>{task.title}</span>
+                          <div className="text-sm opacity-70">{new Date(task.date).toLocaleString()}</div>
+                        </motion.div>
                       </div>
                       <div className="flex gap-2">
                         <button
@@ -148,7 +204,7 @@ const Dashboard = () => {
                           Delete
                         </button>
                       </div>
-                    </li>
+                    </motion.li>
                   ))}
                 </ul>
               )}
