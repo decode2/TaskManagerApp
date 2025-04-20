@@ -259,21 +259,8 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
                       className="text-sm text-blue-300 bg-slate-700 p-3 rounded-lg shadow-inner border border-slate-600 overflow-hidden"
                     >
                       <strong className="block mb-1">📋 Task Preview</strong>
-                      <motion.div layout>{recurrencePreview()}</motion.div>
-                      <AnimatePresence mode="wait">
-                        {!hasTime && (
-                          <motion.div
-                            layout
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="text-sm text-blue-300 bg-slate-700 p-3 rounded-lg shadow-inner border border-slate-600 overflow-hidden"
-                          >
-                            This task does not require a specific time.
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
+                      <div>{recurrencePreview()}</div>
+                      {!hasTime && <p className="mt-2">• This task does not require a specific time.</p>}
                     </motion.div>
                   )}
                 </AnimatePresence>
