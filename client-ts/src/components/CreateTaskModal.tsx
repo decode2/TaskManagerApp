@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface CreateTaskModalProps {
@@ -87,7 +87,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
         recurrenceCount = count;
       }
 
-      await axios.post(
+      await api.post(
         "https://localhost:7044/api/tasksapi",
         {
           title,

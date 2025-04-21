@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api";
 import { Task, RecurrenceType } from "../types/Task";
 import { toast } from "react-toastify";
 import CalendarView from "../components/CalendarView";
@@ -30,9 +30,7 @@ const Dashboard = () => {
   const fetchTasks = async () => {
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.get("https://localhost:7044/api/tasksapi", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get("/tasksapi");
       setTasks(response.data);
     } catch {
       toast.error("Failed to load tasks.", { autoClose: 1500 });
@@ -69,9 +67,8 @@ const Dashboard = () => {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.delete(`https://localhost:7044/api/tasksapi/${taskToDelete.id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await api.delete(`/tasksapi/${taskToDelete.id}`);
+
       toast.success("Task deleted");
       fetchTasks();
     } catch {
@@ -85,12 +82,11 @@ const Dashboard = () => {
   const toggleCompletion = async (task: Task) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put(`https://localhost:7044/api/tasksapi/${task.id}`, {
+      await api.put(`/tasksapi/${task.id}`, {
         ...task,
         isCompleted: !task.isCompleted
-      }, {
-        headers: { Authorization: `Bearer ${token}` }
       });
+
       fetchTasks();
     } catch {
       toast.error("Failed to update task status");
@@ -160,33 +156,54 @@ const Dashboard = () => {
                   {filteredTasks.map((task) => (
                     <motion.li
                       key={task.id}
+                      layout
                       className="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-3 flex justify-between items-center"
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ duration: 0.25 }}
+                      transition={{ duration: 0.25, ease: [0.25, 0.8, 0.25, 1] }}
                     >
-                      <div className="flex items-center gap-3">
-                        <button
-                          onClick={() => toggleCompletion(task)}
-                          className="focus:outline-none"
-                          aria-label="Toggle task completion"
-                        >
-                          {task.isCompleted ? (
-                            <CheckCircle className="text-green-400 w-6 h-6 transition-all duration-300" />
-                          ) : (
-                            <Circle className="text-white/70 w-6 h-6 hover:text-white transition-all duration-300" />
-                          )}
-                        </button>
+                      <motion.div
+                        className="flex items-center gap-3 cursor-pointer"
+                        onClick={() => toggleCompletion(task)}
+                        whileTap={{ scale: 0.96 }}
+                      >
                         <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
+                          layout
+                          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                            task.isCompleted ? "bg-green-500 border-green-500" : "border-slate-400"
+                          }`}
+                          animate={{
+                            scale: task.isCompleted ? 1.2 : 1,
+                            backgroundColor: task.isCompleted ? "#22c55e" : "#0f172a",
+                          }}
+                          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                        >
+                          {task.isCompleted && (
+                            <motion.span
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              exit={{ scale: 0, opacity: 0 }}
+                              className="text-white text-sm font-bold"
+                            >
+                              ✓
+                            </motion.span>
+                          )}
+                        </motion.div>
+
+                        <motion.div
+                          layout
+                          className={`flex flex-col ${
+                            task.isCompleted ? "line-through text-green-400" : ""
+                          }`}
+                          animate={{ opacity: task.isCompleted ? 0.6 : 1 }}
                           transition={{ duration: 0.3 }}
                         >
-                          <span className={task.isCompleted ? "line-through text-green-400" : ""}>{task.title}</span>
-                          <div className="text-sm opacity-70">{new Date(task.date).toLocaleString()}</div>
+                          <span>{task.title}</span>
+                          <span className="text-xs opacity-60">{new Date(task.date).toLocaleString()}</span>
                         </motion.div>
-                      </div>
+                      </motion.div>
+
                       <div className="flex gap-2">
                         <button
                           className="text-sm px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded"
@@ -206,6 +223,7 @@ const Dashboard = () => {
                       </div>
                     </motion.li>
                   ))}
+
                 </ul>
               )}
             </div>

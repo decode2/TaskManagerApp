@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Task, RecurrenceType } from "../types/Task";
 import { Dialog } from "@headlessui/react";
-import axios from "axios";
+import api from "../api";
 import { toast } from "react-toastify";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -32,7 +32,7 @@ const EditTaskModal: React.FC<Props> = ({ task, onClose, onUpdated }) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      await axios.put(
+      await api.put(
         `https://localhost:7044/api/tasksapi/${task?.id}`,
         {
           id: task?.id,

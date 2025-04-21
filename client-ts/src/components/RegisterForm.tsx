@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../api";
 import axios from "axios";
 import CenteredFormLayout from "./layouts/CenteredFormLayout";
 
@@ -23,7 +24,7 @@ export default function RegisterForm() {
     }
 
     try {
-      await axios.post("https://localhost:7044/api/auth/register", {
+      await api.post("/auth/register", {
         email,
         password,
       });

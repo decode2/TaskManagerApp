@@ -1,4 +1,5 @@
 import { useState } from "react";
+import api from "../api";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import CenteredFormLayout from "./layouts/CenteredFormLayout";
@@ -19,10 +20,7 @@ export default function LoginForm() {
     setError("");
 
     try {
-      const response = await axios.post("https://localhost:7044/api/auth/login", {
-        email,
-        password,
-      });
+      const response = await api.post("/auth/login", { email, password });
 
       const token = response.data.token;
       localStorage.setItem("token", token);
