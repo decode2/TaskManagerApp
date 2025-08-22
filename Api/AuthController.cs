@@ -40,28 +40,38 @@ namespace TaskManagerApp.Api
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
-            var user = await _userManager.Users.Include(u => u.RefreshTokens).FirstOrDefaultAsync(u => u.Email == dto.Email);
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
             if (user == null || !await _userManager.CheckPasswordAsync(user, dto.Password))
                 return Unauthorized("Invalid credentials");
 
-            // Remove old tokens
-            user.RefreshTokens.Clear();
+            // Remove all existing tokens for this user
+            var existingTokens = await _context.RefreshTokens.Where(rt => rt.UserId == user.Id).ToListAsync();
+            _context.RefreshTokens.RemoveRange(existingTokens);
 
             var accessToken = _jwtService.GenerateToken(user.Id, user.Email!);
             var refreshToken = _jwtService.GenerateRefreshToken();
 
-            user.RefreshTokens.Add(new RefreshToken { Token = refreshToken, Expires = DateTime.UtcNow.AddDays(7) });
-            await _userManager.UpdateAsync(user);
+            // Add new token
+            var newToken = new RefreshToken 
+            { 
+                Token = refreshToken, 
+                Expires = DateTime.UtcNow.AddDays(7),
+                UserId = user.Id
+            };
+            _context.RefreshTokens.Add(newToken);
+            
+            await _context.SaveChangesAsync();
 
             Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
+                Secure = false, // Changed to false for local development
+                SameSite = SameSiteMode.Lax, // Changed to Lax
                 Expires = DateTimeOffset.UtcNow.AddDays(7)
+                // Removed Domain for local development
             });
 
-            return Ok(new { token = accessToken });
+            return Ok(new { token = accessToken, email = user.Email! });
         }
 
         [HttpPost("refresh")]
@@ -71,35 +81,51 @@ namespace TaskManagerApp.Api
             if (string.IsNullOrEmpty(refreshToken))
                 return Unauthorized("Missing refresh token");
 
-            var user = await _context.Users.Include(u => u.RefreshTokens)
-                                           .FirstOrDefaultAsync(u => u.RefreshTokens.Any(rt => rt.Token == refreshToken));
+            // Find the token directly
+            var storedToken = await _context.RefreshTokens
+                .Include(rt => rt.User)
+                .FirstOrDefaultAsync(rt => rt.Token == refreshToken);
 
+            if (storedToken == null || storedToken.Expires < DateTime.UtcNow)
+                return Unauthorized("Invalid or expired refresh token");
+
+            var user = storedToken.User;
             if (user == null)
                 return Unauthorized("Invalid refresh token");
-
-            var storedToken = user.RefreshTokens.First(t => t.Token == refreshToken);
-
-            if (storedToken.Expires < DateTime.UtcNow)
-                return Unauthorized("Expired refresh token");
-
-            // Remove all old tokens before issuing a new one
-            user.RefreshTokens.Clear();
 
             var newAccessToken = _jwtService.GenerateToken(user.Id, user.Email!);
             var newRefreshToken = _jwtService.GenerateRefreshToken();
 
-            user.RefreshTokens.Add(new RefreshToken { Token = newRefreshToken, Expires = DateTime.UtcNow.AddDays(7) });
+            // Delete the old token first
+            _context.RefreshTokens.Remove(storedToken);
+            await _context.SaveChangesAsync();
+
+            // Add the new token
+            var newToken = new RefreshToken 
+            { 
+                Token = newRefreshToken, 
+                Expires = DateTime.UtcNow.AddDays(7),
+                UserId = user.Id
+            };
+            _context.RefreshTokens.Add(newToken);
             await _context.SaveChangesAsync();
 
             Response.Cookies.Append("refreshToken", newRefreshToken, new CookieOptions
             {
                 HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.Strict,
+                Secure = false,
+                SameSite = SameSiteMode.Lax,
                 Expires = DateTimeOffset.UtcNow.AddDays(7)
             });
 
-            return Ok(new { token = newAccessToken });
+            return Ok(new { token = newAccessToken, email = user.Email! });
+        }
+
+        [HttpPost("Logout")]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("refreshToken");
+            return Ok();
         }
     }
 }

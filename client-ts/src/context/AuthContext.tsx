@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { login, logout, register } from "../services/authService";
 import { jwtDecode } from "jwt-decode";
+import rawApi from "../services/rawApi";
 
 interface User {
   email: string;
@@ -28,18 +29,49 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loadingUser, setLoadingUser] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
+    const initializeUser = async () => {
       try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          setUser(null);
+          return;
+        }
+
         const decoded = jwtDecode<DecodedToken>(token);
-        setUser({ email: decoded.email });
+        const currentTime = Date.now() / 1000;
+        
+        if (decoded.exp < currentTime) {
+          // Token expired, try to refresh
+          try {
+            const res = await rawApi.post("/auth/refresh");
+            const newToken = res.data.token;
+            localStorage.setItem("token", newToken);
+            
+            const newDecoded = jwtDecode<DecodedToken>(newToken);
+            setUser({ email: newDecoded.email });
+            console.log("🔄 Access token refreshed on app load");
+          } catch (refreshErr) {
+            console.warn("🔒 Refresh failed, clearing localStorage token");
+            localStorage.removeItem("token");
+            setUser(null);
+          }
+        } else {
+          // Token is still valid
+          setUser({ email: decoded.email });
+          console.log("✅ Token is still valid");
+        }
       } catch (err) {
-        console.error("Invalid token:", err);
+        console.warn("🔒 Invalid token, clearing localStorage");
+        localStorage.removeItem("token");
         setUser(null);
+      } finally {
+        setLoadingUser(false);
       }
-    }
-    setLoadingUser(false);
+    };
+
+    initializeUser();
   }, []);
+  
 
   const handleLogin = async (email: string, password: string) => {
     const token = await login(email, password);

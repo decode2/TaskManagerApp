@@ -12,8 +12,15 @@ export default function LoginForm() {
 
   const navigate = useNavigate();
 
-  const [isDark, setIsDark] = useDarkMode();
+  const darkMode = useDarkMode();
+  const isDark = darkMode[0];
+  const setIsDark = darkMode[1];
 
+  const handleThemeToggle = () => {
+    if (typeof setIsDark === 'function') {
+      setIsDark(!isDark);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +62,7 @@ export default function LoginForm() {
 
       <div className="flex justify-end mb-4">
         <button
-          onClick={() => setIsDark(!isDark)}
+                          onClick={handleThemeToggle}
           type="button"
           className="text-sm text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-slate-700 px-3 py-1 rounded shadow-sm hover:scale-105 transition"
         >

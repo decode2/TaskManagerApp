@@ -1,0 +1,104 @@
+/* Custom scrollbar styles for modal */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 12px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: rgba(30, 41, 59, 0.3);
+  border-radius: 4px;
+  margin: 4px 0;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(71, 85, 105, 0.6);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+  border: 1px solid rgba(30, 41, 59, 0.2);
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.8);
+}
+
+.scrollbar-thin::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Show scrollbar buttons */
+.scrollbar-thin::-webkit-scrollbar-button {
+  display: block;
+  height: 8px;
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 2px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-button:hover {
+  background: rgba(100, 116, 139, 0.7);
+}
+
+.scrollbar-thin::-webkit-scrollbar-button:start {
+  border-radius: 4px 4px 0 0 !important;
+}
+
+.scrollbar-thin::-webkit-scrollbar-button:end {
+  border-radius: 0 0 4px 4px !important;
+}
+
+/* Firefox scrollbar */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(71, 85, 105, 0.6) rgba(30, 41, 59, 0.3);
+  padding-right: 8px;
+}
+
+/* Light theme scrollbar styles */
+.scrollbar-thin.scrollbar-thumb-gray-400::-webkit-scrollbar-track {
+  background: rgba(229, 231, 235, 0.3);
+}
+
+.scrollbar-thin.scrollbar-thumb-gray-400::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.6);
+  border: 1px solid rgba(229, 231, 235, 0.2);
+}
+
+.scrollbar-thin.scrollbar-thumb-gray-400::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.8);
+}
+
+.scrollbar-thin.scrollbar-thumb-gray-400::-webkit-scrollbar-button {
+  background: rgba(229, 231, 235, 0.5);
+}
+
+.scrollbar-thin.scrollbar-thumb-gray-400::-webkit-scrollbar-button:hover {
+  background: rgba(156, 163, 175, 0.7);
+}
+
+.scrollbar-thin.scrollbar-track-gray-200\/50 {
+  scrollbar-color: rgba(156, 163, 175, 0.6) rgba(229, 231, 235, 0.3);
+}
+
+/* Fix for gradient button overflow */
+.create-task-btn {
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  background-image: linear-gradient(to right, #3b82f6, #9333ea);
+  position: relative;
+}
+
+.create-task-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  margin: -2px;
+  border-radius: inherit;
+  background: linear-gradient(to right, #3b82f6, #9333ea);
+  opacity: 0.3;
+}
+
+.create-task-btn:hover::before {
+  background: linear-gradient(to right, #2563eb, #7e22ce);
+}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
-import { Task, RecurrenceType } from "../types/Task";
+import { Task } from "../types/Task";
 import { toast } from "react-toastify";
 import CalendarView from "../components/CalendarView";
 import useDarkMode from "../hooks/useDarkMode";
@@ -11,14 +11,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import CreateTaskModal from "../components/CreateTaskModal";
 import EditTaskModal from "../components/EditTaskModal";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
-import { CheckCircle, Circle } from "lucide-react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, loadingUser } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [isDark, setIsDark] = useDarkMode();
-  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
   const [editTask, setEditTask] = useState<Task | null>(null);
@@ -29,17 +27,20 @@ const Dashboard = () => {
 
   const fetchTasks = async () => {
     try {
-      const token = localStorage.getItem("token");
       const response = await api.get("/tasksapi");
       setTasks(response.data);
     } catch {
       toast.error("Failed to load tasks.", { autoClose: 1500 });
-    } finally {
-      setLoading(false);
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      await api.post("/auth/logout");
+    } catch (err){
+      console.error("Failed to clear refresh token cookie:", err);
+    }
+
     localStorage.removeItem("token");
     navigate("/login");
   };
@@ -50,7 +51,7 @@ const Dashboard = () => {
     } else if (user) {
       fetchTasks();
     }
-  }, [user, loadingUser]);
+  }, [user, loadingUser, navigate]);
 
   const handleTaskCreated = () => {
     fetchTasks();
@@ -66,7 +67,6 @@ const Dashboard = () => {
     if (!taskToDelete) return;
 
     try {
-      const token = localStorage.getItem("token");
       await api.delete(`/tasksapi/${taskToDelete.id}`);
 
       toast.success("Task deleted");
@@ -81,7 +81,6 @@ const Dashboard = () => {
 
   const toggleCompletion = async (task: Task) => {
     try {
-      const token = localStorage.getItem("token");
       await api.put(`/tasksapi/${task.id}`, {
         ...task,
         isCompleted: !task.isCompleted
@@ -113,7 +112,11 @@ const Dashboard = () => {
             <h1 className="text-4xl font-bold">🎯 Task Dashboard</h1>
             <div className="flex gap-3">
               <button
-                onClick={() => setIsDark(!isDark)}
+                onClick={() => {
+                  if (typeof setIsDark === 'function') {
+                    setIsDark(!isDark);
+                  }
+                }}
                 className="px-4 py-2 text-sm rounded bg-slate-700 hover:bg-slate-600"
               >
                 {isDark ? "🌕 Light" : "🌙 Dark"}

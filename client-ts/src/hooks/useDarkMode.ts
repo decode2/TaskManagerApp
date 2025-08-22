@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const useDarkMode = () => {
+const useDarkMode = (): [boolean, React.Dispatch<React.SetStateAction<boolean>>] => {
   const getInitialTheme = (): boolean => {
     const saved = localStorage.getItem('theme');
     if (saved === 'dark') return true;
@@ -20,15 +20,8 @@ const useDarkMode = () => {
       localStorage.setItem("theme", "light");
     }
   }, [isDark]);
-  
-  // Sync React state with initial class (if user manually toggled theme before)
-  useEffect(() => {
-    const classDark = document.documentElement.classList.contains("dark");
-    setIsDark(classDark);
-  }, []);
-  
 
-  return [isDark, setIsDark] as const;
+  return [isDark, setIsDark];
 };
 
 export default useDarkMode;

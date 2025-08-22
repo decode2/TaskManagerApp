@@ -2,6 +2,7 @@ import { useState } from "react";
 import Calendar from "react-calendar";
 import { Task } from "../types/Task";
 import { format } from "date-fns";
+import useDarkMode from "../hooks/useDarkMode";
 
 interface Props {
   tasks: Task[];
@@ -9,6 +10,7 @@ interface Props {
 
 const CalendarView = ({ tasks }: Props) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
+  const [isDark] = useDarkMode();
 
   const getTasksForDate = (date: Date) =>
     tasks.filter(
@@ -47,13 +49,13 @@ const CalendarView = ({ tasks }: Props) => {
 
       {selectedDate && (
         <div className="mt-6 animate-fade-in">
-          <h3 className="text-lg font-semibold mb-3">
+          <h3 className="text-lg font-semibold mb-3" style={{ color: isDark ? '#ffffff' : '#1f2937' }}>
             Tasks for {format(selectedDate, "EEE MMM dd yyyy")}
           </h3>
 
           <ul className="space-y-2">
             {getTasksForDate(selectedDate).length === 0 ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-sm" style={{ color: isDark ? '#d1d5db' : '#4b5563' }}>
                 No tasks for this day.
               </p>
             ) : (

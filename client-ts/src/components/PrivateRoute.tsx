@@ -7,8 +7,17 @@ interface Props {
 }
 
 const PrivateRoute: React.FC<Props> = ({ children }) => {
-  const { user } = useAuth();
-  return <>{user ? children : <Navigate to="/login" replace />}</>;
+  const { user, loadingUser } = useAuth();
+
+  if (loadingUser) {
+    return (
+      <div className="flex items-center justify-center h-screen text-white">
+        <span className="text-lg animate-pulse">🔄 Loading session...</span>
+      </div>
+    );
+  }
+
+  return user ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
 export default PrivateRoute;

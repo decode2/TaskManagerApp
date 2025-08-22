@@ -2,7 +2,7 @@ import axios from "axios";
 
 const api = axios.create({
   baseURL: "https://localhost:7044/api",
-  withCredentials: true
+  withCredentials: true,
 });
 
 api.interceptors.request.use(
@@ -30,7 +30,11 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !originalRequest.url.includes("/auth/refresh")
+    ) {
       originalRequest._retry = true;
 
       if (isRefreshing) {
@@ -52,10 +56,13 @@ api.interceptors.response.use(
           {},
           { withCredentials: true }
         );
+
         const newToken = res.data.token;
         localStorage.setItem("token", newToken);
+
         api.defaults.headers.common["Authorization"] = "Bearer " + newToken;
         originalRequest.headers.Authorization = "Bearer " + newToken;
+
         processQueue(null, newToken);
         return api(originalRequest);
       } catch (refreshErr) {
