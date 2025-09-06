@@ -6,7 +6,6 @@ import Register from "./pages/Register";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
-import UserMenu from "./components/UserMenu";
 import Dashboard from "./pages/Dashboard";
 import SuccessAnimation from "./components/SuccessAnimation";
 
@@ -17,7 +16,6 @@ function App() {
     <Router>
       <ErrorBoundary>
         <AuthProvider>
-          <UserMenu />
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />

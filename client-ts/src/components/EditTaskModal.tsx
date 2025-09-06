@@ -33,7 +33,7 @@ const EditTaskModal: React.FC<Props> = ({ task, onClose, onUpdated }) => {
     try {
       const token = localStorage.getItem("token");
       await api.put(
-        `https://localhost:7044/api/tasksapi/${task?.id}`,
+        `/api/tasks/${task?.id}`,
         {
           id: task?.id,
           title,
@@ -65,7 +65,7 @@ const EditTaskModal: React.FC<Props> = ({ task, onClose, onUpdated }) => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
               transition={{ duration: 0.3 }}
-              className="bg-slate-800 text-white p-6 rounded-lg shadow-xl z-50 w-full max-w-md relative"
+              className="bg-white dark:bg-slate-800 text-gray-900 dark:text-white p-6 rounded-lg shadow-xl z-50 w-full max-w-md relative"
             >
               <Dialog.Title className="text-2xl font-bold mb-4">Edit Task</Dialog.Title>
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -73,7 +73,7 @@ const EditTaskModal: React.FC<Props> = ({ task, onClose, onUpdated }) => {
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-3 py-2 rounded bg-slate-700 placeholder-gray-400"
+                  className="w-full px-3 py-2 rounded bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
                   placeholder="Title"
                   required
                 />
@@ -81,13 +81,13 @@ const EditTaskModal: React.FC<Props> = ({ task, onClose, onUpdated }) => {
                   type="datetime-local"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded bg-slate-700"
+                  className="w-full px-3 py-2 rounded bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white"
                   required
                 />
                 <select
                   value={recurrenceType}
                   onChange={(e) => setRecurrenceType(Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded bg-slate-700"
+                  className="w-full px-3 py-2 rounded bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white"
                 >
                   {Object.entries(RecurrenceType)
                     .filter(([key, val]) => !isNaN(Number(val)))
@@ -102,14 +102,14 @@ const EditTaskModal: React.FC<Props> = ({ task, onClose, onUpdated }) => {
                       placeholder="Interval (e.g. every 3 days)"
                       value={recurrenceInterval ?? ""}
                       onChange={(e) => setRecurrenceInterval(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded bg-slate-700"
+                      className="w-full px-3 py-2 rounded bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white"
                     />
                     <input
                       type="number"
                       placeholder="Count (number of recurrences)"
                       value={recurrenceCount ?? ""}
                       onChange={(e) => setRecurrenceCount(Number(e.target.value))}
-                      className="w-full px-3 py-2 rounded bg-slate-700"
+                      className="w-full px-3 py-2 rounded bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 text-gray-900 dark:text-white"
                     />
                   </>
                 )}

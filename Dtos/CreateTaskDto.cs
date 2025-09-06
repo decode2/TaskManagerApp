@@ -9,11 +9,14 @@ namespace TaskManagerApp.ViewModels
         [MinLength(1)]
         public string Title { get; set; } = null!;
 
-        [FutureDate(ErrorMessage = "Date must be in the future")]
-        public DateTime Date { get; set; }
+        [Required]
+        public string Date { get; set; } = null!;
 
         public string? RecurrenceType { get; set; }
         public int? RecurrenceInterval { get; set; }
         public int? RecurrenceCount { get; set; }
+
+        // Computed property to get DateTime from string
+        public DateTime DateAsDateTime => DateTime.Parse(Date);
     }
 }

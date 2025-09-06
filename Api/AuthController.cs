@@ -7,6 +7,7 @@ using TaskManagerApp.Dtos;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using TaskManagerApp.Data;
+using Microsoft.Extensions.Configuration;
 
 namespace TaskManagerApp.Api
 {
@@ -17,12 +18,14 @@ namespace TaskManagerApp.Api
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly JwtService _jwtService;
         private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public AuthController(UserManager<ApplicationUser> userManager, JwtService jwtService, ApplicationDbContext context)
+        public AuthController(UserManager<ApplicationUser> userManager, JwtService jwtService, ApplicationDbContext context, IConfiguration configuration)
         {
             _userManager = userManager;
             _jwtService = jwtService;
             _context = context;
+            _configuration = configuration;
         }
 
         [HttpPost("register")]
@@ -62,13 +65,27 @@ namespace TaskManagerApp.Api
             
             await _context.SaveChangesAsync();
 
+            // Get cookie configuration from environment variables
+            var cookieSecure = _configuration.GetValue<bool>("Cookies:Secure", false);
+            var cookieSameSite = _configuration.GetValue<string>("Cookies:SameSite", "Lax");
+            var cookieHttpOnly = _configuration.GetValue<bool>("Cookies:HttpOnly", true);
+            var cookieDomain = _configuration.GetValue<string>("Cookies:Domain", "");
+
+            var sameSiteMode = cookieSameSite.ToLower() switch
+            {
+                "strict" => SameSiteMode.Strict,
+                "lax" => SameSiteMode.Lax,
+                "none" => SameSiteMode.None,
+                _ => SameSiteMode.Lax
+            };
+
             Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
             {
-                HttpOnly = true,
-                Secure = false, // Changed to false for local development
-                SameSite = SameSiteMode.Lax, // Changed to Lax
+                HttpOnly = cookieHttpOnly,
+                Secure = cookieSecure,
+                SameSite = sameSiteMode,
+                Domain = string.IsNullOrEmpty(cookieDomain) ? null : cookieDomain,
                 Expires = DateTimeOffset.UtcNow.AddDays(7)
-                // Removed Domain for local development
             });
 
             return Ok(new { token = accessToken, email = user.Email! });
@@ -110,11 +127,26 @@ namespace TaskManagerApp.Api
             _context.RefreshTokens.Add(newToken);
             await _context.SaveChangesAsync();
 
+            // Get cookie configuration from environment variables
+            var cookieSecure = _configuration.GetValue<bool>("Cookies:Secure", false);
+            var cookieSameSite = _configuration.GetValue<string>("Cookies:SameSite", "Lax");
+            var cookieHttpOnly = _configuration.GetValue<bool>("Cookies:HttpOnly", true);
+            var cookieDomain = _configuration.GetValue<string>("Cookies:Domain", "");
+
+            var sameSiteMode = cookieSameSite.ToLower() switch
+            {
+                "strict" => SameSiteMode.Strict,
+                "lax" => SameSiteMode.Lax,
+                "none" => SameSiteMode.None,
+                _ => SameSiteMode.Lax
+            };
+
             Response.Cookies.Append("refreshToken", newRefreshToken, new CookieOptions
             {
-                HttpOnly = true,
-                Secure = false,
-                SameSite = SameSiteMode.Lax,
+                HttpOnly = cookieHttpOnly,
+                Secure = cookieSecure,
+                SameSite = sameSiteMode,
+                Domain = string.IsNullOrEmpty(cookieDomain) ? null : cookieDomain,
                 Expires = DateTimeOffset.UtcNow.AddDays(7)
             });
 

@@ -1,7 +1,8 @@
 import axios from "axios";
+import { API_BASE_URL } from "./config";
 
 const api = axios.create({
-  baseURL: "https://localhost:7044/api",
+  baseURL: API_BASE_URL,
   withCredentials: true,
 });
 
@@ -52,7 +53,7 @@ api.interceptors.response.use(
 
       try {
         const res = await axios.post(
-          "https://localhost:7044/api/auth/refresh",
+          `${API_BASE_URL}/auth/refresh`,
           {},
           { withCredentials: true }
         );

@@ -26,22 +26,22 @@ const ConfirmDeleteModal = ({
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.3 }}
-          className="relative z-10 bg-slate-800 p-6 rounded-lg max-w-sm w-full shadow-xl"
+          className="relative z-10 bg-white dark:bg-slate-800 p-6 rounded-lg max-w-sm w-full shadow-xl"
         >
-          <Dialog.Title className="text-xl font-semibold text-white mb-4">Delete Task</Dialog.Title>
-          <p className="text-white mb-6">
+          <Dialog.Title className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Delete Task</Dialog.Title>
+          <p className="text-gray-700 dark:text-white mb-6">
             Are you sure you want to delete <strong>{taskTitle}</strong>?
           </p>
           <div className="flex justify-end gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-500 text-white text-sm"
+              className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-500 dark:bg-gray-600 dark:hover:bg-gray-500 text-white text-sm"
             >
               Cancel
             </button>
             <button
               onClick={onConfirm}
-              className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white text-sm"
+              className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 text-white text-sm"
             >
               Confirm
             </button>

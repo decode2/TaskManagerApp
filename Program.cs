@@ -6,6 +6,7 @@ using System.Text;
 using TaskManagerApp.Data;
 using TaskManagerApp.Models;
 using TaskManagerApp.Services;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,16 +63,38 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// CORS for React frontend
+// CORS for React frontend - using environment variables
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:3000")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
-                
+        var allowedOrigins = builder.Configuration["Security:CorsAllowedOrigins"]?.Split(',') ?? new[]
+        {
+            "https://localhost:3000",
+            "https://192.168.0.21",
+            "https://taskmanager.local",
+            "https://myapp.local",
+            "https://tasks.local"
+        };
+
+        policy.SetIsOriginAllowed(origin =>
+        {
+            return allowedOrigins.Any(allowedOrigin => 
+                origin.StartsWith(allowedOrigin.Trim())) ||
+                origin.StartsWith("http://localhost:") ||
+                origin.StartsWith("https://localhost:") ||
+                origin.StartsWith("http://127.0.0.1:") ||
+                origin.StartsWith("https://127.0.0.1:") ||
+                origin.StartsWith("http://192.168.") ||
+                origin.StartsWith("https://192.168.") ||
+                origin.StartsWith("http://10.") ||
+                origin.StartsWith("https://10.") ||
+                origin.StartsWith("http://172.") ||
+                origin.StartsWith("https://172.");
+        })
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
     });
 });
 
@@ -84,13 +107,30 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// HTTPS redirection based on environment
+var enableHttpsRedirect = builder.Configuration.GetValue<bool>("Security:EnableHttpsRedirect", true);
+if (enableHttpsRedirect)
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseCors("AllowReactApp");
 
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Serve static files from React build
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot")),
+    RequestPath = ""
+});
+
+// Map API controllers first
 app.MapControllers();
+
+// Serve React app for all non-API routes (fallback)
+app.MapFallbackToFile("index.html");
 
 app.Run();

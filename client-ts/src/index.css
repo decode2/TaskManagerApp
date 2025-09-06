@@ -4,7 +4,7 @@
 
 @layer utilities {
   .bg-light-animated-gradient {
-    background-image: linear-gradient(270deg, #93c5fd, #c4b5fd, #fcd34d);
+    background-image: linear-gradient(270deg, #f8fafc, #f1f5f9, #e2e8f0, #cbd5e1);
     background-size: 400% 400%;
   }
 
@@ -26,10 +26,25 @@
 
 
 html, body {
-  @apply min-h-screen text-black transition-colors duration-300 dark:bg-slate-900 dark:text-white;
+  @apply min-h-screen text-slate-800 transition-colors duration-300 dark:bg-slate-900 dark:text-white;
 }
 
 .app-background {
-  @apply min-h-screen text-gray-900 dark:text-white transition-colors duration-300 bg-cover bg-no-repeat;
+  @apply min-h-screen text-slate-700 dark:text-white transition-colors duration-300 bg-cover bg-no-repeat;
   @apply bg-light-animated-gradient dark:bg-dark-animated-gradient;
+}
+
+/* Force dropdown to appear above everything */
+.user-dropdown {
+  z-index: 99999 !important;
+  position: absolute !important;
+  top: 100% !important;
+  right: 0 !important;
+  margin-top: 0.5rem !important;
+}
+
+/* Ensure react-calendar doesn't interfere */
+.react-calendar {
+  z-index: 1 !important;
+  position: relative !important;
 }

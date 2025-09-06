@@ -9,7 +9,7 @@ using TaskManagerApp.ViewModels;
 
 namespace TaskManagerApp.Api
 {
-    [Route("api/[controller]")]
+    [Route("api/tasks")]
     [ApiController]
     [Authorize]
     public class TasksApiController(ApplicationDbContext context) : ControllerBase
@@ -47,9 +47,15 @@ namespace TaskManagerApp.Api
                 return BadRequest(ModelState);
             }
 
+            // Validate that the date is in the future
+            if (dto.DateAsDateTime <= DateTime.Now)
+            {
+                return BadRequest("Date must be in the future");
+            }
+
             var task = new TaskModel{
                 Title = dto.Title,
-                Date = dto.Date,
+                Date = dto.DateAsDateTime,
                 IsCompleted = false,
                 UserId = GetUserId()
             };
