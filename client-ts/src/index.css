@@ -130,6 +130,36 @@ html, body {
   }
 }
 
+/* Modal overlay with proper backdrop blur - COMPLETE REWRITE */
+.modal-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  z-index: 99999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 1rem !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Ensure the modal content is properly centered */
+.modal-content {
+  position: relative !important;
+  z-index: 100000 !important;
+  margin: auto !important;
+  max-height: 90vh !important;
+  overflow-y: auto !important;
+}
+
 /* Accessibility: Respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
   *,
