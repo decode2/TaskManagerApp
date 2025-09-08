@@ -107,10 +107,20 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// HTTPS redirection based on environment
+// HTTPS redirection based on environment and available ports
 var enableHttpsRedirect = builder.Configuration.GetValue<bool>("Security:EnableHttpsRedirect", true);
-if (enableHttpsRedirect)
+if (enableHttpsRedirect && app.Environment.IsDevelopment())
 {
+    // Only enable HTTPS redirection if we're running with both HTTP and HTTPS ports
+    var httpsPort = builder.Configuration.GetValue<int>("App:Port", 7044);
+    if (httpsPort > 0)
+    {
+        app.UseHttpsRedirection();
+    }
+}
+else if (enableHttpsRedirect && !app.Environment.IsDevelopment())
+{
+    // In production, always use HTTPS redirection
     app.UseHttpsRedirection();
 }
 

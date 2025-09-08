@@ -48,3 +48,112 @@ html, body {
   z-index: 1 !important;
   position: relative !important;
 }
+
+/* Enhanced button styles */
+@layer components {
+  /* Prevent text selection on non-text elements */
+  .no-select {
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    -webkit-touch-callout: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  .btn-primary {
+    @apply relative overflow-hidden;
+  }
+  
+  .btn-primary::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent;
+    @apply translate-x-[-100%] transition-transform duration-700 ease-out;
+  }
+  
+  .btn-primary:hover::before {
+    @apply translate-x-[100%];
+  }
+  
+  .btn-icon {
+    @apply transition-transform duration-200;
+  }
+  
+  .btn-icon:hover {
+    @apply scale-110;
+  }
+  
+  .btn-glow {
+    @apply shadow-lg hover:shadow-xl;
+    box-shadow: 0 4px 14px 0 rgba(0, 118, 255, 0.15);
+  }
+  
+  .btn-glow:hover {
+    box-shadow: 0 6px 20px 0 rgba(0, 118, 255, 0.25);
+  }
+}
+
+/* Enhanced select dropdown behavior */
+@layer components {
+  .select-container {
+    @apply relative;
+  }
+  
+  .select-container:focus-within .motion-div {
+    @apply scale-100;
+  }
+  
+  .select-container:focus-within .hover-overlay {
+    @apply opacity-0;
+  }
+  
+  .select-focus-state {
+    @apply bg-white dark:bg-slate-600 shadow-md border-blue-500/50;
+  }
+  
+  /* Completely hide native select arrow */
+  .custom-select {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    background-image: none !important;
+  }
+  
+  .custom-select::-ms-expand {
+    display: none !important;
+  }
+  
+  .custom-select::-webkit-outer-spin-button,
+  .custom-select::-webkit-inner-spin-button {
+    -webkit-appearance: none !important;
+    margin: 0 !important;
+  }
+}
+
+/* Accessibility: Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .btn-primary::before {
+    transition: none !important;
+  }
+  
+  .btn-icon {
+    transition: none !important;
+  }
+  
+  .btn-icon:hover {
+    transform: none !important;
+  }
+  
+  .motion-div {
+    transform: none !important;
+  }
+}

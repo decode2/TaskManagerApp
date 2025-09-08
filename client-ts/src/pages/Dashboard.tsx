@@ -25,6 +25,8 @@ const Dashboard = () => {
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
   const [filter, setFilter] = useState<'all' | 'completed' | 'pending'>('all');
+  const [isFilterFocused, setIsFilterFocused] = useState(false);
+  const [previousFilter, setPreviousFilter] = useState<'all' | 'completed' | 'pending'>('all');
 
   const fetchTasks = async () => {
     try {
@@ -44,6 +46,17 @@ const Dashboard = () => {
       fetchTasks();
     }
   }, [user, loadingUser, navigate]);
+
+  // Handle filter dropdown state
+  useEffect(() => {
+    if (filter !== previousFilter) {
+      // Filter changed, close dropdown after a short delay
+      setTimeout(() => {
+        setIsFilterFocused(false);
+      }, 100);
+      setPreviousFilter(filter);
+    }
+  }, [filter, previousFilter]);
 
   const handleTaskCreated = () => {
     fetchTasks();
@@ -119,21 +132,87 @@ const Dashboard = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-2xl font-semibold text-slate-800 dark:text-white">📋 Today's Tasks</h2>
                   <div className="flex gap-3">
-                    <select
-                      value={filter}
-                      onChange={(e) => setFilter(e.target.value as any)}
-                      className="text-sm px-3 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-600 dark:hover:bg-slate-500 text-slate-700 dark:text-white rounded border border-slate-300 dark:border-slate-500"
-                    >
-                      <option value="all">All</option>
-                      <option value="completed">Completed</option>
-                      <option value="pending">Pending</option>
-                    </select>
-                    <button
+                    <div className="relative group">
+                      <div className="relative">
+                        <select
+                          value={filter}
+                          onChange={(e) => {
+                            const newValue = e.target.value as any;
+                            setFilter(newValue);
+                            // Close dropdown immediately when selection changes
+                            setTimeout(() => setIsFilterFocused(false), 50);
+                          }}
+                          onFocus={() => setIsFilterFocused(true)}
+                          onBlur={() => {
+                            // Add a small delay to allow for click events to process
+                            setTimeout(() => setIsFilterFocused(false), 100);
+                          }}
+                          onMouseDown={() => {
+                            // Toggle dropdown state on mouse down
+                            setIsFilterFocused(prev => !prev);
+                          }}
+                          className={`custom-select appearance-none text-sm px-4 py-2.5 pr-8 rounded-lg border transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 ${
+                            isFilterFocused 
+                              ? 'bg-white dark:bg-slate-600 shadow-md border-blue-500/50' 
+                              : 'bg-white/80 hover:bg-white dark:bg-slate-700 dark:hover:bg-slate-600 border-slate-200/60 dark:border-slate-600/60 shadow-sm hover:shadow-md'
+                          } text-slate-700 dark:text-white no-select`}
+                          style={{ 
+                            backgroundImage: 'none',
+                            WebkitAppearance: 'none',
+                            MozAppearance: 'none'
+                          }}
+                        >
+                          <option value="all">All Tasks</option>
+                          <option value="completed">Completed</option>
+                          <option value="pending">Pending</option>
+                        </select>
+                        
+                        {/* Custom dropdown arrow */}
+                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                        <motion.svg
+                          animate={{ rotate: isFilterFocused ? 180 : 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="w-4 h-4 text-slate-500 dark:text-slate-400 transition-colors duration-200 no-select"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </motion.svg>
+                        </div>
+                        
+                        {/* Hover effect overlay - only when not focused */}
+                        <div className={`absolute inset-0 rounded-lg bg-blue-500/5 transition-opacity duration-200 pointer-events-none ${
+                          isFilterFocused ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'
+                        }`}></div>
+                      </div>
+                    </div>
+                    <motion.button
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 17 }}
                       onClick={() => setShowModal(true)}
-                      className="text-sm px-3 py-1 bg-emerald-500 hover:bg-emerald-600 dark:bg-green-600 dark:hover:bg-green-700 text-white rounded shadow-sm"
+                      className="group relative text-sm px-5 py-2.5 bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 hover:from-emerald-600 hover:via-emerald-700 hover:to-teal-700 dark:from-green-600 dark:via-green-700 dark:to-emerald-700 dark:hover:from-green-700 dark:hover:via-green-800 dark:hover:to-emerald-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-emerald-400/30 dark:border-green-500/40 overflow-hidden no-select"
                     >
-                      + Add Task
-                    </button>
+                      <div className="flex items-center gap-2 relative z-10">
+                        <motion.div
+                          animate={{ rotate: [0, 90, 0] }}
+                          transition={{ duration: 0.6, ease: "easeInOut" }}
+                          className="w-5 h-5 flex items-center justify-center no-select"
+                        >
+                          <svg className="w-4 h-4 no-select" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                          </svg>
+                        </motion.div>
+                        <span>Add Task</span>
+                      </div>
+                      
+                      {/* Animated background effect */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out"></div>
+                      
+                      {/* Shine effect */}
+                      <div className="absolute inset-0 rounded-xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </motion.button>
                   </div>
                 </div>
                 {filteredTasks.length === 0 ? (
@@ -151,13 +230,13 @@ const Dashboard = () => {
                         transition={{ duration: 0.25, ease: [0.25, 0.8, 0.25, 1] }}
                       >
                         <motion.div
-                          className="flex items-center gap-3 cursor-pointer"
+                          className="flex items-center gap-3 cursor-pointer no-select"
                           onClick={() => toggleCompletion(task)}
                           whileTap={{ scale: 0.96 }}
                         >
                           <motion.div
                             layout
-                            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center no-select ${
                               task.isCompleted ? "bg-emerald-500 border-emerald-500" : "border-slate-400 dark:border-slate-500"
                             }`}
                             animate={{
@@ -171,7 +250,7 @@ const Dashboard = () => {
                                 initial={{ scale: 0, opacity: 0 }}
                                 animate={{ scale: 1, opacity: 1 }}
                                 exit={{ scale: 0, opacity: 0 }}
-                                className="text-white text-sm font-bold"
+                                className="text-white text-sm font-bold no-select"
                               >
                                 ✓
                               </motion.span>
@@ -192,21 +271,40 @@ const Dashboard = () => {
                         </motion.div>
 
                         <div className="flex gap-2">
-                          <button
-                            className="text-sm px-3 py-1 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 rounded shadow-sm text-white"
+                          <motion.button
+                            whileHover={{ scale: 1.05, y: -1 }}
+                            whileTap={{ scale: 0.95 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                            className="group relative text-sm px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-blue-600 dark:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 rounded-lg shadow-md hover:shadow-lg text-white font-medium transition-all duration-200 border border-blue-400/20 dark:border-blue-500/30 no-select"
                             onClick={() => setEditTask(task)}
                           >
-                            Edit
-                          </button>
-                          <button
+                            <div className="flex items-center gap-2">
+                              <svg className="w-4 h-4 transition-all duration-200 group-hover:scale-110 no-select" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                              <span>Edit</span>
+                            </div>
+                            <div className="absolute inset-0 rounded-lg bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                          </motion.button>
+                          
+                          <motion.button
+                            whileHover={{ scale: 1.05, y: -1 }}
+                            whileTap={{ scale: 0.95 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 17 }}
                             onClick={() => {
                               setTaskToDelete(task);
                               setShowDeleteModal(true);
                             }}
-                            className="ml-2 text-sm px-3 py-1 bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 rounded shadow-sm text-white"
+                            className="group relative text-sm px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 dark:from-red-600 dark:to-red-700 dark:hover:from-red-700 dark:hover:to-red-800 rounded-lg shadow-md hover:shadow-lg text-white font-medium transition-all duration-200 border border-red-400/20 dark:border-red-500/30 no-select"
                           >
-                            Delete
-                          </button>
+                            <div className="flex items-center gap-2">
+                              <svg className="w-4 h-4 transition-all duration-200 group-hover:scale-110 no-select" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                              </svg>
+                              <span>Delete</span>
+                            </div>
+                            <div className="absolute inset-0 rounded-lg bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                          </motion.button>
                         </div>
                       </motion.li>
                     ))}
