@@ -39,7 +39,6 @@ export const useModal = (options: UseModalOptions = {}): UseModalReturn => {
   const {
     initialOpen = false,
     closeOnEscape = true,
-    closeOnOverlayClick = true,
     preventBodyScroll = true
   } = options;
 

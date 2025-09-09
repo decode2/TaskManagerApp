@@ -71,15 +71,13 @@ export function useToggle(
  */
 export function useMultipleToggle<T extends Record<string, boolean>>(
   initialValues: T
-): {
-  [K in keyof T]: {
-    value: boolean;
-    toggle: () => void;
-    setValue: (value: boolean) => void;
-    setTrue: () => void;
-    setFalse: () => void;
-  };
-} {
+): Record<keyof T, {
+  value: boolean;
+  toggle: () => void;
+  setValue: (value: boolean) => void;
+  setTrue: () => void;
+  setFalse: () => void;
+}> {
   const [values, setValues] = useState<T>(initialValues);
 
   const createToggle = (key: keyof T) => ({
@@ -98,15 +96,13 @@ export function useMultipleToggle<T extends Record<string, boolean>>(
     },
   });
 
-  const toggles = {} as {
-    [K in keyof T]: {
-      value: boolean;
-      toggle: () => void;
-      setValue: (value: boolean) => void;
-      setTrue: () => void;
-      setFalse: () => void;
-    };
-  };
+  const toggles = {} as Record<keyof T, {
+    value: boolean;
+    toggle: () => void;
+    setValue: (value: boolean) => void;
+    setTrue: () => void;
+    setFalse: () => void;
+  }>;
 
   for (const key in initialValues) {
     toggles[key] = createToggle(key);
@@ -146,7 +142,7 @@ export function useToggleWithReset(
   () => void,
   () => void
 ] {
-  const [value, setValue] = useState(initialValue);
+  const [value, setValueState] = useState(initialValue);
   const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const clearTimeoutRef = () => {
@@ -156,45 +152,45 @@ export function useToggleWithReset(
   };
 
   const toggle = useCallback(() => {
-    setValue(prev => !prev);
+    setValueState(prev => !prev);
     
     if (resetDelay > 0) {
       clearTimeoutRef();
       timeoutRef.current = setTimeout(() => {
-        setValue(initialValue);
+        setValueState(initialValue);
       }, resetDelay);
     }
   }, [initialValue, resetDelay]);
 
   const setValueCallback = useCallback((newValue: boolean) => {
-    setValue(newValue);
+    setValueState(newValue);
     
     if (resetDelay > 0) {
       clearTimeoutRef();
       timeoutRef.current = setTimeout(() => {
-        setValue(initialValue);
+        setValueState(initialValue);
       }, resetDelay);
     }
   }, [initialValue, resetDelay]);
 
   const setTrue = useCallback(() => {
-    setValue(true);
+    setValueState(true);
     
     if (resetDelay > 0) {
       clearTimeoutRef();
       timeoutRef.current = setTimeout(() => {
-        setValue(initialValue);
+        setValueState(initialValue);
       }, resetDelay);
     }
   }, [initialValue, resetDelay]);
 
   const setFalse = useCallback(() => {
-    setValue(false);
+    setValueState(false);
     clearTimeoutRef();
   }, []);
 
   const reset = useCallback(() => {
-    setValue(initialValue);
+    setValueState(initialValue);
     clearTimeoutRef();
   }, [initialValue]);
 
