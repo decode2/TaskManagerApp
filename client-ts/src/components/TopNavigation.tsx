@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
-import ProfileModal from "./ProfileModal";
+import ProfileModal from "./ProfileModalNew";
 
 interface TopNavigationProps {
   onThemeToggle: () => void;
