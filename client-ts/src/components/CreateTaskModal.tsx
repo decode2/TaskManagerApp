@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import api from "../api";
 import { motion, AnimatePresence } from "framer-motion";
 import "../styles/modal.css";
 import useDarkMode from "../hooks/useDarkMode";
 import DateTimePicker from "./DateTimePicker";
+import { TaskPriority, TaskCategory, TaskPriorityLabelMap, TaskCategoryLabelMap } from "../types/Task";
 
 interface CreateTaskModalProps {
   open: boolean;
@@ -17,6 +18,24 @@ const recurrenceOptions = [
   { label: "Weekly", value: "Weekly", icon: "📆", color: "green", shortLabel: "Weekly" },
   { label: "Monthly", value: "Monthly", icon: "🗓️", color: "purple", shortLabel: "Monthly" },
   { label: "Custom", value: "Custom", icon: "⚙️", color: "orange", shortLabel: "Custom" },
+];
+
+const priorityOptions = [
+  { value: TaskPriority.Low, label: TaskPriorityLabelMap[TaskPriority.Low], icon: "↓", color: "green" },
+  { value: TaskPriority.Medium, label: TaskPriorityLabelMap[TaskPriority.Medium], icon: "→", color: "blue" },
+  { value: TaskPriority.High, label: TaskPriorityLabelMap[TaskPriority.High], icon: "↑", color: "orange" },
+  { value: TaskPriority.Urgent, label: TaskPriorityLabelMap[TaskPriority.Urgent], icon: "⚠", color: "red" },
+];
+
+const categoryOptions = [
+  { value: TaskCategory.Personal, label: TaskCategoryLabelMap[TaskCategory.Personal], icon: "👤", color: "purple" },
+  { value: TaskCategory.Work, label: TaskCategoryLabelMap[TaskCategory.Work], icon: "💼", color: "blue" },
+  { value: TaskCategory.Health, label: TaskCategoryLabelMap[TaskCategory.Health], icon: "🏥", color: "green" },
+  { value: TaskCategory.Education, label: TaskCategoryLabelMap[TaskCategory.Education], icon: "📚", color: "indigo" },
+  { value: TaskCategory.Finance, label: TaskCategoryLabelMap[TaskCategory.Finance], icon: "💰", color: "yellow" },
+  { value: TaskCategory.Shopping, label: TaskCategoryLabelMap[TaskCategory.Shopping], icon: "🛒", color: "pink" },
+  { value: TaskCategory.Travel, label: TaskCategoryLabelMap[TaskCategory.Travel], icon: "✈️", color: "cyan" },
+  { value: TaskCategory.Other, label: TaskCategoryLabelMap[TaskCategory.Other], icon: "📋", color: "gray" },
 ];
 
 // Predefined custom recurrence options for better UX
@@ -40,8 +59,13 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const [isDark] = useDarkMode();
+  
+  // Nuevos estados para categorías y prioridades
+  const [priority, setPriority] = useState<TaskPriority>(TaskPriority.Medium);
+  const [category, setCategory] = useState<TaskCategory>(TaskCategory.Other);
+  const [tags, setTags] = useState<string>("");
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     // Check if user has actually entered any meaningful data
     const hasTitle = title.trim() !== "";
     const hasDescription = description.trim() !== "";
@@ -56,7 +80,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
     } else {
       onClose();
     }
-  };
+  }, [title, description, dueDate, recurrence, interval, count, customUnit, onClose]);
 
   // Reset form when modal opens or closes
   useEffect(() => {
@@ -87,7 +111,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [open]);
+  }, [open, handleCloseModal]);
 
   const handleConfirmClose = () => {
     setShowConfirmDialog(false);
@@ -125,9 +149,13 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
       await api.post("/tasks", {
         title,
         date: dueDate,
+        description: description || null,
         recurrenceType: recurrence,
         recurrenceInterval: recurrence === "Custom" ? interval : null,
         recurrenceCount: recurrence === "Custom" ? count : null,
+        priority,
+        category,
+        tags: tags || null,
       });
       onCreated();
       onClose();
@@ -252,6 +280,71 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
                         : "bg-white border-gray-300 text-gray-900 placeholder-gray-500 hover:border-gray-400"
                     }`}
                     placeholder="Enter task description..."
+                  />
+                </div>
+
+                {/* Priority and Category Row */}
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Priority Selection */}
+                  <div>
+                    <label className={`block text-sm font-medium mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                      Priority
+                    </label>
+                    <select
+                      value={priority}
+                      onChange={(e) => setPriority(Number(e.target.value) as TaskPriority)}
+                      className={`w-full px-3 py-2 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                        isDark 
+                          ? "bg-slate-700/50 border-slate-600/50 text-white hover:border-slate-500" 
+                          : "bg-white border-gray-300 text-gray-900 hover:border-gray-400"
+                      }`}
+                    >
+                      {priorityOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.icon} {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Category Selection */}
+                  <div>
+                    <label className={`block text-sm font-medium mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                      Category
+                    </label>
+                    <select
+                      value={category}
+                      onChange={(e) => setCategory(Number(e.target.value) as TaskCategory)}
+                      className={`w-full px-3 py-2 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                        isDark 
+                          ? "bg-slate-700/50 border-slate-600/50 text-white hover:border-slate-500" 
+                          : "bg-white border-gray-300 text-gray-900 hover:border-gray-400"
+                      }`}
+                    >
+                      {categoryOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.icon} {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Tags Input */}
+                <div>
+                  <label className={`block text-sm font-medium mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                    Tags (comma-separated)
+                  </label>
+                  <input
+                    type="text"
+                    value={tags}
+                    onChange={(e) => setTags(e.target.value)}
+                    className={`w-full px-4 py-2 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                      isDark 
+                        ? "bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 hover:border-slate-500" 
+                        : "bg-white border-gray-300 text-gray-900 placeholder-gray-500 hover:border-gray-400"
+                    }`}
+                    placeholder="e.g., urgent, meeting, project..."
                   />
                 </div>
 

@@ -57,7 +57,12 @@ namespace TaskManagerApp.Api
                 Title = dto.Title,
                 Date = dto.DateAsDateTime,
                 IsCompleted = false,
-                UserId = GetUserId()
+                UserId = GetUserId(),
+                Priority = dto.Priority,
+                Category = dto.Category,
+                Description = dto.Description,
+                Tags = dto.Tags,
+                IsArchived = false
             };
 
             _context.Tasks.Add(task);
@@ -117,6 +122,11 @@ namespace TaskManagerApp.Api
             existing.RecurrenceInterval = updatedTask.RecurrenceInterval;
             existing.RecurrenceCount = updatedTask.RecurrenceCount;
             existing.RecurrenceIndex = updatedTask.RecurrenceIndex;
+            existing.Priority = updatedTask.Priority;
+            existing.Category = updatedTask.Category;
+            existing.Description = updatedTask.Description;
+            existing.Tags = updatedTask.Tags;
+            existing.IsArchived = updatedTask.IsArchived;
 
             await _context.SaveChangesAsync();
             return NoContent();

@@ -21,6 +21,10 @@ export { default as Card, CardHeader, CardTitle, CardDescription, CardContent, C
 export { default as Badge } from './Badge';
 export { default as Alert, AlertTitle, AlertDescription } from './Alert';
 
+// Task-specific Components
+export { default as PriorityBadge } from './PriorityBadge';
+export { default as CategoryBadge } from './CategoryBadge';
+
 // Feedback Components
 export { default as Loading } from './Loading';
 export { default as Progress, CircularProgress } from './Progress';

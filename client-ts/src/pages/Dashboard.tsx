@@ -12,6 +12,7 @@ import TopNavigation from "../components/TopNavigation";
 import CreateTaskModal from "../components/CreateTaskModal";
 import EditTaskModal from "../components/EditTaskModal";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+import { PriorityBadge, CategoryBadge } from "../components/ui";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -265,8 +266,19 @@ const Dashboard = () => {
                             animate={{ opacity: task.isCompleted ? 0.6 : 1 }}
                             transition={{ duration: 0.3 }}
                           >
-                            <span>{task.title}</span>
+                            <div className="flex items-center gap-2 mb-1">
+                              <span>{task.title}</span>
+                              <div className="flex items-center gap-1">
+                                <PriorityBadge priority={task.priority} size="sm" />
+                                <CategoryBadge category={task.category} size="sm" />
+                              </div>
+                            </div>
                             <span className="text-xs opacity-60 text-slate-500 dark:text-gray-400">{new Date(task.date).toLocaleString()}</span>
+                            {task.description && (
+                              <span className="text-xs opacity-70 text-slate-600 dark:text-gray-300 mt-1 line-clamp-2">
+                                {task.description}
+                              </span>
+                            )}
                           </motion.div>
                         </motion.div>
 

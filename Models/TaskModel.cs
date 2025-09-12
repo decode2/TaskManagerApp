@@ -11,6 +11,26 @@ namespace TaskManagerApp.Models{
         Custom
     }
 
+    public enum TaskPriority
+    {
+        Low = 1,
+        Medium = 2,
+        High = 3,
+        Urgent = 4
+    }
+
+    public enum TaskCategory
+    {
+        Personal = 1,
+        Work = 2,
+        Health = 3,
+        Education = 4,
+        Finance = 5,
+        Shopping = 6,
+        Travel = 7,
+        Other = 8
+    }
+
     public class TaskModel{
         public int Id { get; set; }
 
@@ -31,5 +51,12 @@ namespace TaskManagerApp.Models{
         public int? RecurrenceInterval { get; set; }
         public int? RecurrenceCount { get; set; }
         public int? RecurrenceIndex { get; set; }
+
+        // Nuevas propiedades para categorías y prioridades
+        public TaskPriority Priority { get; set; } = TaskPriority.Medium;
+        public TaskCategory Category { get; set; } = TaskCategory.Other;
+        public string? Description { get; set; }
+        public string? Tags { get; set; } // JSON string para múltiples etiquetas
+        public bool IsArchived { get; set; } = false;
     }
 }

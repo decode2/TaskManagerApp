@@ -22,5 +22,12 @@ namespace TaskManagerApp.ViewModels{
         public int? RecurrenceInterval { get; set; }
         public int? RecurrenceCount { get; set; }
         public int? RecurrenceIndex { get; set; }
+
+        // Nuevas propiedades
+        public TaskPriority Priority { get; set; } = TaskPriority.Medium;
+        public TaskCategory Category { get; set; } = TaskCategory.Other;
+        public string? Description { get; set; }
+        public string? Tags { get; set; }
+        public bool IsArchived { get; set; } = false;
     }
 }
