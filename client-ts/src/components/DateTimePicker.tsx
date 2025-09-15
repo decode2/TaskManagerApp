@@ -216,7 +216,7 @@ const DateTimePicker: React.FC<DateTimePickerProps> = ({
                 }`}>
                   ⏰ Select Time
                 </label>
-                <div className="grid grid-cols-4 gap-2 max-h-32 overflow-y-auto scrollbar-thin">
+                <div className="grid grid-cols-4 gap-2 max-h-32 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200/50 dark:scrollbar-thumb-slate-600 dark:scrollbar-track-slate-800/50">
                   {generateTimeOptions().map((time) => (
                     <motion.button
                       key={time}

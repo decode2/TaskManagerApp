@@ -217,80 +217,157 @@ const Dashboard = () => {
                   </div>
                 </div>
                 {filteredTasks.length === 0 ? (
-                  <p className="text-slate-600 dark:text-gray-300">No tasks to show with this filter.</p>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-center py-12"
+                  >
+                    <div className="text-6xl mb-4 opacity-50">📝</div>
+                    <h3 className="text-xl font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                      {filter === 'completed' ? 'No completed tasks' : 
+                       filter === 'pending' ? 'No pending tasks' : 'No tasks yet'}
+                    </h3>
+                    <p className="text-slate-500 dark:text-slate-400 mb-6">
+                      {filter === 'all' ? 'Create your first task to get started!' : 
+                       'Try changing the filter to see more tasks.'}
+                    </p>
+                    {filter === 'all' && (
+                      <motion.button
+                        onClick={() => setShowModal(true)}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-xl transition-colors duration-200 shadow-lg hover:shadow-xl"
+                      >
+                        Create First Task
+                      </motion.button>
+                    )}
+                  </motion.div>
                 ) : (
-                  <ul className="space-y-4">
+                  <div className="space-y-4">
                     {filteredTasks.map((task) => (
-                      <motion.li
+                      <motion.div
                         key={task.id}
                         layout
-                        className="bg-white/60 backdrop-blur-sm rounded-lg px-4 py-3 flex justify-between items-center border border-slate-200/50 dark:bg-white/10 dark:border-slate-700/30"
+                        className={`group relative bg-white/70 backdrop-blur-sm rounded-xl p-4 border transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${
+                          task.isCompleted 
+                            ? "border-emerald-200/50 dark:border-emerald-700/30 bg-emerald-50/50 dark:bg-emerald-900/10" 
+                            : "border-slate-200/50 dark:border-slate-700/30 hover:border-blue-300/50 dark:hover:border-blue-600/30"
+                        }`}
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95 }}
                         transition={{ duration: 0.25, ease: [0.25, 0.8, 0.25, 1] }}
+                        whileHover={{ y: -2 }}
                       >
-                        <motion.div
-                          className="flex items-center gap-3 cursor-pointer no-select"
-                          onClick={() => toggleCompletion(task)}
-                          whileTap={{ scale: 0.96 }}
-                        >
+                        {/* Task Header */}
+                        <div className="flex items-start justify-between mb-3">
                           <motion.div
-                            layout
-                            className={`w-6 h-6 rounded-full border-2 flex items-center justify-center no-select ${
-                              task.isCompleted ? "bg-emerald-500 border-emerald-500" : "border-slate-400 dark:border-slate-500"
-                            }`}
-                            animate={{
-                              scale: task.isCompleted ? 1.2 : 1,
-                              backgroundColor: task.isCompleted ? "#10b981" : "transparent",
-                            }}
-                            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                            className="flex items-start gap-3 cursor-pointer no-select flex-1"
+                            onClick={() => toggleCompletion(task)}
+                            whileTap={{ scale: 0.98 }}
                           >
-                            {task.isCompleted && (
-                              <motion.span
-                                initial={{ scale: 0, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                exit={{ scale: 0, opacity: 0 }}
-                                className="text-white text-sm font-bold no-select"
-                              >
-                                ✓
-                              </motion.span>
-                            )}
-                          </motion.div>
+                            {/* Checkbox */}
+                            <motion.div
+                              layout
+                              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center no-select mt-0.5 ${
+                                task.isCompleted ? "bg-emerald-500 border-emerald-500" : "border-slate-400 dark:border-slate-500"
+                              }`}
+                              animate={{
+                                scale: task.isCompleted ? 1.1 : 1,
+                                backgroundColor: task.isCompleted ? "#10b981" : "transparent",
+                              }}
+                              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                              whileHover={{ scale: 1.1 }}
+                            >
+                              {task.isCompleted && (
+                                <motion.span
+                                  initial={{ scale: 0, opacity: 0 }}
+                                  animate={{ scale: 1, opacity: 1 }}
+                                  exit={{ scale: 0, opacity: 0 }}
+                                  className="text-white text-sm font-bold no-select"
+                                >
+                                  ✓
+                                </motion.span>
+                              )}
+                            </motion.div>
 
-                          <motion.div
-                            layout
-                            className={`flex flex-col ${
-                              task.isCompleted ? "line-through text-emerald-600 dark:text-green-400" : "text-slate-700 dark:text-white"
-                            }`}
-                            animate={{ opacity: task.isCompleted ? 0.6 : 1 }}
-                            transition={{ duration: 0.3 }}
-                          >
-                            <div className="flex items-center gap-2 mb-1">
-                              <span>{task.title}</span>
-                              <div className="flex items-center gap-1">
-                                <PriorityBadge priority={task.priority} size="sm" />
-                                <CategoryBadge category={task.category} size="sm" />
+                            {/* Task Content */}
+                            <div className="flex-1 min-w-0">
+                              <motion.h3
+                                layout
+                                className={`text-lg font-semibold mb-1 ${
+                                  task.isCompleted ? "line-through text-emerald-600 dark:text-green-400" : "text-slate-800 dark:text-white"
+                                }`}
+                                animate={{ opacity: task.isCompleted ? 0.7 : 1 }}
+                                transition={{ duration: 0.3 }}
+                              >
+                                {task.title}
+                              </motion.h3>
+                              
+                              {/* Date */}
+                              <div className="flex items-center gap-1 mb-2">
+                                <svg className="w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span className="text-sm text-slate-500 dark:text-slate-400">
+                                  {new Date(task.date).toLocaleDateString('es-ES', {
+                                    weekday: 'short',
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </span>
+                              </div>
+
+                              {/* Description */}
+                              {task.description && (
+                                <p className="text-sm text-slate-600 dark:text-slate-300 mb-3 line-clamp-2 leading-relaxed">
+                                  {task.description}
+                                </p>
+                              )}
+
+                              {/* Tags */}
+                              {task.tags && (
+                                <div className="flex flex-wrap gap-1 mb-3">
+                                  {task.tags.split(',').map((tag, index) => (
+                                    <span
+                                      key={index}
+                                      className="px-2 py-1 text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-full"
+                                    >
+                                      #{tag.trim()}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+
+                              {/* Badges Row */}
+                              <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                                <PriorityBadge priority={task.priority} size="sm" variant="minimal" animated={true} />
+                                <CategoryBadge category={task.category} size="sm" variant="minimal" animated={true} />
+                                
+                                {/* Archive Badge */}
+                                {task.isArchived && (
+                                  <span className="px-2 py-1 text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 rounded-full border border-amber-200 dark:border-amber-700 whitespace-nowrap">
+                                    📦 Archived
+                                  </span>
+                                )}
                               </div>
                             </div>
-                            <span className="text-xs opacity-60 text-slate-500 dark:text-gray-400">{new Date(task.date).toLocaleString()}</span>
-                            {task.description && (
-                              <span className="text-xs opacity-70 text-slate-600 dark:text-gray-300 mt-1 line-clamp-2">
-                                {task.description}
-                              </span>
-                            )}
                           </motion.div>
-                        </motion.div>
+                        </div>
 
-                        <div className="flex gap-2">
+                        {/* Action Buttons */}
+                        <div className="flex flex-col sm:flex-row gap-2 mt-3 pt-3 border-t border-slate-200/50 dark:border-slate-700/30">
                           <motion.button
                             whileHover={{ scale: 1.05, y: -1 }}
                             whileTap={{ scale: 0.95 }}
                             transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                            className="group relative text-sm px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-blue-600 dark:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 rounded-lg shadow-md hover:shadow-lg text-white font-medium transition-all duration-200 border border-blue-400/20 dark:border-blue-500/30 no-select"
+                            className="group relative text-sm px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-blue-600 dark:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 rounded-lg shadow-md hover:shadow-lg text-white font-medium transition-all duration-200 border border-blue-400/20 dark:border-blue-500/30 no-select flex-1 sm:flex-none"
                             onClick={() => setEditTask(task)}
                           >
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-center gap-2">
                               <svg className="w-4 h-4 transition-all duration-200 group-hover:scale-110 no-select" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                               </svg>
@@ -307,9 +384,9 @@ const Dashboard = () => {
                               setTaskToDelete(task);
                               setShowDeleteModal(true);
                             }}
-                            className="group relative text-sm px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 dark:from-red-600 dark:to-red-700 dark:hover:from-red-700 dark:hover:to-red-800 rounded-lg shadow-md hover:shadow-lg text-white font-medium transition-all duration-200 border border-red-400/20 dark:border-red-500/30 no-select"
+                            className="group relative text-sm px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 dark:from-red-600 dark:to-red-700 dark:hover:from-red-700 dark:hover:to-red-800 rounded-lg shadow-md hover:shadow-lg text-white font-medium transition-all duration-200 border border-red-400/20 dark:border-red-500/30 no-select flex-1 sm:flex-none"
                           >
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-center gap-2">
                               <svg className="w-4 h-4 transition-all duration-200 group-hover:scale-110 no-select" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                               </svg>
@@ -318,10 +395,9 @@ const Dashboard = () => {
                             <div className="absolute inset-0 rounded-lg bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
                           </motion.button>
                         </div>
-                      </motion.li>
+                      </motion.div>
                     ))}
-
-                  </ul>
+                  </div>
                 )}
               </div>
 

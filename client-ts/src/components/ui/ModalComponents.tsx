@@ -31,7 +31,7 @@ export const ModalBody: React.FC<ModalBodyProps> = ({
   className = '', 
   padding = 'md' 
 }) => (
-  <div className={`flex-1 overflow-y-auto ${paddingClasses[padding]} ${className}`}>
+  <div className={`flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200/50 dark:scrollbar-thumb-slate-600 dark:scrollbar-track-slate-800/50 ${paddingClasses[padding]} ${className}`}>
     {children}
   </div>
 );

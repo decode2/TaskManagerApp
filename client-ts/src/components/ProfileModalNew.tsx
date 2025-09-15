@@ -324,7 +324,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
 
       <ModalBody>
         {/* Tab Navigation */}
-        <div className="flex border-b border-slate-200 dark:border-slate-700 overflow-x-auto mb-6">
+        <div className="flex border-b border-slate-200 dark:border-slate-700 overflow-x-auto mb-6 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200/50 dark:scrollbar-thumb-slate-600 dark:scrollbar-track-slate-800/50">
           {tabs.map((tab) => (
             <button
               key={tab.id}
