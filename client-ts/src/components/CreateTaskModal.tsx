@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import "../styles/modal.css";
 import useDarkMode from "../hooks/useDarkMode";
 import DateTimePicker from "./DateTimePicker";
-import { TaskPriority, TaskCategory, TaskPriorityLabelMap, TaskCategoryLabelMap } from "../types/Task";
+import { TaskPriority, TaskCategory } from "../types/Task";
+import { PrioritySelector, CategorySelector } from "./ui";
 
 interface CreateTaskModalProps {
   open: boolean;
@@ -20,23 +21,7 @@ const recurrenceOptions = [
   { label: "Custom", value: "Custom", icon: "⚙️", color: "orange", shortLabel: "Custom" },
 ];
 
-const priorityOptions = [
-  { value: TaskPriority.Low, label: TaskPriorityLabelMap[TaskPriority.Low], icon: "↓", color: "green" },
-  { value: TaskPriority.Medium, label: TaskPriorityLabelMap[TaskPriority.Medium], icon: "→", color: "blue" },
-  { value: TaskPriority.High, label: TaskPriorityLabelMap[TaskPriority.High], icon: "↑", color: "orange" },
-  { value: TaskPriority.Urgent, label: TaskPriorityLabelMap[TaskPriority.Urgent], icon: "⚠", color: "red" },
-];
-
-const categoryOptions = [
-  { value: TaskCategory.Personal, label: TaskCategoryLabelMap[TaskCategory.Personal], icon: "👤", color: "purple" },
-  { value: TaskCategory.Work, label: TaskCategoryLabelMap[TaskCategory.Work], icon: "💼", color: "blue" },
-  { value: TaskCategory.Health, label: TaskCategoryLabelMap[TaskCategory.Health], icon: "🏥", color: "green" },
-  { value: TaskCategory.Education, label: TaskCategoryLabelMap[TaskCategory.Education], icon: "📚", color: "indigo" },
-  { value: TaskCategory.Finance, label: TaskCategoryLabelMap[TaskCategory.Finance], icon: "💰", color: "yellow" },
-  { value: TaskCategory.Shopping, label: TaskCategoryLabelMap[TaskCategory.Shopping], icon: "🛒", color: "pink" },
-  { value: TaskCategory.Travel, label: TaskCategoryLabelMap[TaskCategory.Travel], icon: "✈️", color: "cyan" },
-  { value: TaskCategory.Other, label: TaskCategoryLabelMap[TaskCategory.Other], icon: "📋", color: "gray" },
-];
+// Note: Priority and Category options are now handled by the modern selector components
 
 // Predefined custom recurrence options for better UX
 const predefinedCustomOptions = [
@@ -285,49 +270,16 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
 
                 {/* Priority and Category Row */}
                 <div className="grid grid-cols-2 gap-4">
-                  {/* Priority Selection */}
-                  <div>
-                    <label className={`block text-sm font-medium mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                      Priority
-                    </label>
-                    <select
-                      value={priority}
-                      onChange={(e) => setPriority(Number(e.target.value) as TaskPriority)}
-                      className={`w-full px-3 py-2 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                        isDark 
-                          ? "bg-slate-700/50 border-slate-600/50 text-white hover:border-slate-500" 
-                          : "bg-white border-gray-300 text-gray-900 hover:border-gray-400"
-                      }`}
-                    >
-                      {priorityOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.icon} {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Category Selection */}
-                  <div>
-                    <label className={`block text-sm font-medium mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
-                      Category
-                    </label>
-                    <select
-                      value={category}
-                      onChange={(e) => setCategory(Number(e.target.value) as TaskCategory)}
-                      className={`w-full px-3 py-2 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                        isDark 
-                          ? "bg-slate-700/50 border-slate-600/50 text-white hover:border-slate-500" 
-                          : "bg-white border-gray-300 text-gray-900 hover:border-gray-400"
-                      }`}
-                    >
-                      {categoryOptions.map((option) => (
-                        <option key={option.value} value={option.value}>
-                          {option.icon} {option.label}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  <PrioritySelector
+                    value={priority}
+                    onChange={setPriority}
+                    label="Priority"
+                  />
+                  <CategorySelector
+                    value={category}
+                    onChange={setCategory}
+                    label="Category"
+                  />
                 </div>
 
                 {/* Tags Input */}

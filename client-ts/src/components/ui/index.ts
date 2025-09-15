@@ -24,6 +24,8 @@ export { default as Alert, AlertTitle, AlertDescription } from './Alert';
 // Task-specific Components
 export { default as PriorityBadge } from './PriorityBadge';
 export { default as CategoryBadge } from './CategoryBadge';
+export { default as PrioritySelector } from './PrioritySelector';
+export { default as CategorySelector } from './CategorySelector';
 
 // Feedback Components
 export { default as Loading } from './Loading';

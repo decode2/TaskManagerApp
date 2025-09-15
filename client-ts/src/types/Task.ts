@@ -71,22 +71,5 @@ export const TaskCategoryLabelMap: Record<TaskCategory, string> = {
   [TaskCategory.Other]: "Other",
 };
 
-// Colores para prioridades
-export const TaskPriorityColorMap: Record<TaskPriority, string> = {
-  [TaskPriority.Low]: "text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/30",
-  [TaskPriority.Medium]: "text-blue-600 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/30",
-  [TaskPriority.High]: "text-orange-600 bg-orange-100 dark:text-orange-400 dark:bg-orange-900/30",
-  [TaskPriority.Urgent]: "text-red-600 bg-red-100 dark:text-red-400 dark:bg-red-900/30",
-};
-
-// Colores para categorías
-export const TaskCategoryColorMap: Record<TaskCategory, string> = {
-  [TaskCategory.Personal]: "text-purple-600 bg-purple-100 dark:text-purple-400 dark:bg-purple-900/30",
-  [TaskCategory.Work]: "text-blue-600 bg-blue-100 dark:text-blue-400 dark:bg-blue-900/30",
-  [TaskCategory.Health]: "text-green-600 bg-green-100 dark:text-green-400 dark:bg-green-900/30",
-  [TaskCategory.Education]: "text-indigo-600 bg-indigo-100 dark:text-indigo-400 dark:bg-indigo-900/30",
-  [TaskCategory.Finance]: "text-yellow-600 bg-yellow-100 dark:text-yellow-400 dark:bg-yellow-900/30",
-  [TaskCategory.Shopping]: "text-pink-600 bg-pink-100 dark:text-pink-400 dark:bg-pink-900/30",
-  [TaskCategory.Travel]: "text-cyan-600 bg-cyan-100 dark:text-cyan-400 dark:bg-cyan-900/30",
-  [TaskCategory.Other]: "text-gray-600 bg-gray-100 dark:text-gray-400 dark:bg-gray-900/30",
-};
+// Note: Color mapping is now handled directly in the badge components
+// for better customization and variant support

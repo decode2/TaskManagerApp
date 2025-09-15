@@ -7,6 +7,7 @@ import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
 import Dashboard from "./pages/Dashboard";
 import SuccessAnimation from "./components/SuccessAnimation";
+import BadgeShowcase from "./components/BadgeShowcase";
 
 import { Navigate } from "react-router-dom";
 
@@ -20,6 +21,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             
             <Route path="/success" element={<SuccessAnimation />} />
+            <Route path="/badge-showcase" element={<BadgeShowcase />} />
 
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
