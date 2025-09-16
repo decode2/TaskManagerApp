@@ -87,7 +87,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
           type="button"
           onClick={() => !disabled && setIsOpen(!isOpen)}
           disabled={disabled}
-          className={`w-full px-3 py-2.5 rounded-lg border-2 transition-all duration-200 text-left flex items-center justify-between group ${
+          className={`w-full px-3 sm:px-3 py-3 sm:py-2.5 rounded-lg border-2 transition-all duration-200 text-left flex items-center justify-between group min-h-[44px] touch-manipulation ${
             isDark 
               ? 'bg-slate-700/50 border-slate-600/50 hover:bg-slate-700/70 hover:border-slate-500/50' 
               : 'bg-white border-gray-300 hover:bg-gray-50 hover:border-gray-400'
@@ -101,7 +101,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
             {selectedOption ? (
               <>
                 {getOptionIcon(selectedOption)}
-                <span className={`text-sm font-medium truncate ${
+                <span className={`text-sm sm:text-sm font-medium truncate ${
                   isDark ? 'text-white' : 'text-gray-900'
                 }`}>
                   {selectedOption.label}
@@ -156,7 +156,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Search..."
-                    className={`w-full px-2 py-1.5 rounded border text-xs transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 ${
+                    className={`w-full px-2 py-2 sm:py-1.5 rounded border text-sm sm:text-xs transition-all duration-200 focus:outline-none focus:ring-1 focus:ring-blue-500/50 focus:border-blue-500/50 touch-manipulation ${
                       isDark 
                         ? 'bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400' 
                         : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'
@@ -180,7 +180,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
                       type="button"
                       onClick={() => handleSelect(option.value)}
                       disabled={option.disabled}
-                      className={`w-full px-3 py-2 text-left flex items-center gap-2 transition-all duration-200 ${
+                      className={`w-full px-3 py-3 sm:py-2 text-left flex items-center gap-2 transition-all duration-200 min-h-[44px] touch-manipulation ${
                         isDark 
                           ? 'text-white' 
                           : 'text-gray-900'

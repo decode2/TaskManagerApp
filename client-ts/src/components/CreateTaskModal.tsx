@@ -188,14 +188,14 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
           <motion.div
             ref={modalRef}
-            className={`relative w-full max-w-lg max-h-[85vh] flex flex-col rounded-3xl shadow-2xl backdrop-blur-sm overflow-hidden mx-auto ${
+            className={`relative w-full max-w-lg max-h-[95vh] sm:max-h-[85vh] flex flex-col rounded-xl sm:rounded-3xl shadow-2xl backdrop-blur-sm overflow-hidden mx-auto ${
               isDark 
                 ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 border border-slate-600/50" 
                 : "bg-gradient-to-br from-white via-gray-50 to-white border border-gray-300/70"
@@ -206,9 +206,9 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
             exit="exit"
           >
             {/* Modal Header */}
-            <div className={`p-6 border-b ${isDark ? "border-slate-600/30" : "border-gray-200/50"}`}>
+            <div className={`p-4 sm:p-6 border-b ${isDark ? "border-slate-600/30" : "border-gray-200/50"}`}>
               <motion.h2 
-                className={`text-2xl font-bold text-center bg-gradient-to-r bg-clip-text text-transparent ${
+                className={`text-xl sm:text-2xl font-bold text-center bg-gradient-to-r bg-clip-text text-transparent ${
                   isDark 
                     ? "from-blue-400 to-purple-400" 
                     : "from-blue-600 to-purple-600"
@@ -222,7 +222,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
             </div>
 
             {/* Scrollable Content Area */}
-            <div className="flex-1 overflow-y-auto scrollbar-thin p-6" style={{ paddingRight: '20px' }}>
+            <div className="flex-1 overflow-y-auto scrollbar-thin p-4 sm:p-6" style={{ paddingRight: '20px' }}>
               <motion.form
                 id="task-form"
                 onSubmit={handleSubmit}
@@ -240,7 +240,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className={`w-full px-4 py-2 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                    className={`w-full px-3 sm:px-4 py-3 sm:py-2 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-base touch-manipulation ${
                       isDark 
                         ? "bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 hover:border-slate-500" 
                         : "bg-white border-gray-300 text-gray-900 placeholder-gray-500 hover:border-gray-400"
@@ -258,8 +258,8 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
                   <textarea
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    rows={2}
-                    className={`w-full px-4 py-2 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none ${
+                    rows={3}
+                    className={`w-full px-3 sm:px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-base touch-manipulation ${
                       isDark 
                         ? "bg-slate-700/50 border-slate-600/50 text-white placeholder-gray-400 hover:border-slate-500" 
                         : "bg-white border-gray-300 text-gray-900 placeholder-gray-500 hover:border-gray-400"
@@ -269,7 +269,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
                 </div>
 
                 {/* Priority and Category Row */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <PrioritySelector
                     value={priority}
                     onChange={setPriority}
@@ -543,12 +543,12 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
             </div>
 
             {/* Actions */}
-            <div className={`p-4 border-t ${isDark ? "border-slate-600/30" : "border-gray-200/50"}`}>
-              <div className="flex gap-4">
+            <div className={`p-3 sm:p-4 border-t ${isDark ? "border-slate-600/30" : "border-gray-200/50"}`}>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <motion.button
                   type="button"
                   onClick={handleCancelButton}
-                  className={`flex-1 px-6 py-3 rounded-xl font-semibold transition-all duration-200 border-2 overflow-hidden ${
+                  className={`flex-1 px-4 sm:px-6 py-3 rounded-xl font-semibold transition-all duration-200 border-2 overflow-hidden min-h-[44px] touch-manipulation ${
                     isDark
                       ? "bg-slate-700/50 hover:bg-slate-600/70 text-white border-slate-600/50 hover:border-slate-500"
                       : "bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-300 hover:border-gray-400"
@@ -561,7 +561,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
                 <motion.button
                   type="submit"
                   form="task-form"
-                  className="flex-1 px-6 py-3 rounded-xl text-white font-semibold transition-all duration-200 shadow-xl overflow-hidden create-task-btn"
+                  className="flex-1 px-4 sm:px-6 py-3 rounded-xl text-white font-semibold transition-all duration-200 shadow-xl overflow-hidden create-task-btn min-h-[44px] touch-manipulation"
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                 >

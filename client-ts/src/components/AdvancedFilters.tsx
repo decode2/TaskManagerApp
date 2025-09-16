@@ -178,8 +178,9 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
             ? 'bg-slate-800/60 border-slate-700/50 hover:bg-slate-800/80 hover:border-slate-600/50' 
             : 'bg-white/80 border-slate-200/50 hover:bg-white hover:border-slate-300/50'
         } ${activeFiltersCount > 0 ? 'ring-2 ring-blue-500/20' : ''}`}
-        whileHover={{ scale: 1.01 }}
-        whileTap={{ scale: 0.99 }}
+        whileHover={{ scale: 1.005 }}
+        whileTap={{ scale: 0.995 }}
+        transition={{ duration: 0.1, ease: "easeOut" }}
       >
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
@@ -192,8 +193,10 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
           </div>
           {activeFiltersCount > 0 && (
             <motion.span
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{ duration: 0.15, ease: "easeOut" }}
               className="px-2 py-1 text-xs bg-blue-500 text-white rounded-full font-medium"
             >
               {activeFiltersCount}
@@ -203,7 +206,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
         
         <motion.svg
           animate={{ rotate: isExpanded ? 180 : 0 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.15, ease: "easeOut" }}
           className="w-5 h-5 text-slate-500"
           fill="none"
           stroke="currentColor"
@@ -217,10 +220,16 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
       <AnimatePresence>
         {isExpanded && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            initial={{ opacity: 0, y: -10, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.98 }}
+            transition={{ 
+              duration: 0.2, 
+              ease: [0.25, 0.8, 0.25, 1],
+              opacity: { duration: 0.15 },
+              y: { duration: 0.2 },
+              scale: { duration: 0.2 }
+            }}
             className={`mt-4 p-4 rounded-xl border ${
               isDark 
                 ? 'bg-slate-800/40 border-slate-700/30' 
