@@ -166,7 +166,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
               )}
 
               {/* Options List */}
-              <div className="max-h-36 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200/50 dark:scrollbar-thumb-slate-600 dark:scrollbar-track-slate-800/50">
+              <div className="max-h-36 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200/50 dark:scrollbar-thumb-slate-600 dark:scrollbar-track-slate-800/50">
                 {filteredOptions.length === 0 ? (
                   <div className={`p-2 text-center text-xs ${
                     isDark ? 'text-gray-400' : 'text-gray-500'
@@ -182,26 +182,24 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
                       disabled={option.disabled}
                       className={`w-full px-3 py-2 text-left flex items-center gap-2 transition-all duration-200 ${
                         isDark 
-                          ? 'hover:bg-slate-700/50 text-white' 
-                          : 'hover:bg-gray-50 text-gray-900'
+                          ? 'text-white' 
+                          : 'text-gray-900'
                       } ${
                         option.disabled 
                           ? 'opacity-50 cursor-not-allowed' 
                           : 'cursor-pointer'
-                      } ${
-                        value === option.value 
-                          ? isDark 
-                            ? 'bg-blue-600/20 border-l-4 border-blue-500' 
-                            : 'bg-blue-50 border-l-4 border-blue-500'
-                          : ''
                       }`}
                       style={value === option.value ? { 
-                        marginLeft: '-12px', 
-                        marginRight: '-12px', 
-                        paddingLeft: '12px', 
-                        paddingRight: '12px' 
+                        backgroundColor: isDark ? 'rgba(59, 130, 246, 0.2)' : 'rgba(239, 246, 255, 1)',
+                        borderLeft: '4px solid rgb(59, 130, 246)',
+                        marginLeft: '-12px',
+                        marginRight: '-12px',
+                        paddingLeft: '12px',
+                        paddingRight: '12px'
                       } : {}}
-                      whileHover={!option.disabled ? { backgroundColor: isDark ? 'rgba(71, 85, 105, 0.1)' : 'rgba(249, 250, 251, 0.8)' } : {}}
+                      whileHover={!option.disabled && value !== option.value ? { 
+                        backgroundColor: isDark ? 'rgba(71, 85, 105, 0.1)' : 'rgba(249, 250, 251, 0.8)' 
+                      } : {}}
                       whileTap={!option.disabled ? { scale: 0.98 } : {}}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
