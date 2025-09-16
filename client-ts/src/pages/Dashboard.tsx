@@ -12,6 +12,8 @@ import TopNavigation from "../components/TopNavigation";
 import CreateTaskModal from "../components/CreateTaskModal";
 import EditTaskModal from "../components/EditTaskModal";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
+import AdvancedFilters, { FilterState } from "../components/AdvancedFilters";
+import FilterStats from "../components/FilterStats";
 import { PriorityBadge, CategoryBadge } from "../components/ui";
 
 const Dashboard = () => {
@@ -25,9 +27,8 @@ const Dashboard = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
-  const [filter, setFilter] = useState<'all' | 'completed' | 'pending'>('all');
-  const [isFilterFocused, setIsFilterFocused] = useState(false);
-  const [previousFilter, setPreviousFilter] = useState<'all' | 'completed' | 'pending'>('all');
+  const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   const fetchTasks = async () => {
     try {
@@ -48,16 +49,6 @@ const Dashboard = () => {
     }
   }, [user, loadingUser, navigate]);
 
-  // Handle filter dropdown state
-  useEffect(() => {
-    if (filter !== previousFilter) {
-      // Filter changed, close dropdown after a short delay
-      setTimeout(() => {
-        setIsFilterFocused(false);
-      }, 100);
-      setPreviousFilter(filter);
-    }
-  }, [filter, previousFilter]);
 
   const handleTaskCreated = () => {
     fetchTasks();
@@ -98,11 +89,9 @@ const Dashboard = () => {
     }
   };
 
-  const filteredTasks = tasks.filter((t) => {
-    if (filter === 'completed') return t.isCompleted;
-    if (filter === 'pending') return !t.isCompleted;
-    return true;
-  });
+  const handleFilterChange = (newFilteredTasks: Task[]) => {
+    setFilteredTasks(newFilteredTasks);
+  };
 
   return (
     <AnimatePresence>
@@ -130,91 +119,42 @@ const Dashboard = () => {
 
             <div className="grid md:grid-cols-3 gap-8">
               <div className="md:col-span-2 bg-white/80 backdrop-blur-md p-6 rounded-xl shadow-xl border border-slate-200/50 dark:bg-white/10 dark:border-slate-700/30">
-                <div className="flex justify-between items-center mb-4">
+                <div className="flex justify-between items-center mb-6">
                   <h2 className="text-2xl font-semibold text-slate-800 dark:text-white">📋 Today's Tasks</h2>
-                  <div className="flex gap-3">
-                    <div className="relative group">
-                      <div className="relative">
-                        <select
-                          value={filter}
-                          onChange={(e) => {
-                            const newValue = e.target.value as any;
-                            setFilter(newValue);
-                            // Close dropdown immediately when selection changes
-                            setTimeout(() => setIsFilterFocused(false), 50);
-                          }}
-                          onFocus={() => setIsFilterFocused(true)}
-                          onBlur={() => {
-                            // Add a small delay to allow for click events to process
-                            setTimeout(() => setIsFilterFocused(false), 100);
-                          }}
-                          onMouseDown={() => {
-                            // Toggle dropdown state on mouse down
-                            setIsFilterFocused(prev => !prev);
-                          }}
-                          className={`custom-select appearance-none text-sm px-4 py-2.5 pr-8 rounded-lg border transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 ${
-                            isFilterFocused 
-                              ? 'bg-white dark:bg-slate-600 shadow-md border-blue-500/50' 
-                              : 'bg-white/80 hover:bg-white dark:bg-slate-700 dark:hover:bg-slate-600 border-slate-200/60 dark:border-slate-600/60 shadow-sm hover:shadow-md'
-                          } text-slate-700 dark:text-white no-select`}
-                          style={{ 
-                            backgroundImage: 'none',
-                            WebkitAppearance: 'none',
-                            MozAppearance: 'none'
-                          }}
-                        >
-                          <option value="all">All Tasks</option>
-                          <option value="completed">Completed</option>
-                          <option value="pending">Pending</option>
-                        </select>
-                        
-                        {/* Custom dropdown arrow */}
-                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                        <motion.svg
-                          animate={{ rotate: isFilterFocused ? 180 : 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="w-4 h-4 text-slate-500 dark:text-slate-400 transition-colors duration-200 no-select"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                        </motion.svg>
-                        </div>
-                        
-                        {/* Hover effect overlay - only when not focused */}
-                        <div className={`absolute inset-0 rounded-lg bg-blue-500/5 transition-opacity duration-200 pointer-events-none ${
-                          isFilterFocused ? 'opacity-0' : 'opacity-0 group-hover:opacity-100'
-                        }`}></div>
-                      </div>
+                  <motion.button
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                    onClick={() => setShowModal(true)}
+                    className="group relative text-sm px-5 py-2.5 bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 hover:from-emerald-600 hover:via-emerald-700 hover:to-teal-700 dark:from-green-600 dark:via-green-700 dark:to-emerald-700 dark:hover:from-green-700 dark:hover:via-green-800 dark:hover:to-emerald-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-emerald-400/30 dark:border-green-500/40 overflow-hidden no-select"
+                  >
+                    <div className="flex items-center gap-2 relative z-10">
+                      <motion.div
+                        animate={{ rotate: [0, 90, 0] }}
+                        transition={{ duration: 0.6, ease: "easeInOut" }}
+                        className="w-5 h-5 flex items-center justify-center no-select"
+                      >
+                        <svg className="w-4 h-4 no-select" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                      </motion.div>
+                      <span>Add Task</span>
                     </div>
-                    <motion.button
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                      onClick={() => setShowModal(true)}
-                      className="group relative text-sm px-5 py-2.5 bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 hover:from-emerald-600 hover:via-emerald-700 hover:to-teal-700 dark:from-green-600 dark:via-green-700 dark:to-emerald-700 dark:hover:from-green-700 dark:hover:via-green-800 dark:hover:to-emerald-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-emerald-400/30 dark:border-green-500/40 overflow-hidden no-select"
-                    >
-                      <div className="flex items-center gap-2 relative z-10">
-                        <motion.div
-                          animate={{ rotate: [0, 90, 0] }}
-                          transition={{ duration: 0.6, ease: "easeInOut" }}
-                          className="w-5 h-5 flex items-center justify-center no-select"
-                        >
-                          <svg className="w-4 h-4 no-select" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                          </svg>
-                        </motion.div>
-                        <span>Add Task</span>
-                      </div>
-                      
-                      {/* Animated background effect */}
-                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out"></div>
-                      
-                      {/* Shine effect */}
-                      <div className="absolute inset-0 rounded-xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    </motion.button>
-                  </div>
+                    
+                    {/* Animated background effect */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-out"></div>
+                    
+                    {/* Shine effect */}
+                    <div className="absolute inset-0 rounded-xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </motion.button>
+                </div>
+
+                {/* Advanced Filters */}
+                <div className="mb-6">
+                  <AdvancedFilters
+                    tasks={tasks}
+                    onFilterChange={handleFilterChange}
+                  />
                 </div>
                 {filteredTasks.length === 0 ? (
                   <motion.div
@@ -224,14 +164,13 @@ const Dashboard = () => {
                   >
                     <div className="text-6xl mb-4 opacity-50">📝</div>
                     <h3 className="text-xl font-semibold text-slate-700 dark:text-slate-300 mb-2">
-                      {filter === 'completed' ? 'No completed tasks' : 
-                       filter === 'pending' ? 'No pending tasks' : 'No tasks yet'}
+                      {tasks.length === 0 ? 'No tasks yet' : 'No tasks match your filters'}
                     </h3>
                     <p className="text-slate-500 dark:text-slate-400 mb-6">
-                      {filter === 'all' ? 'Create your first task to get started!' : 
-                       'Try changing the filter to see more tasks.'}
+                      {tasks.length === 0 ? 'Create your first task to get started!' : 
+                       'Try adjusting your filters to see more tasks.'}
                     </p>
-                    {filter === 'all' && (
+                    {tasks.length === 0 && (
                       <motion.button
                         onClick={() => setShowModal(true)}
                         whileHover={{ scale: 1.05 }}
@@ -248,36 +187,28 @@ const Dashboard = () => {
                       <motion.div
                         key={task.id}
                         layout
-                        className={`group relative bg-white/70 backdrop-blur-sm rounded-xl p-4 border transition-all duration-300 hover:shadow-lg hover:scale-[1.02] ${
+                        className={`group relative backdrop-blur-sm rounded-xl p-4 border transition-all duration-300 hover:shadow-lg ${
                           task.isCompleted 
-                            ? "border-emerald-200/50 dark:border-emerald-700/30 bg-emerald-50/50 dark:bg-emerald-900/10" 
-                            : "border-slate-200/50 dark:border-slate-700/30 hover:border-blue-300/50 dark:hover:border-blue-600/30"
+                            ? "border-emerald-200/50 dark:border-emerald-700/30 bg-emerald-50/50 dark:bg-emerald-900/20" 
+                            : "border-slate-200/50 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/60 hover:border-blue-300/50 dark:hover:border-blue-600/30 hover:bg-white dark:hover:bg-slate-800/80"
                         }`}
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95 }}
                         transition={{ duration: 0.25, ease: [0.25, 0.8, 0.25, 1] }}
-                        whileHover={{ y: -2 }}
+                        whileHover={{ y: -1 }}
                       >
                         {/* Task Header */}
                         <div className="flex items-start justify-between mb-3">
-                          <motion.div
-                            className="flex items-start gap-3 cursor-pointer no-select flex-1"
+                          <div
+                            className="flex items-start gap-3 cursor-pointer no-select flex-1 active:scale-95 transition-transform duration-100"
                             onClick={() => toggleCompletion(task)}
-                            whileTap={{ scale: 0.98 }}
                           >
                             {/* Checkbox */}
-                            <motion.div
-                              layout
-                              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center no-select mt-0.5 ${
+                            <div
+                              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center no-select mt-0.5 transition-all duration-200 hover:scale-105 ${
                                 task.isCompleted ? "bg-emerald-500 border-emerald-500" : "border-slate-400 dark:border-slate-500"
                               }`}
-                              animate={{
-                                scale: task.isCompleted ? 1.1 : 1,
-                                backgroundColor: task.isCompleted ? "#10b981" : "transparent",
-                              }}
-                              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                              whileHover={{ scale: 1.1 }}
                             >
                               {task.isCompleted && (
                                 <motion.span
@@ -289,20 +220,17 @@ const Dashboard = () => {
                                   ✓
                                 </motion.span>
                               )}
-                            </motion.div>
+                            </div>
 
                             {/* Task Content */}
                             <div className="flex-1 min-w-0">
-                              <motion.h3
-                                layout
-                                className={`text-lg font-semibold mb-1 ${
-                                  task.isCompleted ? "line-through text-emerald-600 dark:text-green-400" : "text-slate-800 dark:text-white"
+                              <h3
+                                className={`text-lg font-semibold mb-1 transition-opacity duration-300 ${
+                                  task.isCompleted ? "line-through text-emerald-600 dark:text-green-400 opacity-70" : "text-slate-800 dark:text-white"
                                 }`}
-                                animate={{ opacity: task.isCompleted ? 0.7 : 1 }}
-                                transition={{ duration: 0.3 }}
                               >
                                 {task.title}
-                              </motion.h3>
+                              </h3>
                               
                               {/* Date */}
                               <div className="flex items-center gap-1 mb-2">
@@ -355,7 +283,7 @@ const Dashboard = () => {
                                 )}
                               </div>
                             </div>
-                          </motion.div>
+                          </div>
                         </div>
 
                         {/* Action Buttons */}
@@ -401,9 +329,19 @@ const Dashboard = () => {
                 )}
               </div>
 
-              <div className="bg-white/80 backdrop-blur-md p-6 rounded-xl shadow-xl border border-slate-200/50 dark:bg-white/10 dark:border-slate-700/30">
-                <h2 className="text-2xl font-semibold mb-4 text-slate-800 dark:text-white">🗓️ Calendar</h2>
-                <CalendarView tasks={tasks} />
+              <div className="space-y-6">
+                {/* Task Statistics */}
+                <FilterStats 
+                  totalTasks={tasks.length}
+                  filteredTasks={filteredTasks.length}
+                  tasks={tasks}
+                />
+
+                {/* Calendar */}
+                <div className="bg-white/80 backdrop-blur-md p-6 rounded-xl shadow-xl border border-slate-200/50 dark:bg-white/10 dark:border-slate-700/30">
+                  <h2 className="text-2xl font-semibold mb-4 text-slate-800 dark:text-white">🗓️ Calendar</h2>
+                  <CalendarView tasks={tasks} />
+                </div>
               </div>
             </div>
 
