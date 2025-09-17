@@ -28,8 +28,9 @@ const CategoryBadge: React.FC<CategoryBadgeProps> = ({
   };
 
   const getVariantClasses = () => {
-    const baseClasses = "inline-flex items-center gap-1.5 rounded-full font-medium transition-all duration-200";
-    const animationClasses = animated ? "hover:scale-105 hover:shadow-md" : "";
+    const baseClasses = "inline-flex items-center gap-1.5 rounded-full font-medium";
+    // Removed CSS hover animations to prevent conflict with Framer Motion
+    const animationClasses = animated ? "" : "";
     
     switch (variant) {
       case 'outline':
@@ -37,7 +38,7 @@ const CategoryBadge: React.FC<CategoryBadgeProps> = ({
       case 'minimal':
         return `${baseClasses} ${animationClasses} bg-transparent`;
       default:
-        return `${baseClasses} ${animationClasses} shadow-sm`;
+        return `${baseClasses} ${animationClasses} shadow-sm font-semibold`;
     }
   };
 
@@ -167,13 +168,25 @@ const CategoryBadge: React.FC<CategoryBadgeProps> = ({
         ${getSizeClasses()}
         ${currentStyle}
       `}
+      style={{
+        // Prevent text distortion during animations
+        transform: 'translateZ(0)',
+        backfaceVisibility: 'hidden',
+        WebkitBackfaceVisibility: 'hidden',
+        WebkitTransform: 'translateZ(0)'
+      }}
     >
       {showIcon && (
         <span className="flex items-center justify-center">
           {getCategoryIcon()}
         </span>
       )}
-      <span className="font-semibold tracking-wide">
+      <span className="font-semibold tracking-wide" style={{ 
+        // Additional text rendering optimization
+        textRendering: 'optimizeLegibility',
+        WebkitFontSmoothing: 'antialiased',
+        MozOsxFontSmoothing: 'grayscale'
+      }}>
         {TaskCategoryLabelMap[category]}
       </span>
     </span>

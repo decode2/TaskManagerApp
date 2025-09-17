@@ -178,9 +178,9 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
             ? 'bg-slate-800/60 border-slate-700/50 hover:bg-slate-800/80 hover:border-slate-600/50' 
             : 'bg-white/80 border-slate-200/50 hover:bg-white hover:border-slate-300/50'
         } ${activeFiltersCount > 0 ? 'ring-2 ring-blue-500/20' : ''}`}
-        whileHover={{ scale: 1.005 }}
-        whileTap={{ scale: 0.995 }}
-        transition={{ duration: 0.1, ease: "easeOut" }}
+        whileHover={{ scale: 1.002 }}
+        whileTap={{ scale: 0.998 }}
+        transition={{ duration: 0.15, ease: [0.4, 0.0, 0.2, 1] }}
       >
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
@@ -206,7 +206,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
         
         <motion.svg
           animate={{ rotate: isExpanded ? 180 : 0 }}
-          transition={{ duration: 0.15, ease: "easeOut" }}
+          transition={{ duration: 0.2, ease: [0.4, 0.0, 0.2, 1] }}
           className="w-5 h-5 text-slate-500"
           fill="none"
           stroke="currentColor"
@@ -220,15 +220,14 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
       <AnimatePresence>
         {isExpanded && (
           <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.98 }}
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
             transition={{ 
-              duration: 0.2, 
-              ease: [0.25, 0.8, 0.25, 1],
-              opacity: { duration: 0.15 },
-              y: { duration: 0.2 },
-              scale: { duration: 0.2 }
+              duration: 0.25, 
+              ease: [0.4, 0.0, 0.2, 1],
+              opacity: { duration: 0.2 },
+              y: { duration: 0.25 }
             }}
             className={`mt-4 p-4 rounded-xl border ${
               isDark 
@@ -236,9 +235,19 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                 : 'bg-white/60 border-slate-200/30'
             }`}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <motion.div 
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.2, delay: 0.1 }}
+            >
               {/* Search */}
-              <div className="lg:col-span-3">
+              <motion.div 
+                className="lg:col-span-3"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, delay: 0.1 }}
+              >
                 <label className={`block text-sm font-medium mb-2 ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
                   Search Tasks
                 </label>
@@ -253,10 +262,15 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                       : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
                   }`}
                 />
-              </div>
+              </motion.div>
 
               {/* Status Filter */}
-              <CustomDropdown
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, delay: 0.15 }}
+              >
+                <CustomDropdown
                 options={statusOptions.map(option => ({
                   value: option.value,
                   label: option.label,
@@ -266,9 +280,15 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                 onChange={(value) => updateFilter('status', value)}
                 label="Status"
               />
+              </motion.div>
 
               {/* Priority Filter */}
-              <CustomDropdown
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, delay: 0.2 }}
+              >
+                <CustomDropdown
                 options={priorityOptions.map(option => ({
                   value: option.value,
                   label: option.label,
@@ -283,9 +303,15 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                 onChange={(value) => updateFilter('priority', value)}
                 label="Priority"
               />
+              </motion.div>
 
               {/* Category Filter */}
-              <CustomDropdown
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, delay: 0.25 }}
+              >
+                <CustomDropdown
                 options={categoryOptions.map(option => ({
                   value: option.value,
                   label: option.label,
@@ -297,9 +323,15 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                 searchable={true}
                 maxHeight="180px"
               />
+              </motion.div>
 
               {/* Date Range Filter */}
-              <CustomDropdown
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, delay: 0.3 }}
+              >
+                <CustomDropdown
                 options={dateRangeOptions.map(option => ({
                   value: option.value,
                   label: option.label,
@@ -309,10 +341,16 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                 onChange={(value) => updateFilter('dateRange', value)}
                 label="Date Range"
               />
-            </div>
+              </motion.div>
+            </motion.div>
 
             {/* Active Filter Chips */}
-            <div className="mt-4">
+            <motion.div 
+              className="mt-4"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: 0.35 }}
+            >
               <FilterChips
                 filters={filters}
                 onClearFilter={(filterType) => {
@@ -336,7 +374,7 @@ const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                 }}
                 onClearAll={clearFilters}
               />
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -12,7 +12,7 @@ import TopNavigation from "../components/TopNavigation";
 import CreateTaskModal from "../components/CreateTaskModal";
 import EditTaskModal from "../components/EditTaskModal";
 import ConfirmDeleteModal from "../components/ConfirmDeleteModal";
-import AdvancedFilters, { FilterState } from "../components/AdvancedFilters";
+import AdvancedFilters from "../components/AdvancedFilters";
 import FilterStats from "../components/FilterStats";
 import { PriorityBadge, CategoryBadge } from "../components/ui";
 
@@ -28,7 +28,6 @@ const Dashboard = () => {
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
   const [filteredTasks, setFilteredTasks] = useState<Task[]>([]);
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   const fetchTasks = async () => {
     try {
@@ -206,9 +205,15 @@ const Dashboard = () => {
                           >
                             {/* Checkbox */}
                             <div
-                              className={`w-6 h-6 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center no-select mt-0.5 transition-all duration-200 hover:scale-105 touch-manipulation ${
+                              className={`w-6 h-6 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center no-select mt-0.5 touch-manipulation ${
                                 task.isCompleted ? "bg-emerald-500 border-emerald-500" : "border-slate-400 dark:border-slate-500"
                               }`}
+                              style={{
+                                // Prevent text distortion during animations
+                                transform: 'translateZ(0)',
+                                backfaceVisibility: 'hidden',
+                                WebkitBackfaceVisibility: 'hidden'
+                              }}
                             >
                               {task.isCompleted && (
                                 <motion.span
@@ -270,9 +275,16 @@ const Dashboard = () => {
                               )}
 
                               {/* Badges Row */}
-                              <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-                                <PriorityBadge priority={task.priority} size="sm" variant="minimal" animated={true} />
-                                <CategoryBadge category={task.category} size="sm" variant="minimal" animated={true} />
+                              <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Priority:</span>
+                                  <PriorityBadge priority={task.priority || 2} size="sm" variant="outline" animated={true} />
+                                </div>
+                                <div className="w-px h-4 bg-slate-300 dark:bg-slate-600"></div>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Category:</span>
+                                  <CategoryBadge category={task.category || 8} size="sm" variant="default" animated={true} />
+                                </div>
                                 
                                 {/* Archive Badge */}
                                 {task.isArchived && (
@@ -288,38 +300,80 @@ const Dashboard = () => {
                         {/* Action Buttons */}
                         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-3 pt-3 border-t border-slate-200/50 dark:border-slate-700/30">
                           <motion.button
-                            whileHover={{ scale: 1.05, y: -1 }}
-                            whileTap={{ scale: 0.95 }}
-                            transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                            className="group relative text-sm px-4 py-3 sm:py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-blue-600 dark:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 rounded-lg shadow-md hover:shadow-lg text-white font-medium transition-all duration-200 border border-blue-400/20 dark:border-blue-500/30 no-select flex-1 sm:flex-none min-h-[44px] touch-manipulation"
+                            whileHover={{ 
+                              scale: 1.02, 
+                              y: -1,
+                              boxShadow: "0 8px 25px rgba(59, 130, 246, 0.3)"
+                            }}
+                            whileTap={{ scale: 0.98 }}
+                            transition={{ 
+                              type: "spring", 
+                              stiffness: 300, 
+                              damping: 20,
+                              mass: 0.8
+                            }}
+                            className="group relative text-sm px-4 py-3 sm:py-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 dark:from-blue-600 dark:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800 rounded-lg shadow-md text-white font-medium border border-blue-400/20 dark:border-blue-500/30 no-select flex-1 sm:flex-none min-h-[44px] touch-manipulation"
+                            style={{
+                              // Prevent text distortion during animations
+                              transform: 'translateZ(0)',
+                              backfaceVisibility: 'hidden',
+                              WebkitBackfaceVisibility: 'hidden'
+                            }}
                             onClick={() => setEditTask(task)}
                           >
                             <div className="flex items-center justify-center gap-2">
-                              <svg className="w-4 h-4 transition-all duration-200 group-hover:scale-110 no-select" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4 no-select" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{
+                                textRendering: 'optimizeLegibility',
+                                WebkitFontSmoothing: 'antialiased'
+                              }}>
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                               </svg>
-                              <span>Edit</span>
+                              <span style={{
+                                textRendering: 'optimizeLegibility',
+                                WebkitFontSmoothing: 'antialiased',
+                                MozOsxFontSmoothing: 'grayscale'
+                              }}>Edit</span>
                             </div>
-                            <div className="absolute inset-0 rounded-lg bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
                           </motion.button>
                           
                           <motion.button
-                            whileHover={{ scale: 1.05, y: -1 }}
-                            whileTap={{ scale: 0.95 }}
-                            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                            whileHover={{ 
+                              scale: 1.02, 
+                              y: -1,
+                              boxShadow: "0 8px 25px rgba(239, 68, 68, 0.3)"
+                            }}
+                            whileTap={{ scale: 0.98 }}
+                            transition={{ 
+                              type: "spring", 
+                              stiffness: 300, 
+                              damping: 20,
+                              mass: 0.8
+                            }}
                             onClick={() => {
                               setTaskToDelete(task);
                               setShowDeleteModal(true);
                             }}
-                            className="group relative text-sm px-4 py-3 sm:py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 dark:from-red-600 dark:to-red-700 dark:hover:from-red-700 dark:hover:to-red-800 rounded-lg shadow-md hover:shadow-lg text-white font-medium transition-all duration-200 border border-red-400/20 dark:border-red-500/30 no-select flex-1 sm:flex-none min-h-[44px] touch-manipulation"
+                            className="group relative text-sm px-4 py-3 sm:py-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 dark:from-red-600 dark:to-red-700 dark:hover:from-red-700 dark:hover:to-red-800 rounded-lg shadow-md text-white font-medium border border-red-400/20 dark:border-red-500/30 no-select flex-1 sm:flex-none min-h-[44px] touch-manipulation"
+                            style={{
+                              // Prevent text distortion during animations
+                              transform: 'translateZ(0)',
+                              backfaceVisibility: 'hidden',
+                              WebkitBackfaceVisibility: 'hidden'
+                            }}
                           >
                             <div className="flex items-center justify-center gap-2">
-                              <svg className="w-4 h-4 transition-all duration-200 group-hover:scale-110 no-select" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4 no-select" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{
+                                textRendering: 'optimizeLegibility',
+                                WebkitFontSmoothing: 'antialiased'
+                              }}>
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                               </svg>
-                              <span>Delete</span>
+                              <span style={{
+                                textRendering: 'optimizeLegibility',
+                                WebkitFontSmoothing: 'antialiased',
+                                MozOsxFontSmoothing: 'grayscale'
+                              }}>Delete</span>
                             </div>
-                            <div className="absolute inset-0 rounded-lg bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
                           </motion.button>
                         </div>
                       </motion.div>

@@ -28,12 +28,13 @@ const PriorityBadge: React.FC<PriorityBadgeProps> = ({
   };
 
   const getVariantClasses = () => {
-    const baseClasses = "inline-flex items-center gap-1.5 rounded-full font-medium transition-all duration-200";
-    const animationClasses = animated ? "hover:scale-105 hover:shadow-md" : "";
+    const baseClasses = "inline-flex items-center gap-1.5 rounded-full font-medium";
+    // Removed CSS hover animations to prevent conflict with Framer Motion
+    const animationClasses = animated ? "" : "";
     
     switch (variant) {
       case 'outline':
-        return `${baseClasses} ${animationClasses} border-2 bg-transparent`;
+        return `${baseClasses} ${animationClasses} border-2 bg-transparent font-semibold`;
       case 'minimal':
         return `${baseClasses} ${animationClasses} bg-transparent`;
       default:
@@ -119,13 +120,25 @@ const PriorityBadge: React.FC<PriorityBadgeProps> = ({
         ${getSizeClasses()}
         ${currentStyle}
       `}
+      style={{
+        // Prevent text distortion during animations
+        transform: 'translateZ(0)',
+        backfaceVisibility: 'hidden',
+        WebkitBackfaceVisibility: 'hidden',
+        WebkitTransform: 'translateZ(0)'
+      }}
     >
       {showIcon && (
         <span className="flex items-center justify-center">
           {getPriorityIcon()}
         </span>
       )}
-      <span className="font-semibold tracking-wide">
+      <span className="font-semibold tracking-wide" style={{ 
+        // Additional text rendering optimization
+        textRendering: 'optimizeLegibility',
+        WebkitFontSmoothing: 'antialiased',
+        MozOsxFontSmoothing: 'grayscale'
+      }}>
         {TaskPriorityLabelMap[priority]}
       </span>
     </span>

@@ -160,6 +160,32 @@ html, body {
   overflow-y: auto !important;
 }
 
+/* Text rendering optimization for animations */
+.animated-text {
+  text-rendering: optimizeLegibility !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+}
+
+/* Prevent text distortion during hover animations */
+.motion-button,
+.motion-badge,
+.motion-element {
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+}
+
+/* Optimize text rendering for all interactive elements */
+button, .badge, .priority-badge, .category-badge {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 /* Accessibility: Respect reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
   *,
