@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../api";
 import { Task } from "../types/Task";
 import { toast } from "react-toastify";
-import CalendarView from "../components/CalendarView";
+import ModernCalendar from "../components/ModernCalendar";
 import useDarkMode from "../hooks/useDarkMode";
 import { useAuth } from "../context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -393,7 +393,12 @@ const Dashboard = () => {
                 {/* Calendar */}
                 <div className="bg-white/80 backdrop-blur-md p-6 rounded-xl shadow-xl border border-slate-200/50 dark:bg-white/10 dark:border-slate-700/30">
                   <h2 className="text-2xl font-semibold mb-4 text-slate-800 dark:text-white">🗓️ Calendar</h2>
-                  <CalendarView tasks={tasks} />
+                  <ModernCalendar 
+                    tasks={tasks} 
+                    onDateSelect={(date) => console.log('Selected date:', date)}
+                    onTaskSelect={(task) => setEditTask(task)}
+                    className="w-full"
+                  />
                 </div>
               </div>
             </div>

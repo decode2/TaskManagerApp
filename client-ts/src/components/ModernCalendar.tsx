@@ -1,0 +1,498 @@
+import React, { useState, useMemo, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday, addMonths, subMonths, startOfWeek, endOfWeek } from 'date-fns';
+import useDarkMode from '../hooks/useDarkMode';
+import { Task, TaskPriority } from '../types/Task';
+import { PriorityBadge } from './ui';
+
+interface ModernCalendarProps {
+  tasks: Task[];
+  onDateSelect?: (date: Date) => void;
+  onTaskSelect?: (task: Task) => void;
+  className?: string;
+}
+
+interface CalendarDay {
+  date: Date;
+  isCurrentMonth: boolean;
+  isToday: boolean;
+  isSelected: boolean;
+  tasks: Task[];
+}
+
+const ModernCalendar: React.FC<ModernCalendarProps> = ({
+  tasks,
+  onDateSelect,
+  onTaskSelect,
+  className = ""
+}) => {
+  const [isDark] = useDarkMode();
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [showMonthYearPicker, setShowMonthYearPicker] = useState(false);
+
+  // Obtener tareas para una fecha específica
+  const getTasksForDate = useCallback((date: Date) => {
+    return tasks.filter(task => 
+      isSameDay(new Date(task.date), date)
+    );
+  }, [tasks]);
+
+  // Generar días del calendario
+  const calendarDays = useMemo(() => {
+    const monthStart = startOfMonth(currentDate);
+    const monthEnd = endOfMonth(currentDate);
+    const calendarStart = startOfWeek(monthStart, { weekStartsOn: 1 }); // Lunes
+    const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
+
+    const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+    
+    return days.map(date => ({
+      date,
+      isCurrentMonth: isSameMonth(date, currentDate),
+      isToday: isToday(date),
+      isSelected: selectedDate ? isSameDay(date, selectedDate) : false,
+      tasks: getTasksForDate(date)
+    }));
+  }, [currentDate, selectedDate, getTasksForDate]);
+
+  // Navegación
+  const goToPreviousMonth = () => {
+    setCurrentDate(prev => subMonths(prev, 1));
+  };
+
+  const goToNextMonth = () => {
+    setCurrentDate(prev => addMonths(prev, 1));
+  };
+
+  const goToToday = () => {
+    const today = new Date();
+    setCurrentDate(today);
+    setSelectedDate(today);
+  };
+
+  // Manejar selección de fecha
+  const handleDateClick = (day: CalendarDay) => {
+    setSelectedDate(day.date);
+    onDateSelect?.(day.date);
+  };
+
+  // Obtener color de prioridad
+  const getPriorityColor = (priority: TaskPriority): string => {
+    const colors = {
+      [TaskPriority.Low]: '#10b981',
+      [TaskPriority.Medium]: '#f59e0b',
+      [TaskPriority.High]: '#f97316',
+      [TaskPriority.Urgent]: '#ef4444',
+    };
+    return colors[priority] || colors[TaskPriority.Medium];
+  };
+
+  // Renderizar tarea en el día
+  const renderTask = (task: Task) => (
+    <motion.div
+      key={task.id}
+      className="w-full h-1 rounded-full mb-1"
+      style={{ backgroundColor: getPriorityColor(task.priority) }}
+      initial={{ scaleX: 0 }}
+      animate={{ scaleX: 1 }}
+      transition={{ duration: 0.3 }}
+      onClick={(e) => {
+        e.stopPropagation();
+        onTaskSelect?.(task);
+      }}
+      title={task.title}
+    />
+  );
+
+  // Renderizar día del calendario
+  const renderDay = (day: CalendarDay) => (
+    <motion.button
+      key={day.date.toISOString()}
+      className={`
+        relative w-full h-20 p-2 text-left transition-all duration-200
+        ${day.isCurrentMonth 
+          ? isDark ? 'text-white' : 'text-gray-900'
+          : isDark ? 'text-gray-600' : 'text-gray-400'
+        }
+        ${day.isToday 
+          ? isDark 
+            ? 'bg-blue-600 text-white font-semibold' 
+            : 'bg-blue-500 text-white font-semibold'
+          : ''
+        }
+        ${day.isSelected && !day.isToday
+          ? isDark 
+            ? 'bg-slate-700 ring-2 ring-blue-500' 
+            : 'bg-gray-100 ring-2 ring-blue-500'
+          : ''
+        }
+        hover:${isDark ? 'bg-slate-700' : 'bg-gray-50'}
+        focus:outline-none focus:ring-2 focus:ring-blue-500
+      `}
+      onClick={() => handleDateClick(day)}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      <div className="flex flex-col h-full">
+        <div className="text-sm font-medium mb-1 text-center">
+          {format(day.date, 'd')}
+        </div>
+        <div className="flex-1 flex flex-col justify-end">
+          {day.tasks.slice(0, 3).map(renderTask)}
+              {day.tasks.length > 3 && (
+                <div className={`text-xs text-center ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                  +{day.tasks.length - 3} more
+                </div>
+              )}
+        </div>
+      </div>
+    </motion.button>
+  );
+
+  return (
+    <motion.div
+      className={`modern-calendar ${className}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      {/* Header con navegación */}
+      <motion.div
+        className={`mb-6 p-4 rounded-xl ${
+          isDark 
+            ? 'bg-slate-800 border border-slate-700' 
+            : 'bg-white border border-gray-200'
+        } shadow-sm`}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        {/* Header del calendario - Diseño Moderno y Profesional */}
+        <div className="relative">
+          {/* Barra superior con navegación */}
+          <div className="flex items-center justify-between mb-6">
+            {/* Navegación izquierda - Botones de flecha */}
+            <div className="flex items-center gap-1">
+              <button
+                onClick={goToPreviousMonth}
+                className={`p-2.5 rounded-xl transition-all duration-300 hover:scale-105 ${
+                  isDark 
+                    ? 'bg-slate-700/50 hover:bg-slate-600 text-slate-200 hover:shadow-lg hover:shadow-slate-500/20' 
+                    : 'bg-white hover:bg-gray-50 text-gray-600 hover:shadow-lg hover:shadow-gray-200'
+                } border border-slate-200/20 hover:border-slate-300/30`}
+                aria-label="Previous Month"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+
+              <button
+                onClick={goToNextMonth}
+                className={`p-2.5 rounded-xl transition-all duration-300 hover:scale-105 ${
+                  isDark 
+                    ? 'bg-slate-700/50 hover:bg-slate-600 text-slate-200 hover:shadow-lg hover:shadow-slate-500/20' 
+                    : 'bg-white hover:bg-gray-50 text-gray-600 hover:shadow-lg hover:shadow-gray-200'
+                } border border-slate-200/20 hover:border-slate-300/30`}
+                aria-label="Next Month"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Botón Today - Estilo destacado */}
+            <button
+              onClick={goToToday}
+              className="px-4 py-2.5 rounded-xl font-semibold text-sm transition-all duration-300 hover:scale-105 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl hover:shadow-blue-500/25 border border-blue-500/20"
+            >
+              Today
+            </button>
+          </div>
+
+          {/* Título del mes/año - Diseño centrado y elegante */}
+          <div className="flex justify-center mb-4">
+            <button
+              className={`group relative px-6 py-4 rounded-2xl transition-all duration-300 hover:scale-[1.02] ${
+                isDark 
+                  ? 'bg-gradient-to-br from-slate-800/80 to-slate-900/80 hover:from-slate-700/80 hover:to-slate-800/80 border border-slate-600/30 hover:border-slate-500/50' 
+                  : 'bg-gradient-to-br from-white to-gray-50 hover:from-gray-50 hover:to-gray-100 border border-gray-200/50 hover:border-gray-300/70'
+              } shadow-lg hover:shadow-xl backdrop-blur-sm`}
+              onClick={() => setShowMonthYearPicker(!showMonthYearPicker)}
+            >
+              {/* Efecto de brillo sutil */}
+              <div className={`absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+              
+              {/* Contenido del título */}
+              <div className="relative">
+                {/* Versión móvil - Formato compacto */}
+                <div className="block sm:hidden text-center">
+                  <div className={`text-lg font-bold tracking-tight ${
+                    isDark ? 'text-white' : 'text-gray-900'
+                  }`}>
+                    {currentDate.toLocaleDateString('en-US', { month: 'short', year: '2-digit' })}
+                  </div>
+                  <div className={`text-xs mt-1.5 font-medium opacity-70 group-hover:opacity-100 transition-all duration-300 ${
+                    isDark ? 'text-slate-300' : 'text-gray-600'
+                  }`}>
+                    Tap to change
+                  </div>
+                </div>
+                
+                {/* Versión desktop - Formato completo */}
+                <div className="hidden sm:block text-center">
+                  <div className={`text-2xl font-bold tracking-tight ${
+                    isDark ? 'text-white' : 'text-gray-900'
+                  }`}>
+                    {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                  </div>
+                  <div className={`text-sm mt-2 font-medium opacity-70 group-hover:opacity-100 transition-all duration-300 ${
+                    isDark ? 'text-slate-300' : 'text-gray-600'
+                  }`}>
+                    Click to change
+                  </div>
+                </div>
+              </div>
+
+              {/* Indicador de interacción */}
+              <div className={`absolute top-2 right-2 w-2 h-2 rounded-full transition-all duration-300 ${
+                isDark 
+                  ? 'bg-slate-400 group-hover:bg-blue-400' 
+                  : 'bg-gray-400 group-hover:bg-blue-500'
+              } opacity-60 group-hover:opacity-100`}></div>
+            </button>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Selector de mes/año */}
+      {showMonthYearPicker && (
+        <motion.div
+          className={`mb-6 p-4 rounded-xl ${
+            isDark 
+              ? 'bg-slate-800 border border-slate-700' 
+              : 'bg-white border border-gray-200'
+          } shadow-sm`}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+        >
+          <div className="grid grid-cols-2 gap-4">
+            {/* Selector de mes */}
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${
+                isDark ? 'text-slate-300' : 'text-gray-600'
+              }`}>
+                Month
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {Array.from({ length: 12 }, (_, i) => {
+                  const month = new Date(2024, i, 1);
+                  return (
+                    <motion.button
+                      key={i}
+                      onClick={() => {
+                        setCurrentDate(new Date(currentDate.getFullYear(), i, 1));
+                        setShowMonthYearPicker(false);
+                      }}
+                      className={`px-2 py-1 text-xs rounded transition-all duration-200 ${
+                        currentDate.getMonth() === i
+                          ? isDark 
+                            ? 'bg-blue-600 text-white' 
+                            : 'bg-blue-500 text-white'
+                          : isDark 
+                            ? 'bg-slate-700 hover:bg-slate-600 text-slate-300' 
+                            : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                      }`}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      {month.toLocaleDateString('en-US', { month: 'short' })}
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Selector de año */}
+            <div>
+              <label className={`block text-sm font-medium mb-2 ${
+                isDark ? 'text-slate-300' : 'text-gray-600'
+              }`}>
+                Year
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {Array.from({ length: 5 }, (_, i) => {
+                  const year = new Date().getFullYear() - 2 + i;
+                  return (
+                    <motion.button
+                      key={year}
+                      onClick={() => {
+                        setCurrentDate(new Date(year, currentDate.getMonth(), 1));
+                        setShowMonthYearPicker(false);
+                      }}
+                      className={`px-2 py-1 text-xs rounded transition-all duration-200 ${
+                        currentDate.getFullYear() === year
+                          ? isDark 
+                            ? 'bg-blue-600 text-white' 
+                            : 'bg-blue-500 text-white'
+                          : isDark 
+                            ? 'bg-slate-700 hover:bg-slate-600 text-slate-300' 
+                            : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                      }`}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      {year}
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Leyenda de prioridades compacta */}
+      <motion.div
+        className={`mb-6 p-3 rounded-xl ${
+          isDark 
+            ? 'bg-slate-800 border border-slate-700' 
+            : 'bg-white border border-gray-200'
+        } shadow-sm`}
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <span className={`text-xs font-medium ${
+            isDark ? 'text-slate-300' : 'text-gray-600'
+          }`}>
+            Priorities:
+          </span>
+          {[
+            { priority: TaskPriority.Low, label: 'Low', color: '#10b981' },
+            { priority: TaskPriority.Medium, label: 'Medium', color: '#f59e0b' },
+            { priority: TaskPriority.High, label: 'High', color: '#f97316' },
+            { priority: TaskPriority.Urgent, label: 'Urgent', color: '#ef4444' }
+          ].map((item) => (
+            <div key={item.priority} className="flex items-center gap-1.5">
+              <div 
+                className="w-2.5 h-2.5 rounded-full"
+                style={{ backgroundColor: item.color }}
+              />
+              <span className={`text-xs ${
+                isDark ? 'text-slate-300' : 'text-gray-600'
+              }`}>
+                {item.label}
+              </span>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* Calendario */}
+      <motion.div
+        className={`rounded-xl overflow-hidden shadow-lg ${
+          isDark 
+            ? 'bg-slate-800 border border-slate-700' 
+            : 'bg-white border border-gray-200'
+        }`}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.3 }}
+      >
+        {/* Días de la semana */}
+        <div className={`grid grid-cols-7 ${
+          isDark ? 'bg-slate-700' : 'bg-gray-50'
+        }`}>
+          {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+            <div
+              key={day}
+              className={`p-3 text-center text-sm font-semibold ${
+                isDark ? 'text-slate-300' : 'text-gray-600'
+              }`}
+            >
+              {day}
+            </div>
+          ))}
+        </div>
+
+        {/* Días del calendario */}
+        <div className="grid grid-cols-7">
+          <AnimatePresence>
+            {calendarDays.map(renderDay)}
+          </AnimatePresence>
+        </div>
+      </motion.div>
+
+      {/* Detalles del día seleccionado */}
+      {selectedDate && (
+        <motion.div
+          className={`mt-6 p-4 rounded-xl ${
+            isDark 
+              ? 'bg-slate-800 border border-slate-700' 
+              : 'bg-white border border-gray-200'
+          } shadow-sm`}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <h3 className={`text-lg font-semibold mb-3 ${
+            isDark ? 'text-white' : 'text-gray-900'
+          }`}>
+            {selectedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+          </h3>
+          {getTasksForDate(selectedDate).length > 0 ? (
+            <div className="space-y-2">
+              {getTasksForDate(selectedDate).map((task) => (
+                <motion.div
+                  key={task.id}
+                  className={`p-3 rounded-lg cursor-pointer transition-all duration-200 ${
+                    isDark ? 'bg-slate-700 hover:bg-slate-600' : 'bg-gray-50 hover:bg-gray-100'
+                  }`}
+                  onClick={() => onTaskSelect?.(task)}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <h4 className={`font-medium ${
+                        isDark ? 'text-white' : 'text-gray-900'
+                      }`}>
+                        {task.title}
+                      </h4>
+                      {task.description && (
+                        <p className={`text-sm mt-1 ${
+                          isDark ? 'text-slate-300' : 'text-gray-600'
+                        }`}>
+                          {task.description}
+                        </p>
+                      )}
+                    </div>
+                    <PriorityBadge 
+                      priority={task.priority} 
+                      size="sm"
+                      variant="minimal"
+                    />
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <p className={`text-sm ${
+              isDark ? 'text-slate-400' : 'text-gray-500'
+            }`}>
+              No tasks for this day
+            </p>
+          )}
+        </motion.div>
+      )}
+    </motion.div>
+  );
+};
+
+export default ModernCalendar;

@@ -1,0 +1,245 @@
+/* Modern Calendar Styles */
+.modern-calendar {
+  @apply w-full bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-gray-200 dark:border-slate-700 p-4;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* Navigation */
+.modern-calendar .react-calendar__navigation {
+  @apply flex items-center justify-between mb-6 pb-4 border-b border-gray-200 dark:border-slate-700;
+}
+
+.modern-calendar .react-calendar__navigation button {
+  @apply flex items-center justify-center w-10 h-10 rounded-full text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all duration-200 font-medium;
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.modern-calendar .react-calendar__navigation button:disabled {
+  @apply opacity-50 cursor-not-allowed hover:bg-transparent hover:text-current;
+}
+
+.modern-calendar .react-calendar__navigation__label {
+  @apply text-lg font-semibold text-gray-900 dark:text-white px-4 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors duration-200;
+}
+
+/* Month/Year Navigation */
+.modern-calendar .react-calendar__navigation__prev-button,
+.modern-calendar .react-calendar__navigation__next-button {
+  @apply relative;
+}
+
+.modern-calendar .react-calendar__navigation__prev-button::before,
+.modern-calendar .react-calendar__navigation__next-button::before {
+  content: '';
+  @apply absolute inset-0 rounded-full bg-blue-500 opacity-0 scale-75 transition-all duration-200;
+}
+
+.modern-calendar .react-calendar__navigation__prev-button:hover::before,
+.modern-calendar .react-calendar__navigation__next-button:hover::before {
+  @apply opacity-10 scale-100;
+}
+
+/* Weekday Headers */
+.modern-calendar .react-calendar__month-view__weekdays {
+  @apply grid grid-cols-7 gap-1 mb-4;
+}
+
+.modern-calendar .react-calendar__month-view__weekdays__weekday {
+  @apply text-center py-3 text-sm font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide;
+}
+
+/* Calendar Grid */
+.modern-calendar .react-calendar__month-view__days {
+  @apply grid grid-cols-7 gap-1;
+}
+
+.modern-calendar .react-calendar__tile {
+  @apply relative min-h-[60px] sm:min-h-[70px] flex flex-col items-center justify-start p-2 rounded-lg transition-all duration-200 cursor-pointer touch-manipulation;
+  @apply border border-transparent hover:border-blue-200 dark:hover:border-blue-800;
+}
+
+/* Day Numbers */
+.modern-calendar .react-calendar__tile abbr {
+  @apply text-sm font-medium text-gray-700 dark:text-gray-300 mb-1;
+  text-decoration: none;
+}
+
+/* Today */
+.modern-calendar .react-calendar__tile--now {
+  @apply bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-800;
+}
+
+.modern-calendar .react-calendar__tile--now abbr {
+  @apply text-blue-700 dark:text-blue-300 font-semibold;
+}
+
+/* Selected Date */
+.modern-calendar .react-calendar__tile--active {
+  @apply bg-blue-600 text-white shadow-lg scale-105;
+}
+
+.modern-calendar .react-calendar__tile--active abbr {
+  @apply text-white font-bold;
+}
+
+/* Weekend */
+.modern-calendar .react-calendar__month-view__days__day--weekend {
+  @apply text-gray-500 dark:text-gray-400;
+}
+
+.modern-calendar .react-calendar__tile--active.react-calendar__month-view__days__day--weekend {
+  @apply text-white;
+}
+
+/* Disabled Dates */
+.modern-calendar .react-calendar__tile:disabled {
+  @apply text-gray-400 dark:text-gray-600 cursor-not-allowed opacity-50;
+}
+
+.modern-calendar .react-calendar__tile:disabled:hover {
+  @apply bg-transparent border-transparent scale-100;
+}
+
+/* Hover Effects */
+.modern-calendar .react-calendar__tile:not(:disabled):not(.react-calendar__tile--active):hover {
+  @apply bg-gray-50 dark:bg-slate-700/50 scale-102 shadow-sm;
+}
+
+/* Focus States for Accessibility */
+.modern-calendar .react-calendar__tile:focus {
+  @apply outline-none ring-2 ring-blue-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-800;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 640px) {
+  .modern-calendar {
+    @apply p-3;
+  }
+  
+  .modern-calendar .react-calendar__tile {
+    @apply min-h-[50px] p-1;
+  }
+  
+  .modern-calendar .react-calendar__tile abbr {
+    @apply text-xs;
+  }
+  
+  .modern-calendar .react-calendar__navigation button {
+    @apply w-8 h-8;
+    min-width: 32px;
+    min-height: 32px;
+  }
+  
+  .modern-calendar .react-calendar__navigation__label {
+    @apply text-base px-2 py-1;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .modern-calendar .react-calendar__tile--active {
+    @apply bg-black text-white border-2 border-white;
+  }
+  
+  .modern-calendar .react-calendar__tile--now {
+    @apply bg-white text-black border-2 border-black;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .modern-calendar .react-calendar__tile {
+    @apply transition-none;
+  }
+  
+  .modern-calendar .react-calendar__tile:hover {
+    @apply scale-100;
+  }
+  
+  .modern-calendar .react-calendar__tile--active {
+    @apply scale-100;
+  }
+}
+
+/* Dark Mode Specific Enhancements */
+.dark .modern-calendar .react-calendar__tile--now {
+  @apply bg-blue-900/40 border-blue-700;
+}
+
+.dark .modern-calendar .react-calendar__tile--active {
+  @apply bg-blue-600 text-white shadow-blue-900/50;
+}
+
+/* Animation Classes for Framer Motion Integration */
+.calendar-tile-enter {
+  @apply opacity-0 scale-95;
+}
+
+.calendar-tile-enter-active {
+  @apply opacity-100 scale-100 transition-all duration-200;
+}
+
+.calendar-tile-exit {
+  @apply opacity-100 scale-100;
+}
+
+.calendar-tile-exit-active {
+  @apply opacity-0 scale-95 transition-all duration-200;
+}
+
+/* Priority Indicator Styles */
+.priority-indicator {
+  @apply w-2 h-2 rounded-full;
+}
+
+.priority-indicator--low {
+  @apply bg-green-500;
+}
+
+.priority-indicator--medium {
+  @apply bg-yellow-500;
+}
+
+.priority-indicator--high {
+  @apply bg-orange-500;
+}
+
+.priority-indicator--urgent {
+  @apply bg-red-500;
+}
+
+/* Task Count Badge */
+.task-count-badge {
+  @apply text-xs font-semibold px-1.5 py-0.5 rounded-full;
+}
+
+.dark .task-count-badge {
+  @apply bg-slate-700/50 text-slate-200;
+}
+
+.light .task-count-badge {
+  @apply bg-slate-100 text-slate-700;
+}
+
+/* Today Indicator */
+.today-indicator {
+  @apply w-1 h-1 rounded-full bg-blue-500;
+}
+
+/* Custom Scrollbar for Calendar Container */
+.modern-calendar::-webkit-scrollbar {
+  @apply w-2;
+}
+
+.modern-calendar::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-slate-700 rounded-full;
+}
+
+.modern-calendar::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-slate-500 rounded-full;
+}
+
+.modern-calendar::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-slate-400;
+}

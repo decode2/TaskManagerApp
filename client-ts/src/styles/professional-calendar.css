@@ -1,0 +1,212 @@
+/* Professional Calendar Styles */
+
+.professional-calendar .rbc-calendar {
+  font-family: inherit;
+}
+
+.professional-calendar .rbc-header {
+  font-weight: 600;
+  padding: 12px 8px;
+  text-align: center;
+}
+
+.professional-calendar .rbc-month-view,
+.professional-calendar .rbc-time-view {
+  border: 1px solid;
+}
+
+.professional-calendar .rbc-date-cell {
+  font-weight: 500;
+}
+
+.professional-calendar .rbc-today {
+  font-weight: 600;
+}
+
+.professional-calendar .rbc-toolbar {
+  display: none;
+}
+
+.professional-calendar .rbc-event {
+  border-radius: 6px;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 2px 6px;
+  cursor: pointer;
+}
+
+.professional-calendar .rbc-event:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+  transition: all 0.2s ease;
+}
+
+.professional-calendar .rbc-slot-selection {
+  opacity: 0.3;
+}
+
+.professional-calendar .rbc-time-slot {
+  border-top: 1px solid;
+}
+
+.professional-calendar .rbc-time-header-content {
+  border-left: 1px solid;
+}
+
+.professional-calendar .rbc-time-content {
+  border-top: 1px solid;
+}
+
+/* Light theme */
+.light-calendar .rbc-calendar {
+  background-color: #ffffff;
+  color: #1f2937;
+}
+
+.light-calendar .rbc-header {
+  background-color: #f8fafc;
+  color: #374151;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.light-calendar .rbc-month-view,
+.light-calendar .rbc-time-view {
+  border-color: #e5e7eb;
+}
+
+.light-calendar .rbc-date-cell {
+  color: #6b7280;
+}
+
+.light-calendar .rbc-today {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.light-calendar .rbc-off-range-bg {
+  background-color: #f9fafb;
+  color: #9ca3af;
+}
+
+.light-calendar .rbc-slot-selection {
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+.light-calendar .rbc-time-slot {
+  border-top-color: #f3f4f6;
+}
+
+.light-calendar .rbc-time-header-content {
+  border-left-color: #e5e7eb;
+}
+
+.light-calendar .rbc-time-content {
+  border-top-color: #e5e7eb;
+}
+
+.light-calendar .rbc-agenda-view table {
+  background-color: #ffffff;
+  color: #1f2937;
+}
+
+.light-calendar .rbc-agenda-view .rbc-agenda-date-cell,
+.light-calendar .rbc-agenda-view .rbc-agenda-time-cell {
+  border-bottom: 1px solid #e5e7eb;
+  color: #6b7280;
+}
+
+/* Dark theme */
+.dark-calendar .rbc-calendar {
+  background-color: #1e293b;
+  color: #f1f5f9;
+}
+
+.dark-calendar .rbc-header {
+  background-color: #334155;
+  color: #e2e8f0;
+  border-bottom: 1px solid #475569;
+}
+
+.dark-calendar .rbc-month-view,
+.dark-calendar .rbc-time-view {
+  border-color: #475569;
+}
+
+.dark-calendar .rbc-date-cell {
+  color: #cbd5e1;
+}
+
+.dark-calendar .rbc-today {
+  background-color: #1e40af;
+  color: #ffffff;
+}
+
+.dark-calendar .rbc-off-range-bg {
+  background-color: #0f172a;
+  color: #64748b;
+}
+
+.dark-calendar .rbc-slot-selection {
+  background-color: rgba(59, 130, 246, 0.3);
+}
+
+.dark-calendar .rbc-time-slot {
+  border-top-color: #374151;
+}
+
+.dark-calendar .rbc-time-header-content {
+  border-left-color: #374151;
+}
+
+.dark-calendar .rbc-time-content {
+  border-top-color: #374151;
+}
+
+.dark-calendar .rbc-agenda-view table {
+  background-color: #1e293b;
+  color: #f1f5f9;
+}
+
+.dark-calendar .rbc-agenda-view .rbc-agenda-date-cell,
+.dark-calendar .rbc-agenda-view .rbc-agenda-time-cell {
+  border-bottom: 1px solid #374151;
+  color: #cbd5e1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .professional-calendar .rbc-header {
+    padding: 8px 4px;
+    font-size: 14px;
+  }
+  
+  .professional-calendar .rbc-event {
+    font-size: 11px;
+    padding: 1px 4px;
+  }
+  
+  .professional-calendar .rbc-date-cell {
+    font-size: 14px;
+  }
+}
+
+/* Animation improvements */
+.professional-calendar .rbc-event {
+  transition: all 0.2s ease;
+}
+
+.professional-calendar .rbc-event:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Focus states for accessibility */
+.professional-calendar .rbc-event:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.professional-calendar .rbc-toolbar button:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}

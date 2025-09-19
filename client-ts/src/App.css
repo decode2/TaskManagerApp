@@ -65,3 +65,6 @@
 .react-calendar__month-view__weekdays__weekday {
   @apply px-2;
 }
+
+/* ====== Modern Calendar Styles ====== */
+@import './styles/modern-calendar.css';
