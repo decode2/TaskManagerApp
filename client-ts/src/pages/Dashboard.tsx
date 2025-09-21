@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api';
 import { Task } from '../types/Task';
-import useDarkMode from '../hooks/useDarkMode';
+// import useDarkMode from '../hooks/useDarkMode'; // Currently unused
 import { useCalendarSettings } from '../hooks/useCalendarSettings';
 import CreateTaskModal from '../components/CreateTaskModal';
 import EditTaskModal from '../components/EditTaskModal';
@@ -21,7 +21,7 @@ import CategoryBadge from '../components/ui/CategoryBadge';
 const Dashboard = () => {
   const { user, loadingUser } = useAuth();
   const navigate = useNavigate();
-  const [isDark] = useDarkMode();
+  // const [isDark] = useDarkMode(); // Currently unused
   const { settings: calendarSettings } = useCalendarSettings();
   
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -80,8 +80,8 @@ const Dashboard = () => {
     } catch {
       toast.error("Failed to delete task");
     }
-    setShowDeleteModal(false);
-    setTaskToDelete(null);
+      setShowDeleteModal(false);
+      setTaskToDelete(null);
   };
 
   const toggleCompletion = async (task: Task) => {
@@ -166,18 +166,18 @@ const Dashboard = () => {
                       >
                         Create Task
                       </motion.button>
-                    </div>
+              </div>
                   ) : (
                     <div className="space-y-4">
                       {tasks.map((task) => (
                         <motion.div
-                          key={task.id}
-                          layout
+                      key={task.id}
+                      layout
                           className="group relative backdrop-blur-sm rounded-xl p-3 sm:p-4 border transition-all duration-300 hover:shadow-lg border-slate-200/50 dark:border-slate-700/30 bg-white/50 dark:bg-slate-800/50"
-                          initial={{ opacity: 0, y: 8 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.95 }}
-                          transition={{ duration: 0.25, ease: [0.25, 0.8, 0.25, 1] }}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.25, ease: [0.25, 0.8, 0.25, 1] }}
                           whileHover={{ y: -1 }}
                         >
                           <div className="flex items-start justify-between">
@@ -235,7 +235,7 @@ const Dashboard = () => {
                                 </svg>
                               </motion.button>
                               <motion.button
-                                onClick={() => setEditTask(task)}
+                          onClick={() => setEditTask(task)}
                                 className="p-3 sm:p-2 rounded-xl sm:rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-all duration-200 shadow-sm hover:shadow-md min-h-[48px] min-w-[48px] sm:min-h-[40px] sm:min-w-[40px] touch-manipulation flex items-center justify-center"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
@@ -245,10 +245,10 @@ const Dashboard = () => {
                                 </svg>
                               </motion.button>
                               <motion.button
-                                onClick={() => {
-                                  setTaskToDelete(task);
-                                  setShowDeleteModal(true);
-                                }}
+                          onClick={() => {
+                            setTaskToDelete(task);
+                            setShowDeleteModal(true);
+                          }}
                                 className="p-3 sm:p-2 rounded-xl sm:rounded-lg bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-all duration-200 shadow-sm hover:shadow-md min-h-[48px] min-w-[48px] sm:min-h-[40px] sm:min-w-[40px] touch-manipulation flex items-center justify-center"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
@@ -258,11 +258,11 @@ const Dashboard = () => {
                                 </svg>
                               </motion.button>
                             </div>
-                          </div>
+                      </div>
                         </motion.div>
-                      ))}
+                  ))}
                     </div>
-                  )}
+              )}
                 </div>
               </div>
             </div>

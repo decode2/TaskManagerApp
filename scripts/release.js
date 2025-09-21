@@ -1,22 +1,19 @@
 #!/usr/bin/env node
 
 /**
- * Release Management Script for TaskManagerApp
- * Handles automated release process including building, testing, and deployment
+ * Release script for TaskManagerApp
+ * Automates the release process including versioning, building, and packaging
  */
 
+const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 
 // Configuration
 const CONFIG = {
-  versionFile: 'VERSION',
-  buildDir: 'build',
-  distDir: 'client-ts/build',
   releaseDir: 'releases',
-  gitRemote: 'origin',
-  mainBranch: 'main'
+  buildDir: 'build',
+  frontendDir: 'client-ts'
 };
 
 // ANSI Colors
@@ -27,7 +24,6 @@ const colors = {
   green: '\x1b[32m',
   yellow: '\x1b[33m',
   blue: '\x1b[34m',
-  magenta: '\x1b[35m',
   cyan: '\x1b[36m'
 };
 
@@ -37,7 +33,6 @@ function log(message, color = colors.reset) {
 
 function error(message) {
   log(`❌ ${message}`, colors.red);
-  process.exit(1);
 }
 
 function success(message) {
@@ -53,25 +48,26 @@ function warning(message) {
 }
 
 /**
- * Get current version
+ * Get current version from VERSION file
  */
 function getCurrentVersion() {
   try {
-    return fs.readFileSync(CONFIG.versionFile, 'utf8').trim();
+    return fs.readFileSync('VERSION', 'utf8').trim();
   } catch (err) {
-    error(`Could not read version file: ${CONFIG.versionFile}`);
+    error('Could not read VERSION file');
+    process.exit(1);
   }
 }
 
 /**
- * Check if git repository is clean
+ * Check if git working directory is clean
  */
 function isGitClean() {
   try {
     const status = execSync('git status --porcelain', { encoding: 'utf8' });
     return status.trim() === '';
   } catch (err) {
-    error('Not a git repository or git command failed');
+    return false;
   }
 }
 
@@ -80,9 +76,9 @@ function isGitClean() {
  */
 function getCurrentBranch() {
   try {
-    return execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
+    return execSync('git branch --show-current', { encoding: 'utf8' }).trim();
   } catch (err) {
-    error('Could not determine current git branch');
+    return 'unknown';
   }
 }
 
@@ -90,23 +86,22 @@ function getCurrentBranch() {
  * Run tests
  */
 function runTests() {
-  info('🧪 Running tests...');
+  info('Running tests...');
   
   try {
-    // Run backend tests
-    info('Running backend tests...');
-    execSync('dotnet test', { stdio: 'inherit' });
-    success('Backend tests passed');
-    
     // Run frontend tests
-    info('Running frontend tests...');
-    process.chdir('client-ts');
-    execSync('npm test -- --coverage --watchAll=false', { stdio: 'inherit' });
+    process.chdir(CONFIG.frontendDir);
+    execSync('npm test -- --watchAll=false', { stdio: 'inherit' });
     process.chdir('..');
-    success('Frontend tests passed');
     
+    // Run backend tests
+    execSync('dotnet test --configuration Release', { stdio: 'inherit' });
+    
+    success('All tests passed');
+    return true;
   } catch (err) {
-    error('Tests failed. Please fix failing tests before releasing.');
+    error('Tests failed');
+    return false;
   }
 }
 
@@ -114,86 +109,85 @@ function runTests() {
  * Build application
  */
 function buildApplication() {
-  info('🔨 Building application...');
+  info('Building application...');
   
   try {
-    // Build backend
-    info('Building backend...');
-    execSync('dotnet build --configuration Release', { stdio: 'inherit' });
-    success('Backend build successful');
-    
     // Build frontend
-    info('Building frontend...');
-    process.chdir('client-ts');
+    process.chdir(CONFIG.frontendDir);
     execSync('npm run build', { stdio: 'inherit' });
     process.chdir('..');
-    success('Frontend build successful');
     
+    // Build backend
+    execSync('dotnet build --configuration Release', { stdio: 'inherit' });
+    
+    success('Build completed');
+    return true;
   } catch (err) {
-    error(`Build failed: ${err.message}`);
+    error('Build failed');
+    return false;
   }
 }
 
 /**
- * Create release directory
+ * Create release directory structure
  */
 function createReleaseDirectory(version) {
+  info('Creating release directory...');
+  
   const releaseDir = path.join(CONFIG.releaseDir, `v${version}`);
   
-  try {
-    if (fs.existsSync(releaseDir)) {
-      execSync(`rm -rf ${releaseDir}`);
-    }
-    execSync(`mkdir -p ${releaseDir}`);
-    success(`Created release directory: ${releaseDir}`);
-    return releaseDir;
-  } catch (err) {
-    error(`Failed to create release directory: ${err.message}`);
+  if (!fs.existsSync(CONFIG.releaseDir)) {
+    fs.mkdirSync(CONFIG.releaseDir);
   }
+  
+  if (fs.existsSync(releaseDir)) {
+    fs.rmSync(releaseDir, { recursive: true });
+  }
+  
+  fs.mkdirSync(releaseDir, { recursive: true });
+  success(`Release directory created: ${releaseDir}`);
 }
 
 /**
  * Package release files
  */
 function packageRelease(version) {
-  const releaseDir = createReleaseDirectory(version);
+  info('Packaging release files...');
   
   try {
-    info('📦 Packaging release files...');
-    
-    // Copy backend files
-    execSync(`cp -r bin/Release/net9.0/publish/* ${releaseDir}/ 2>/dev/null || echo "Backend publish not found"`);
+    const releaseDir = path.join(CONFIG.releaseDir, `v${version}`);
     
     // Copy frontend build
-    if (fs.existsSync('client-ts/build')) {
-      execSync(`cp -r client-ts/build ${releaseDir}/frontend`);
-      success('Frontend files packaged');
+    const frontendBuild = path.join(CONFIG.frontendDir, 'build');
+    if (fs.existsSync(frontendBuild)) {
+      fs.cpSync(frontendBuild, path.join(releaseDir, 'frontend'), { recursive: true });
+    }
+    
+    // Copy backend build
+    const backendBuild = 'bin/Release/net9.0/publish';
+    if (fs.existsSync(backendBuild)) {
+      fs.cpSync(backendBuild, path.join(releaseDir, 'backend'), { recursive: true });
     }
     
     // Copy configuration files
-    execSync(`cp appsettings.json ${releaseDir}/ 2>/dev/null || echo "appsettings.json not found"`);
-    execSync(`cp VERSION ${releaseDir}/`);
-    execSync(`cp CHANGELOG.md ${releaseDir}/`);
-    execSync(`cp README.md ${releaseDir}/ 2>/dev/null || echo "README.md not found"`);
+    const configFiles = [
+      'appsettings.json',
+      'appsettings.Production.json',
+      'README.md',
+      'RELEASE.md'
+    ];
     
-    // Create release info file
-    const releaseInfo = {
-      version: version,
-      releaseDate: new Date().toISOString(),
-      gitCommit: execSync('git rev-parse HEAD', { encoding: 'utf8' }).trim(),
-      gitBranch: getCurrentBranch(),
-      buildDate: new Date().toISOString()
-    };
+    configFiles.forEach(file => {
+      if (fs.existsSync(file)) {
+        fs.copyFileSync(file, path.join(releaseDir, file));
+      }
+    });
     
-    fs.writeFileSync(
-      path.join(releaseDir, 'release-info.json'),
-      JSON.stringify(releaseInfo, null, 2)
-    );
-    
-    success(`Release packaged in: ${releaseDir}`);
-    
+    success('Release files packaged');
+    return true;
   } catch (err) {
-    error(`Failed to package release: ${err.message}`);
+    error(`Packaging failed: ${err.message}`);
+    return false;
   }
 }
 
@@ -201,24 +195,21 @@ function packageRelease(version) {
  * Create release archive
  */
 function createReleaseArchive(version) {
+  info('Creating release archive...');
+  
   try {
-    info('🗜️  Creating release archive...');
-    
     const releaseDir = path.join(CONFIG.releaseDir, `v${version}`);
     const archiveName = `TaskManagerApp-v${version}.tar.gz`;
     const archivePath = path.join(CONFIG.releaseDir, archiveName);
     
+    // Create tar.gz archive
     execSync(`tar -czf ${archivePath} -C ${CONFIG.releaseDir} v${version}`);
     
-    // Get archive size
-    const stats = fs.statSync(archivePath);
-    const sizeInMB = (stats.size / (1024 * 1024)).toFixed(2);
-    
-    success(`Release archive created: ${archiveName} (${sizeInMB} MB)`);
+    success(`Release archive created: ${archivePath}`);
     return archivePath;
-    
   } catch (err) {
-    error(`Failed to create release archive: ${err.message}`);
+    error(`Archive creation failed: ${err.message}`);
+    return null;
   }
 }
 
@@ -226,40 +217,42 @@ function createReleaseArchive(version) {
  * Push to git repository
  */
 function pushToGit(version) {
+  info('Pushing to git repository...');
+  
   try {
-    info('📤 Pushing to git repository...');
-    
-    const currentBranch = getCurrentBranch();
     const tag = `v${version}`;
     
     // Push commits
-    execSync(`git push ${CONFIG.gitRemote} ${currentBranch}`);
-    success('Pushed commits to remote');
+    execSync('git push origin main', { stdio: 'inherit' });
     
     // Push tags
-    execSync(`git push ${CONFIG.gitRemote} ${tag}`);
-    success(`Pushed tag ${tag} to remote`);
+    execSync(`git push origin ${tag}`, { stdio: 'inherit' });
     
+    success('Changes pushed to repository');
+    return true;
   } catch (err) {
-    error(`Failed to push to git: ${err.message}`);
+    error(`Git push failed: ${err.message}`);
+    return false;
   }
 }
 
 /**
- * Generate release notes
+ * Generate release notes from changelog
  */
 function generateReleaseNotes(version) {
+  info('Generating release notes...');
+  
   try {
-    info('📝 Generating release notes...');
-    
-    // Get changelog content
     const changelog = fs.readFileSync('CHANGELOG.md', 'utf8');
-    
-    // Extract version section
     const versionSection = extractVersionSection(changelog, version);
     
+    if (!versionSection) {
+      warning('No changelog entry found for this version');
+      return '';
+    }
+    
     // Create release notes file
-    const releaseNotesPath = path.join(CONFIG.releaseDir, `v${version}`, 'RELEASE_NOTES.md`);
+    const releaseNotesPath = path.join(CONFIG.releaseDir, `v${version}`, 'RELEASE_NOTES.md');
     fs.writeFileSync(releaseNotesPath, versionSection);
     
     success('Release notes generated');
@@ -275,94 +268,92 @@ function generateReleaseNotes(version) {
  * Extract version section from changelog
  */
 function extractVersionSection(changelog, version) {
+  const lines = changelog.split('\n');
   const versionHeader = `## [${version}]`;
-  const startIndex = changelog.indexOf(versionHeader);
+  const startIndex = lines.findIndex(line => line.startsWith(versionHeader));
   
   if (startIndex === -1) {
-    return `# Release ${version}\n\nNo release notes available.`;
+    return null;
   }
   
-  const nextVersionIndex = changelog.indexOf('## [', startIndex + 1);
-  const endIndex = nextVersionIndex === -1 ? changelog.length : nextVersionIndex;
+  const endIndex = lines.findIndex((line, index) => 
+    index > startIndex && line.startsWith('## [') && !line.includes(version)
+  );
   
-  return changelog.slice(startIndex, endIndex).trim();
+  const section = lines.slice(startIndex, endIndex === -1 ? lines.length : endIndex);
+  return section.join('\n');
 }
 
 /**
  * Main release function
  */
 function createRelease(options = {}) {
-  info('🚀 Starting release process...');
-  
-  const {
-    skipTests = false,
-    skipBuild = false,
-    skipPackage = false,
-    skipGit = false,
-    dryRun = false
-  } = options;
-  
-  // Validate environment
-  if (!isGitClean()) {
-    error('Working directory is not clean. Please commit or stash changes first.');
-  }
-  
-  const currentBranch = getCurrentBranch();
-  if (currentBranch !== CONFIG.mainBranch) {
-    warning(`Current branch is '${currentBranch}'. Consider running this on ${CONFIG.mainBranch} branch.`);
-  }
+  log('\n🚀 Starting release process...', colors.bright);
   
   const version = getCurrentVersion();
-  info(`Releasing version: ${version}`);
+  const branch = getCurrentBranch();
+  const isClean = isGitClean();
   
-  if (dryRun) {
-    info('🔍 DRY RUN MODE - No actual changes will be made');
+  info(`Version: ${version}`);
+  info(`Branch: ${branch}`);
+  info(`Git Status: ${isClean ? 'Clean' : 'Dirty'}`);
+  
+  if (!isClean && !options.dryRun) {
+    error('Working directory is not clean. Please commit or stash changes first.');
+    process.exit(1);
   }
   
-  try {
-    // Run tests
-    if (!skipTests && !dryRun) {
-      runTests();
-    } else if (skipTests) {
-      warning('Skipping tests');
+  if (branch !== 'main' && !options.dryRun) {
+    warning(`Not on main branch (current: ${branch})`);
+  }
+  
+  let allSuccess = true;
+  
+  // Run tests
+  if (!options.skipTests) {
+    if (options.dryRun) {
+      info('DRY RUN: Would run tests');
+    } else {
+      allSuccess = runTests() && allSuccess;
     }
-    
-    // Build application
-    if (!skipBuild && !dryRun) {
-      buildApplication();
-    } else if (skipBuild) {
-      warning('Skipping build');
+  }
+  
+  // Build application
+  if (!options.skipBuild) {
+    if (options.dryRun) {
+      info('DRY RUN: Would build application');
+    } else {
+      allSuccess = buildApplication() && allSuccess;
     }
-    
-    // Package release
-    if (!skipPackage && !dryRun) {
-      packageRelease(version);
+  }
+  
+  // Package release
+  if (!options.skipPackage) {
+    if (options.dryRun) {
+      info('DRY RUN: Would package release files');
+    } else {
+      createReleaseDirectory(version);
+      allSuccess = packageRelease(version) && allSuccess;
       createReleaseArchive(version);
       generateReleaseNotes(version);
-    } else if (skipPackage) {
-      warning('Skipping packaging');
     }
-    
-    // Push to git
-    if (!skipGit && !dryRun) {
-      pushToGit(version);
-    } else if (skipGit) {
-      warning('Skipping git push');
-    }
-    
-    if (dryRun) {
-      success('🔍 DRY RUN completed successfully');
+  }
+  
+  // Push to git
+  if (!options.skipGit && allSuccess) {
+    if (options.dryRun) {
+      info('DRY RUN: Would push to git repository');
     } else {
-      success(`🎉 Release ${version} completed successfully!`);
-      info('Next steps:');
-      info('  1. Verify the release in the releases/ directory');
-      info('  2. Deploy to staging environment for testing');
-      info('  3. Deploy to production when ready');
-      info('  4. Create GitHub/GitLab release if needed');
+      allSuccess = pushToGit(version) && allSuccess;
     }
-    
-  } catch (err) {
-    error(`Release failed: ${err.message}`);
+  }
+  
+  if (allSuccess) {
+    success('\n🎉 Release completed successfully!');
+    info(`Version ${version} is ready for deployment.`);
+  } else {
+    error('\n❌ Release failed. Please check the errors above.');
+    process.exit(1);
   }
 }
 

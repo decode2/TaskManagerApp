@@ -200,7 +200,7 @@ export function useAsyncPolling<T = any>(
     intervalRef.current = setInterval(() => {
       asyncResult.execute();
     }, interval);
-  }, [asyncResult.execute, interval]);
+  }, [asyncResult, interval]);
 
   const stopPolling = useCallback(() => {
     if (intervalRef.current) {

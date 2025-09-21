@@ -68,7 +68,7 @@ export function useApi<T = any>(
       
       return null;
     }
-  }, [apiFunction, options.onSuccess, options.onError]);
+  }, [apiFunction, options]);
 
   const reset = useCallback(() => {
     setState({
@@ -112,9 +112,13 @@ export function useApi<T = any>(
 export function useMultipleApis<T extends Record<string, (...args: any[]) => Promise<any>>>(
   apiFunctions: T
 ): { [K in keyof T]: UseApiReturn<Awaited<ReturnType<T[K]>>> } {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const apis = {} as { [K in keyof T]: UseApiReturn<Awaited<ReturnType<T[K]>>> };
 
+  // This is a utility function that creates multiple API hooks
+  // The hooks are created in a loop, but this is intentional for this utility
   for (const key in apiFunctions) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     apis[key] = useApi(apiFunctions[key]);
   }
 

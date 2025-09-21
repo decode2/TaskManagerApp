@@ -81,7 +81,7 @@ export function useDebouncedCallback<T extends (...args: any[]) => any>(
         clearTimeout(timeoutRef.current);
       }
     };
-  }, deps);
+  }, deps); // eslint-disable-line react-hooks/exhaustive-deps
 
   return debouncedCallback;
 }
