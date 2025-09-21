@@ -98,59 +98,82 @@ namespace TaskManagerApp.Api
             if (string.IsNullOrEmpty(refreshToken))
                 return Unauthorized("Missing refresh token");
 
-            // Find the token directly
-            var storedToken = await _context.RefreshTokens
-                .Include(rt => rt.User)
-                .FirstOrDefaultAsync(rt => rt.Token == refreshToken);
-
-            if (storedToken == null || storedToken.Expires < DateTime.UtcNow)
-                return Unauthorized("Invalid or expired refresh token");
-
-            var user = storedToken.User;
-            if (user == null)
-                return Unauthorized("Invalid refresh token");
-
-            var newAccessToken = _jwtService.GenerateToken(user.Id, user.Email!);
-            var newRefreshToken = _jwtService.GenerateRefreshToken();
-
-            // Delete the old token first
-            _context.RefreshTokens.Remove(storedToken);
-            await _context.SaveChangesAsync();
-
-            // Add the new token
-            var newToken = new RefreshToken 
-            { 
-                Token = newRefreshToken, 
-                Expires = DateTime.UtcNow.AddDays(7),
-                UserId = user.Id
-            };
-            _context.RefreshTokens.Add(newToken);
-            await _context.SaveChangesAsync();
-
-            // Get cookie configuration from environment variables
-            var cookieSecure = _configuration.GetValue<bool>("Cookies:Secure", false);
-            var cookieSameSite = _configuration.GetValue<string>("Cookies:SameSite", "Lax");
-            var cookieHttpOnly = _configuration.GetValue<bool>("Cookies:HttpOnly", true);
-            var cookieDomain = _configuration.GetValue<string>("Cookies:Domain", "");
-
-            var sameSiteMode = cookieSameSite.ToLower() switch
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                "strict" => SameSiteMode.Strict,
-                "lax" => SameSiteMode.Lax,
-                "none" => SameSiteMode.None,
-                _ => SameSiteMode.Lax
-            };
+                // Find the token directly
+                var storedToken = await _context.RefreshTokens
+                    .Include(rt => rt.User)
+                    .FirstOrDefaultAsync(rt => rt.Token == refreshToken);
 
-            Response.Cookies.Append("refreshToken", newRefreshToken, new CookieOptions
+                if (storedToken == null || storedToken.Expires < DateTime.UtcNow)
+                {
+                    await transaction.RollbackAsync();
+                    return Unauthorized("Invalid or expired refresh token");
+                }
+
+                var user = storedToken.User;
+                if (user == null)
+                {
+                    await transaction.RollbackAsync();
+                    return Unauthorized("Invalid refresh token");
+                }
+
+                var newAccessToken = _jwtService.GenerateToken(user.Id, user.Email!);
+                var newRefreshToken = _jwtService.GenerateRefreshToken();
+
+                // Delete the old token first
+                _context.RefreshTokens.Remove(storedToken);
+
+                // Add the new token
+                var newToken = new RefreshToken 
+                { 
+                    Token = newRefreshToken, 
+                    Expires = DateTime.UtcNow.AddDays(7),
+                    UserId = user.Id
+                };
+                _context.RefreshTokens.Add(newToken);
+
+                // Save all changes in a single transaction
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                // Get cookie configuration from environment variables
+                var cookieSecure = _configuration.GetValue<bool>("Cookies:Secure", false);
+                var cookieSameSite = _configuration.GetValue<string>("Cookies:SameSite", "Lax");
+                var cookieHttpOnly = _configuration.GetValue<bool>("Cookies:HttpOnly", true);
+                var cookieDomain = _configuration.GetValue<string>("Cookies:Domain", "");
+
+                var sameSiteMode = cookieSameSite.ToLower() switch
+                {
+                    "strict" => SameSiteMode.Strict,
+                    "lax" => SameSiteMode.Lax,
+                    "none" => SameSiteMode.None,
+                    _ => SameSiteMode.Lax
+                };
+
+                Response.Cookies.Append("refreshToken", newRefreshToken, new CookieOptions
+                {
+                    HttpOnly = cookieHttpOnly,
+                    Secure = cookieSecure,
+                    SameSite = sameSiteMode,
+                    Domain = string.IsNullOrEmpty(cookieDomain) ? null : cookieDomain,
+                    Expires = DateTimeOffset.UtcNow.AddDays(7)
+                });
+
+                return Ok(new { token = newAccessToken, email = user.Email! });
+            }
+            catch (DbUpdateConcurrencyException)
             {
-                HttpOnly = cookieHttpOnly,
-                Secure = cookieSecure,
-                SameSite = sameSiteMode,
-                Domain = string.IsNullOrEmpty(cookieDomain) ? null : cookieDomain,
-                Expires = DateTimeOffset.UtcNow.AddDays(7)
-            });
-
-            return Ok(new { token = newAccessToken, email = user.Email! });
+                await transaction.RollbackAsync();
+                return Unauthorized("Token refresh conflict. Please login again.");
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                Console.WriteLine($"Error refreshing token: {ex.Message}");
+                return Unauthorized("Error refreshing token. Please login again.");
+            }
         }
 
         [HttpPost("Logout")]

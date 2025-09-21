@@ -8,6 +8,7 @@ import PrivateRoute from "./components/PrivateRoute";
 import Dashboard from "./pages/Dashboard";
 import SuccessAnimation from "./components/SuccessAnimation";
 import BadgeShowcase from "./components/BadgeShowcase";
+import CalendarExamples from "./pages/CalendarExamples";
 
 import { Navigate } from "react-router-dom";
 
@@ -22,6 +23,7 @@ function App() {
             
             <Route path="/success" element={<SuccessAnimation />} />
             <Route path="/badge-showcase" element={<BadgeShowcase />} />
+            <Route path="/calendar-examples" element={<CalendarExamples />} />
 
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
