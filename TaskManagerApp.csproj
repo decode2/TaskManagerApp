@@ -5,6 +5,17 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-TaskManagerApp-00d9d65e-badc-4bf5-a921-d365ff0ec4e6</UserSecretsId>
+    
+    <!-- Version Information -->
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
+    <AssemblyTitle>TaskManagerApp</AssemblyTitle>
+    <AssemblyDescription>Task Management Application with Calendar Integration</AssemblyDescription>
+    <AssemblyCompany>TaskManagerApp</AssemblyCompany>
+    <AssemblyProduct>TaskManagerApp</AssemblyProduct>
+    <AssemblyCopyright>Copyright © 2024</AssemblyCopyright>
+    <AssemblyInformationalVersion>1.0.0</AssemblyInformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>

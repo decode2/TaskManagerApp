@@ -1,6 +1,6 @@
 {
   "name": "client-ts",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@headlessui/react": "2.2.1",
@@ -39,7 +39,16 @@
     "test:watch": "react-scripts test --watchAll",
     "test:e2e": "cypress run",
     "test:e2e:open": "cypress open",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint src --ext .ts,.tsx --max-warnings 0",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "type-check": "tsc --noEmit",
+    "version:check": "node ../scripts/check-version.js check",
+    "version:info": "node ../scripts/check-version.js info",
+    "version:fix": "node ../scripts/check-version.js fix",
+    "version:bump": "node ../scripts/version.js",
+    "release": "node ../scripts/release.js",
+    "pre-commit": "node ../scripts/pre-commit.js"
   },
   "eslintConfig": {
     "extends": [
