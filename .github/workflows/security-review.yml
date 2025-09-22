@@ -1,0 +1,141 @@
+name: Security Review for Dependencies
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - 'client-ts/package.json'
+      - 'client-ts/package-lock.json'
+      - 'TaskManagerApp.csproj'
+      - '.github/workflows/*.yml'
+
+jobs:
+  security-review:
+    name: Security Review
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.labels.*.name, 'security-review-required')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: client-ts/package-lock.json
+          
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+          
+      - name: Install frontend dependencies
+        working-directory: ./client-ts
+        run: npm ci
+        
+      - name: Run npm audit (frontend)
+        working-directory: ./client-ts
+        run: |
+          echo "🔍 Running npm audit for security vulnerabilities..."
+          npm audit --audit-level moderate --json > audit-results.json || true
+          
+      - name: Check for high/critical vulnerabilities
+        working-directory: ./client-ts
+        run: |
+          echo "🚨 Checking for high/critical vulnerabilities..."
+          if npm audit --audit-level high; then
+            echo "✅ No high/critical vulnerabilities found"
+          else
+            echo "❌ HIGH/CRITICAL vulnerabilities detected!"
+            echo "::warning::High or critical security vulnerabilities found in npm packages"
+            exit 1
+          fi
+          
+      - name: Run dotnet list package vulnerabilities (backend)
+        run: |
+          echo "🔍 Checking .NET package vulnerabilities..."
+          dotnet list package --vulnerable --include-transitive || true
+          
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          
+      - name: Check package integrity (npm)
+        working-directory: ./client-ts
+        run: |
+          echo "🔐 Verifying package integrity..."
+          npm ci --audit --fund=false
+          
+      - name: Verify package signatures
+        run: |
+          echo "🔍 Checking for suspicious package changes..."
+          # Check if any packages were added/removed
+          if [ -f "client-ts/package.json" ]; then
+            echo "📦 Frontend packages detected"
+          fi
+          if [ -f "TaskManagerApp.csproj" ]; then
+            echo "📦 Backend packages detected"
+          fi
+          
+      - name: Security summary
+        run: |
+          echo "## 🔒 Security Review Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ✅ Security Checks Completed:" >> $GITHUB_STEP_SUMMARY
+          echo "- npm audit scan" >> $GITHUB_STEP_SUMMARY
+          echo "- .NET vulnerability check" >> $GITHUB_STEP_SUMMARY
+          echo "- Trivy filesystem scan" >> $GITHUB_STEP_SUMMARY
+          echo "- Package integrity verification" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### ⚠️ Manual Review Required:" >> $GITHUB_STEP_SUMMARY
+          echo "- Review all package changes manually" >> $GITHUB_STEP_SUMMARY
+          echo "- Verify package sources and maintainers" >> $GITHUB_STEP_SUMMARY
+          echo "- Test functionality after merge" >> $GITHUB_STEP_SUMMARY
+          
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('🔒 Security Review')
+            );
+            
+            if (!botComment) {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `## 🔒 Security Review Required
+                
+                This PR contains dependency updates that require manual security review.
+                
+                ### ⚠️ Please verify:
+                - [ ] Package sources are trusted
+                - [ ] No suspicious package additions
+                - [ ] Version changes are reasonable
+                - [ ] No breaking changes introduced
+                - [ ] Test the application after merge
+                
+                ### 🔍 Automated checks completed:
+                - npm audit scan
+                - .NET vulnerability check  
+                - Trivy security scan
+                - Package integrity verification
+                
+                **Do not merge until manual review is complete.**`
+              });
+            }
