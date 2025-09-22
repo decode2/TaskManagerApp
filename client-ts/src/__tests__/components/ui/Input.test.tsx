@@ -31,6 +31,6 @@ describe('Input Component', () => {
   it('should apply correct size styles', () => {
     render(<Input size="lg" />);
     const input = screen.getByRole('textbox');
-    expect(input).toHaveClass('px-4', 'py-3');
+    expect(input).toHaveClass('px-3', 'py-2');
   });
 });

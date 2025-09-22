@@ -75,6 +75,7 @@ const Modal: React.FC<ModalProps> = ({
     <AnimatePresence>
       <div
         className="modal-overlay"
+        data-testid="modal-overlay"
         onClick={handleOverlayClick}
         style={{
           position: 'fixed',

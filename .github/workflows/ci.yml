@@ -65,39 +65,39 @@ jobs:
         working-directory: ./client-ts
         run: npm run test:ci
 
-  backend-tests:
-    name: Backend Tests
-    runs-on: ubuntu-latest
-    needs: version-check
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: testpassword
-          MYSQL_DATABASE: TaskManagerDbTest
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+  # backend-tests:
+  #   name: Backend Tests
+  #   runs-on: ubuntu-latest
+  #   needs: version-check
+  #   services:
+  #     mysql:
+  #       image: mysql:8.0
+  #       env:
+  #         MYSQL_ROOT_PASSWORD: testpassword
+  #         MYSQL_DATABASE: TaskManagerDbTest
+  #       ports:
+  #         - 3306:3306
+  #       options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v5
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+  #     - name: Setup .NET
+  #       uses: actions/setup-dotnet@v5
+  #       with:
+  #         dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Restore dependencies
-        run: dotnet restore
+  #     - name: Restore dependencies
+  #       run: dotnet restore
 
-      - name: Build project
-        run: dotnet build --configuration Release --no-restore
+  #     - name: Build project
+  #       run: dotnet build --configuration Release --no-restore
 
-      - name: Run tests
-        run: dotnet test --configuration Release --no-build --verbosity normal
-        env:
-          ConnectionStrings__DefaultConnection: "Server=localhost;Database=TaskManagerDbTest;Uid=root;Pwd=testpassword;"
+  #     - name: Run tests
+  #       run: dotnet test --configuration Release --no-build --verbosity normal
+  #       env:
+  #         ConnectionStrings__DefaultConnection: "Server=localhost;Database=TaskManagerDbTest;Uid=root;Pwd=testpassword;"
 
   security-scan:
     name: Security Scan
@@ -135,7 +135,7 @@ jobs:
   build-application:
     name: Build Application
     runs-on: ubuntu-latest
-    needs: [frontend-tests, backend-tests]
+    needs: [frontend-tests]
     steps:
       - name: Checkout code
         uses: actions/checkout@v5

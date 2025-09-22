@@ -53,6 +53,14 @@ jest.mock('framer-motion', () => ({
       const React = require('react');
       return React.createElement('div', props, children);
     },
+    p: ({ children, ...props }: any) => {
+      const React = require('react');
+      return React.createElement('p', props, children);
+    },
+    span: ({ children, ...props }: any) => {
+      const React = require('react');
+      return React.createElement('span', props, children);
+    },
   },
   AnimatePresence: ({ children }: any) => children,
 }));
@@ -71,3 +79,45 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: jest.fn(),
   })),
 });
+
+// Mock axios
+jest.mock('axios', () => ({
+  create: jest.fn(() => ({
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    interceptors: {
+      request: { use: jest.fn() },
+      response: { use: jest.fn() },
+    },
+  })),
+  get: jest.fn(),
+  post: jest.fn(),
+  put: jest.fn(),
+  delete: jest.fn(),
+}));
+
+// Mock API services
+jest.mock('./api', () => ({
+  default: {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+  },
+}));
+
+jest.mock('./services/authService', () => ({
+  login: jest.fn(),
+  register: jest.fn(),
+  logout: jest.fn(),
+  refreshToken: jest.fn(),
+}));
+
+jest.mock('./services/taskService', () => ({
+  getTasks: jest.fn(),
+  createTask: jest.fn(),
+  updateTask: jest.fn(),
+  deleteTask: jest.fn(),
+}));
