@@ -1,58 +1,90 @@
 version: 2
 updates:
-  # Enable version updates for npm
+  # Frontend dependencies (npm) - SECURE CONFIG
   - package-ecosystem: "npm"
     directory: "/client-ts"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-    open-pull-requests-limit: 10
+    # STRICT LIMITS
+    open-pull-requests-limit: 3
+    # ONLY security and patch updates
+    ignore:
+      # Ignore major (breaking) updates for all
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      # Ignore minor/major updates for risky deps
+      - dependency-name: "react"
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
+    # REVIEW SETTINGS
     reviewers:
       - "devel"
     assignees:
       - "devel"
     commit-message:
-      prefix: "chore"
+      prefix: "security"
       include: "scope"
     labels:
       - "dependencies"
       - "frontend"
+      - "security-review-required"
 
-  # Enable version updates for NuGet
+  # Backend dependencies (NuGet) - SECURE CONFIG
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-    open-pull-requests-limit: 10
+    # STRICT LIMITS
+    open-pull-requests-limit: 2
+    # ONLY security and patch updates
+    ignore:
+      # Ignore major updates globally
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      # Ignore minor/major for critical framework packages
+      - dependency-name: "Microsoft.AspNetCore.*"
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
+      - dependency-name: "Microsoft.EntityFrameworkCore.*"
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
+    # REVIEW SETTINGS
     reviewers:
       - "devel"
     assignees:
       - "devel"
     commit-message:
-      prefix: "chore"
+      prefix: "security"
       include: "scope"
     labels:
       - "dependencies"
       - "backend"
+      - "security-review-required"
 
-  # Enable version updates for GitHub Actions
+  # GitHub Actions - SECURE CONFIG
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
       day: "monday"
       time: "09:00"
-    open-pull-requests-limit: 5
+    # VERY STRICT LIMITS
+    open-pull-requests-limit: 1
+    # REVIEW SETTINGS
     reviewers:
       - "devel"
     assignees:
       - "devel"
     commit-message:
-      prefix: "chore"
+      prefix: "security"
       include: "scope"
     labels:
       - "dependencies"
       - "github-actions"
+      - "security-review-required"
+      - "manual-review-required"
