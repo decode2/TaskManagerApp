@@ -1,27 +1,27 @@
 version: 2
 updates:
-  # Frontend dependencies (npm) - CONFIGURACIÓN SEGURA
+  # Frontend dependencies (npm) - SECURE CONFIG
   - package-ecosystem: "npm"
     directory: "/client-ts"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-    # LÍMITES ESTRICTOS
-    open-pull-requests-limit: 3  # Máximo 3 PRs abiertos
-    # SOLO actualizaciones de seguridad y parches
+    # STRICT LIMITS
+    open-pull-requests-limit: 3
+    # ONLY security and patch updates
     ignore:
-      # Ignorar actualizaciones mayores (breaking changes)
+      # Ignore major (breaking) updates for all
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
-      # Ignorar dependencias específicas problemáticas
+      # Ignore minor/major updates for risky deps
       - dependency-name: "react"
         update-types: ["version-update:semver-minor", "version-update:semver-major"]
       - dependency-name: "react-dom"
         update-types: ["version-update:semver-minor", "version-update:semver-major"]
       - dependency-name: "typescript"
         update-types: ["version-update:semver-minor", "version-update:semver-major"]
-    # CONFIGURACIÓN DE REVISIÓN
+    # REVIEW SETTINGS
     reviewers:
       - "devel"
     assignees:
@@ -34,26 +34,26 @@ updates:
       - "frontend"
       - "security-review-required"
 
-  # Backend dependencies (NuGet) - CONFIGURACIÓN SEGURA
+  # Backend dependencies (NuGet) - SECURE CONFIG
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-    # LÍMITES ESTRICTOS
-    open-pull-requests-limit: 2  # Máximo 2 PRs abiertos
-    # SOLO actualizaciones de seguridad y parches
+    # STRICT LIMITS
+    open-pull-requests-limit: 2
+    # ONLY security and patch updates
     ignore:
-      # Ignorar actualizaciones mayores
+      # Ignore major updates globally
       - dependency-name: "*"
         update-types: ["version-update:semver-major"]
-      # Ignorar dependencias críticas del framework
+      # Ignore minor/major for critical framework packages
       - dependency-name: "Microsoft.AspNetCore.*"
         update-types: ["version-update:semver-minor", "version-update:semver-major"]
       - dependency-name: "Microsoft.EntityFrameworkCore.*"
         update-types: ["version-update:semver-minor", "version-update:semver-major"]
-    # CONFIGURACIÓN DE REVISIÓN
+    # REVIEW SETTINGS
     reviewers:
       - "devel"
     assignees:
@@ -66,16 +66,16 @@ updates:
       - "backend"
       - "security-review-required"
 
-  # GitHub Actions - CONFIGURACIÓN SEGURA
+  # GitHub Actions - SECURE CONFIG
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "monthly"  # Menos frecuente
+      interval: "monthly"
       day: "monday"
       time: "09:00"
-    # LÍMITES MUY ESTRICTOS
-    open-pull-requests-limit: 1  # Solo 1 PR a la vez
-    # CONFIGURACIÓN DE REVISIÓN
+    # VERY STRICT LIMITS
+    open-pull-requests-limit: 1
+    # REVIEW SETTINGS
     reviewers:
       - "devel"
     assignees:
