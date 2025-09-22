@@ -1,58 +1,90 @@
 version: 2
 updates:
-  # Enable version updates for npm
+  # Frontend dependencies (npm) - CONFIGURACIÓN SEGURA
   - package-ecosystem: "npm"
     directory: "/client-ts"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-    open-pull-requests-limit: 10
+    # LÍMITES ESTRICTOS
+    open-pull-requests-limit: 3  # Máximo 3 PRs abiertos
+    # SOLO actualizaciones de seguridad y parches
+    ignore:
+      # Ignorar actualizaciones mayores (breaking changes)
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      # Ignorar dependencias específicas problemáticas
+      - dependency-name: "react"
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
+      - dependency-name: "react-dom"
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
+    # CONFIGURACIÓN DE REVISIÓN
     reviewers:
       - "devel"
     assignees:
       - "devel"
     commit-message:
-      prefix: "chore"
+      prefix: "security"
       include: "scope"
     labels:
       - "dependencies"
       - "frontend"
+      - "security-review-required"
 
-  # Enable version updates for NuGet
+  # Backend dependencies (NuGet) - CONFIGURACIÓN SEGURA
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "09:00"
-    open-pull-requests-limit: 10
+    # LÍMITES ESTRICTOS
+    open-pull-requests-limit: 2  # Máximo 2 PRs abiertos
+    # SOLO actualizaciones de seguridad y parches
+    ignore:
+      # Ignorar actualizaciones mayores
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+      # Ignorar dependencias críticas del framework
+      - dependency-name: "Microsoft.AspNetCore.*"
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
+      - dependency-name: "Microsoft.EntityFrameworkCore.*"
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
+    # CONFIGURACIÓN DE REVISIÓN
     reviewers:
       - "devel"
     assignees:
       - "devel"
     commit-message:
-      prefix: "chore"
+      prefix: "security"
       include: "scope"
     labels:
       - "dependencies"
       - "backend"
+      - "security-review-required"
 
-  # Enable version updates for GitHub Actions
+  # GitHub Actions - CONFIGURACIÓN SEGURA
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "weekly"
+      interval: "monthly"  # Menos frecuente
       day: "monday"
       time: "09:00"
-    open-pull-requests-limit: 5
+    # LÍMITES MUY ESTRICTOS
+    open-pull-requests-limit: 1  # Solo 1 PR a la vez
+    # CONFIGURACIÓN DE REVISIÓN
     reviewers:
       - "devel"
     assignees:
       - "devel"
     commit-message:
-      prefix: "chore"
+      prefix: "security"
       include: "scope"
     labels:
       - "dependencies"
       - "github-actions"
+      - "security-review-required"
+      - "manual-review-required"
