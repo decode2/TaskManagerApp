@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
@@ -93,6 +93,16 @@ const Dashboard = () => {
       toast.error("Failed to update task");
     }
   };
+
+  // Memoized calculations for better performance
+  const taskStats = useMemo(() => {
+    const total = tasks.length;
+    const completed = tasks.filter(task => task.isCompleted).length;
+    const pending = total - completed;
+    const highPriority = tasks.filter(task => task.priority === 3 || task.priority === 4).length;
+    
+    return { total, completed, pending, highPriority };
+  }, [tasks]);
 
   if (loadingUser) {
     return (
@@ -323,7 +333,7 @@ const Dashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-blue-100 text-sm sm:text-base">Total Tasks</p>
-                      <p className="text-2xl sm:text-3xl font-bold">{tasks.length}</p>
+                      <p className="text-2xl sm:text-3xl font-bold">{taskStats.total}</p>
                     </div>
                     <div className="p-3 bg-blue-400/20 rounded-lg">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -337,7 +347,7 @@ const Dashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-green-100 text-sm sm:text-base">Completed</p>
-                      <p className="text-2xl sm:text-3xl font-bold">{tasks.filter(task => task.isCompleted).length}</p>
+                      <p className="text-2xl sm:text-3xl font-bold">{taskStats.completed}</p>
                     </div>
                     <div className="p-3 bg-green-400/20 rounded-lg">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -351,7 +361,7 @@ const Dashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-orange-100 text-sm sm:text-base">Pending</p>
-                      <p className="text-2xl sm:text-3xl font-bold">{tasks.filter(task => !task.isCompleted).length}</p>
+                      <p className="text-2xl sm:text-3xl font-bold">{taskStats.pending}</p>
                     </div>
                     <div className="p-3 bg-orange-400/20 rounded-lg">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -365,7 +375,7 @@ const Dashboard = () => {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-purple-100 text-sm sm:text-base">High Priority</p>
-                      <p className="text-2xl sm:text-3xl font-bold">{tasks.filter(task => task.priority === 3 || task.priority === 4).length}</p>
+                      <p className="text-2xl sm:text-3xl font-bold">{taskStats.highPriority}</p>
                     </div>
                     <div className="p-3 bg-purple-400/20 rounded-lg">
                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

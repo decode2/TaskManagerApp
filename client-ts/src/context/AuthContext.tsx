@@ -49,19 +49,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             
             const newDecoded = jwtDecode<DecodedToken>(newToken);
             setUser({ email: newDecoded.email });
-            console.log("🔄 Access token refreshed on app load");
+            // Token refreshed successfully
           } catch (refreshErr) {
-            console.warn("🔒 Refresh failed, clearing localStorage token");
+            // Refresh failed, clearing token
             localStorage.removeItem("token");
             setUser(null);
           }
         } else {
           // Token is still valid
           setUser({ email: decoded.email });
-          console.log("✅ Token is still valid");
         }
       } catch (err) {
-        console.warn("🔒 Invalid token, clearing localStorage");
+        // Invalid token, clearing localStorage
         localStorage.removeItem("token");
         setUser(null);
       } finally {

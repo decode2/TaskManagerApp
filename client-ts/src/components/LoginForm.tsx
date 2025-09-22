@@ -34,7 +34,7 @@ export default function LoginForm() {
       navigate("/dashboard");
     } catch (err: any) {
       if (axios.isAxiosError(err)) {
-        console.error("Axios error:", err.response);
+        // Axios error occurred
       
         // Identity-style array errors
         if (Array.isArray(err.response?.data)) {
