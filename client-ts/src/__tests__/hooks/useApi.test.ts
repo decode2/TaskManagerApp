@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, act } from '@testing-library/react';
 import { useApi } from '../../hooks/useApi';
 
 // Mock fetch function
@@ -29,7 +29,9 @@ describe('useApi Hook', () => {
     const { result } = renderHook(() => useApi(mockApiFunction));
 
     // Execute the API function
-    await result.current.execute();
+    await act(async () => {
+      await result.current.execute();
+    });
 
     expect(mockApiFunction).toHaveBeenCalled();
     expect(result.current.data).toEqual(mockData);
@@ -44,7 +46,9 @@ describe('useApi Hook', () => {
     const { result } = renderHook(() => useApi(mockApiFunction));
 
     // Execute the API function
-    await result.current.execute();
+    await act(async () => {
+      await result.current.execute();
+    });
 
     expect(mockApiFunction).toHaveBeenCalled();
     expect(result.current.data).toBe(null);
@@ -59,11 +63,15 @@ describe('useApi Hook', () => {
     const { result } = renderHook(() => useApi(mockApiFunction));
 
     // Execute and get data
-    await result.current.execute();
+    await act(async () => {
+      await result.current.execute();
+    });
     expect(result.current.data).toEqual(mockData);
 
     // Reset state
-    result.current.reset();
+    act(() => {
+      result.current.reset();
+    });
 
     expect(result.current.data).toBe(null);
     expect(result.current.loading).toBe(false);
@@ -75,7 +83,9 @@ describe('useApi Hook', () => {
     const { result } = renderHook(() => useApi(mockApiFunction));
 
     const newData = { id: 2, title: 'New Task' };
-    result.current.setData(newData);
+    act(() => {
+      result.current.setData(newData);
+    });
 
     expect(result.current.data).toEqual(newData);
   });

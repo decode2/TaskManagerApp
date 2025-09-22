@@ -6,7 +6,7 @@ module.exports = {
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
   
   // Module name mapping for absolute imports
-  moduleNameMapping: {
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   
@@ -37,7 +37,8 @@ module.exports = {
   
   // Transform files
   transform: {
-    '^.+\\.(js|jsx|ts|tsx)$': 'babel-jest',
+    '^.+\\.(ts|tsx)$': 'ts-jest',
+    '^.+\\.(js|jsx)$': 'babel-jest',
   },
   
   // Module file extensions
@@ -49,4 +50,12 @@ module.exports = {
     '<rootDir>/build/',
     '<rootDir>/cypress/',
   ],
+
+  // Transform ignore patterns for ES modules
+  transformIgnorePatterns: [
+    'node_modules/(?!(axios|framer-motion)/)',
+  ],
+
+  // Setup files
+  setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
 };
