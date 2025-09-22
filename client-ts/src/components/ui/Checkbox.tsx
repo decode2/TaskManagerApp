@@ -52,7 +52,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
               ref={ref}
               id={checkboxId}
               type="checkbox"
-              className={`${sizeClasses[size]} text-blue-600 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-slate-800 focus:ring-2 dark:bg-slate-700 dark:border-slate-600 ${className}`}
+              className={`${sizeClasses[size]} text-blue-600 bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-slate-800 focus:ring-2 ${className}`}
               {...props}
             />
             {animated && (

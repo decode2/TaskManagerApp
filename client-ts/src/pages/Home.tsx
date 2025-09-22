@@ -10,7 +10,7 @@ const Home = () => {
         const data = await fetchTasks();
         setTasks(data);
       } catch (error) {
-        console.error("Failed to load tasks", error);
+        // Failed to load tasks
       }
     };
 

@@ -57,7 +57,7 @@ if (-not (Test-Path "wwwroot")) {
 # Verificar si el backend está ejecutándose
 $backendRunning = $false
 try {
-    $response = Invoke-WebRequest -Uri "https://localhost:$appPort/api/tasks" -UseBasicParsing -TimeoutSec 5
+    Invoke-WebRequest -Uri "https://localhost:$appPort/api/tasks" -UseBasicParsing -TimeoutSec 5 | Out-Null
     $backendRunning = $true
 } catch {
     $backendRunning = $false
@@ -76,7 +76,7 @@ if (-not $backendRunning) {
         Start-Sleep -Seconds 2
         $attempts++
         try {
-            $response = Invoke-WebRequest -Uri "https://localhost:$appPort/api/tasks" -UseBasicParsing -TimeoutSec 5
+            Invoke-WebRequest -Uri "https://localhost:$appPort/api/tasks" -UseBasicParsing -TimeoutSec 5 | Out-Null
             $backendRunning = $true
         } catch {
             $backendRunning = $false

@@ -1,0 +1,28 @@
+# Global code owners
+* @devel
+
+# Frontend specific
+/client-ts/ @devel
+
+# Backend specific
+/Api/ @devel
+/Models/ @devel
+/Services/ @devel
+/Data/ @devel
+/Dtos/ @devel
+/Validators/ @devel
+/ViewModels/ @devel
+
+# Configuration files
+*.csproj @devel
+*.sln @devel
+appsettings*.json @devel
+Program.cs @devel
+
+# Documentation
+*.md @devel
+README.md @devel
+DEVELOPMENT_GUIDE.md @devel
+
+# CI/CD
+/.github/ @devel
