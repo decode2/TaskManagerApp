@@ -99,7 +99,6 @@ jobs:
         run: dotnet test --configuration Release --no-build --verbosity normal
         env:
           ConnectionStrings__DefaultConnection: "Server=localhost;Database=TaskManagerDbTest;Uid=root;Pwd=testpassword;"
-        continue-on-error: true
 
   security-scan:
     name: Security Scan
