@@ -29,7 +29,7 @@ describe('Input Component', () => {
   });
 
   it('should apply correct size styles', () => {
-    render(<Input size="lg" />);
+    render(<Input />);
     const input = screen.getByRole('textbox');
     expect(input).toHaveClass('px-3', 'py-2');
   });

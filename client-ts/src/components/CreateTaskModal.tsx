@@ -156,7 +156,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
       scale: 1, 
       y: 0,
       transition: { 
-        type: "spring", 
+        type: "spring" as const, 
         stiffness: 300, 
         damping: 30,
         duration: 0.3
