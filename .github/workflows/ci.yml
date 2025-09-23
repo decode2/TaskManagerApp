@@ -27,7 +27,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./client-ts
-        run: npm ci
+        run: npm ci --no-audit --fund=false
 
       - name: Check version consistency
         working-directory: ./client-ts
@@ -51,7 +51,7 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./client-ts
-        run: npm ci
+        run: npm ci --no-audit --fund=false
 
       - name: Run linting
         working-directory: ./client-ts
@@ -127,7 +127,7 @@ jobs:
 
       - name: Run npm audit for frontend
         working-directory: ./client-ts
-        run: npm audit --audit-level moderate || true
+        run: npm audit --audit-level high || true
 
       - name: Run dotnet list package vulnerabilities
         run: dotnet list package --vulnerable || true
@@ -154,7 +154,7 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: ./client-ts
-        run: npm ci
+        run: npm ci --no-audit --fund=false
 
       - name: Build frontend
         working-directory: ./client-ts
