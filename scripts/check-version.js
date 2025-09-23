@@ -10,9 +10,9 @@ const path = require('path');
 
 // Configuration
 const CONFIG = {
-  versionFile: 'VERSION',
-  packageJson: 'client-ts/package.json',
-  csprojFile: 'TaskManagerApp.csproj'
+  versionFile: path.join(__dirname, '..', 'VERSION'),
+  packageJson: path.join(__dirname, '..', 'client-ts', 'package.json'),
+  csprojFile: path.join(__dirname, '..', 'TaskManagerApp.csproj')
 };
 
 // ANSI Colors
