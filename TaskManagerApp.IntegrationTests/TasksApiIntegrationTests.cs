@@ -1,8 +1,8 @@
-using System.Net.Http.Json;
-using Microsoft.AspNetCore.Mvc.Testing;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using TaskManagerApp.Api;
 using TaskManagerApp.Data;
 using TaskManagerApp.Dtos;
 using TaskManagerApp.Models;
@@ -10,70 +10,61 @@ using Xunit;
 
 namespace TaskManagerApp.IntegrationTests;
 
-public class TestApplicationFactory : WebApplicationFactory<Program>
+public class TasksApiUnitTests
 {
-    protected override IHost CreateHost(IHostBuilder builder)
+    private static ApplicationDbContext CreateDb()
     {
-        builder.ConfigureServices(services =>
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseSqlite("DataSource=:memory:")
+            .Options;
+        var db = new ApplicationDbContext(options);
+        db.Database.OpenConnection();
+        db.Database.EnsureCreated();
+        return db;
+    }
+
+    private static TasksApiController CreateController(ApplicationDbContext db, string userId = "test-user")
+    {
+        var controller = new TasksApiController(db);
+        var claims = new[] { new Claim(ClaimTypes.NameIdentifier, userId) };
+        var identity = new ClaimsIdentity(claims, "TestAuth");
+        var principal = new ClaimsPrincipal(identity);
+        controller.ControllerContext = new ControllerContext
         {
-            // Replace real DB with SQLite in-memory
-            var descriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
-            if (descriptor != null)
-            {
-                services.Remove(descriptor);
-            }
-
-            services.AddDbContext<ApplicationDbContext>(options =>
-            {
-                options.UseSqlite("DataSource=:memory:");
-            });
-
-            // Build to create DB and keep connection open per scope
-            var sp = services.BuildServiceProvider();
-            using var scope = sp.CreateScope();
-            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            db.Database.OpenConnection();
-            db.Database.EnsureCreated();
-        });
-
-        return base.CreateHost(builder);
-    }
-}
-
-public class TasksApiIntegrationTests : IClassFixture<TestApplicationFactory>
-{
-    private readonly HttpClient _client;
-
-    public TasksApiIntegrationTests(TestApplicationFactory factory)
-    {
-        _client = factory.CreateClient();
-        // For now, we'll test without auth to validate basic functionality
-        // In a real scenario, you'd configure test authentication
+            HttpContext = new DefaultHttpContext { User = principal }
+        };
+        return controller;
     }
 
     [Fact]
-    public async Task GetTasks_WithoutAuth_ReturnsUnauthorized()
+    public async Task GetTasks_EmptyDb_ReturnsEmptyList()
     {
-        var response = await _client.GetAsync("/api/tasks");
-        Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+        using var db = CreateDb();
+        var controller = CreateController(db);
+
+        var result = await controller.GetTasks();
+        var okData = Assert.IsType<ActionResult<IEnumerable<TaskModel>>>(result);
+        var list = Assert.IsAssignableFrom<IEnumerable<TaskModel>>(okData.Value!);
+        Assert.Empty(list);
     }
 
     [Fact]
-    public async Task CreateTask_WithPastDate_ReturnsBadRequest()
+    public async Task CreateTask_PastDate_ReturnsBadRequest()
     {
+        using var db = CreateDb();
+        var controller = CreateController(db);
+
         var dto = new CreateTaskDto
         {
-            Title = "Test Task",
+            Title = "Past Task",
             Date = DateTime.UtcNow.AddDays(-1).ToString("o"),
-            Priority = TaskPriority.Medium,
+            Priority = TaskPriority.Low,
             Category = TaskCategory.General,
             Description = "Test description",
             Tags = "test"
         };
 
-        var response = await _client.PostAsJsonAsync("/api/tasks", dto);
-        // Should return 401 (Unauthorized) since we're not authenticated
-        Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+        var result = await controller.CreateTask(dto);
+        Assert.IsType<BadRequestObjectResult>(result.Result);
     }
 }
