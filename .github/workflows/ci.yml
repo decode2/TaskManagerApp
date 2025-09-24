@@ -204,12 +204,13 @@ jobs:
 
       - name: Create Release
         if: steps.check-tag.outputs.exists == 'false'
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.version.outputs.tag }}
-          release_name: Release ${{ steps.version.outputs.version }}
+          target_commitish: ${{ github.sha }}
+          name: Release ${{ steps.version.outputs.version }}
           draft: false
           prerelease: false
           body: |
@@ -228,5 +229,5 @@ jobs:
             ### Installation
             Download the artifacts from the Actions tab or use the built application directly.
           files: |
-            build-artifacts/client-ts/build/*
-            build-artifacts/publish/*
+            build-artifacts/client-ts/build/**
+            build-artifacts/publish/**
