@@ -1,0 +1,394 @@
+/* ===== COMPREHENSIVE THEME SYSTEM ===== */
+
+/* ===== THEME 1: NOTION INSPIRED - Clean & Minimal ===== */
+.theme-notion {
+  /* Light Mode */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f7f6f3;
+  --bg-tertiary: #f1f1ef;
+  --bg-elevated: #ffffff;
+  
+  --text-primary: #37352f;
+  --text-secondary: #787774;
+  --text-tertiary: #9b9a97;
+  --text-inverse: #ffffff;
+  
+  --border-light: #e9e9e7;
+  --border-medium: #d9d9d7;
+  --border-strong: #c9c9c7;
+  
+  --accent-primary: #2383e2;
+  --accent-success: #0f7b0f;
+  --accent-warning: #d9730d;
+  --accent-error: #e16259;
+  --accent-info: #0f7b0f;
+  
+  --shadow-light: rgba(15, 23, 42, 0.02);
+  --shadow-medium: rgba(15, 23, 42, 0.04);
+  --shadow-strong: rgba(15, 23, 42, 0.08);
+}
+
+.theme-notion.dark {
+  --bg-primary: #191919;
+  --bg-secondary: #2f3437;
+  --bg-tertiary: #373c3f;
+  --bg-elevated: #2f3437;
+  
+  --text-primary: #ffffff;
+  --text-secondary: #9b9a97;
+  --text-tertiary: #787774;
+  --text-inverse: #37352f;
+  
+  --border-light: #373c3f;
+  --border-medium: #4a4d50;
+  --border-strong: #5d6163;
+  
+  --accent-primary: #2383e2;
+  --accent-success: #0f7b0f;
+  --accent-warning: #d9730d;
+  --accent-error: #e16259;
+  --accent-info: #0f7b0f;
+  
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.2);
+  --shadow-strong: rgba(0, 0, 0, 0.3);
+}
+
+/* ===== THEME 2: LINEAR INSPIRED - Modern & Tech ===== */
+.theme-linear {
+  /* Light Mode */
+  --bg-primary: #fafbfc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f8fafc;
+  --bg-elevated: #ffffff;
+  
+  --text-primary: #0d0d0d;
+  --text-secondary: #5e6ad2;
+  --text-tertiary: #8b949e;
+  --text-inverse: #ffffff;
+  
+  --border-light: #e1e4e8;
+  --border-medium: #d0d7de;
+  --border-strong: #8b949e;
+  
+  --accent-primary: #5e6ad2;
+  --accent-success: #2da44e;
+  --accent-warning: #bf8700;
+  --accent-error: #d1242f;
+  --accent-info: #0969da;
+  
+  --shadow-light: rgba(31, 35, 40, 0.04);
+  --shadow-medium: rgba(31, 35, 40, 0.08);
+  --shadow-strong: rgba(31, 35, 40, 0.12);
+}
+
+.theme-linear.dark {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #21262d;
+  --bg-elevated: #161b22;
+  
+  --text-primary: #f0f6fc;
+  --text-secondary: #8b949e;
+  --text-tertiary: #6e7681;
+  --text-inverse: #0d0d0d;
+  
+  --border-light: #21262d;
+  --border-medium: #30363d;
+  --border-strong: #484f58;
+  
+  --accent-primary: #5e6ad2;
+  --accent-success: #3fb950;
+  --accent-warning: #d29922;
+  --accent-error: #f85149;
+  --accent-info: #58a6ff;
+  
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.2);
+  --shadow-strong: rgba(0, 0, 0, 0.4);
+}
+
+/* ===== THEME 3: FIGMA INSPIRED - Creative & Vibrant ===== */
+.theme-figma {
+  /* Light Mode */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f7f7f7;
+  --bg-tertiary: #f0f0f0;
+  --bg-elevated: #ffffff;
+  
+  --text-primary: #1e1e1e;
+  --text-secondary: #6b6b6b;
+  --text-tertiary: #999999;
+  --text-inverse: #ffffff;
+  
+  --border-light: #e5e5e5;
+  --border-medium: #d1d1d1;
+  --border-strong: #b3b3b3;
+  
+  --accent-primary: #8c4fff;
+  --accent-success: #00c851;
+  --accent-warning: #ff8800;
+  --accent-error: #ff4444;
+  --accent-info: #33b5e5;
+  
+  --shadow-light: rgba(0, 0, 0, 0.04);
+  --shadow-medium: rgba(0, 0, 0, 0.08);
+  --shadow-strong: rgba(0, 0, 0, 0.12);
+}
+
+.theme-figma.dark {
+  --bg-primary: #1e1e1e;
+  --bg-secondary: #2c2c2c;
+  --bg-tertiary: #3a3a3a;
+  --bg-elevated: #2c2c2c;
+  
+  --text-primary: #ffffff;
+  --text-secondary: #b3b3b3;
+  --text-tertiary: #999999;
+  --text-inverse: #1e1e1e;
+  
+  --border-light: #3a3a3a;
+  --border-medium: #4a4a4a;
+  --border-strong: #5a5a5a;
+  
+  --accent-primary: #8c4fff;
+  --accent-success: #00c851;
+  --accent-warning: #ff8800;
+  --accent-error: #ff4444;
+  --accent-info: #33b5e5;
+  
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.2);
+  --shadow-strong: rgba(0, 0, 0, 0.3);
+}
+
+/* ===== THEME 4: APPLE INSPIRED - Elegant & Refined ===== */
+.theme-apple {
+  /* Light Mode */
+  --bg-primary: #f5f5f7;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f2f2f7;
+  --bg-elevated: #ffffff;
+  
+  --text-primary: #1d1d1f;
+  --text-secondary: #86868b;
+  --text-tertiary: #a1a1a6;
+  --text-inverse: #ffffff;
+  
+  --border-light: #d2d2d7;
+  --border-medium: #c7c7cc;
+  --border-strong: #aeaeb2;
+  
+  --accent-primary: #007aff;
+  --accent-success: #34c759;
+  --accent-warning: #ff9500;
+  --accent-error: #ff3b30;
+  --accent-info: #5ac8fa;
+  
+  --shadow-light: rgba(0, 0, 0, 0.02);
+  --shadow-medium: rgba(0, 0, 0, 0.04);
+  --shadow-strong: rgba(0, 0, 0, 0.08);
+}
+
+.theme-apple.dark {
+  --bg-primary: #000000;
+  --bg-secondary: #1c1c1e;
+  --bg-tertiary: #2c2c2e;
+  --bg-elevated: #1c1c1e;
+  
+  --text-primary: #ffffff;
+  --text-secondary: #ebebf5;
+  --text-tertiary: #ebebf599;
+  --text-inverse: #1d1d1f;
+  
+  --border-light: #38383a;
+  --border-medium: #48484a;
+  --border-strong: #636366;
+  
+  --accent-primary: #0a84ff;
+  --accent-success: #30d158;
+  --accent-warning: #ff9f0a;
+  --accent-error: #ff453a;
+  --accent-info: #64d2ff;
+  
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.2);
+  --shadow-strong: rgba(0, 0, 0, 0.4);
+}
+
+/* ===== THEME 5: SLACK INSPIRED - Friendly & Professional ===== */
+.theme-slack {
+  /* Light Mode */
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f3f4;
+  --bg-elevated: #ffffff;
+  
+  --text-primary: #1d1c1d;
+  --text-secondary: #616061;
+  --text-tertiary: #868686;
+  --text-inverse: #ffffff;
+  
+  --border-light: #e8e8e8;
+  --border-medium: #d1d2d3;
+  --border-strong: #b0b0b0;
+  
+  --accent-primary: #4a154b;
+  --accent-success: #2eb67d;
+  --accent-warning: #ecb22e;
+  --accent-error: #e01e5a;
+  --accent-info: #36c5f0;
+  
+  --shadow-light: rgba(0, 0, 0, 0.03);
+  --shadow-medium: rgba(0, 0, 0, 0.06);
+  --shadow-strong: rgba(0, 0, 0, 0.1);
+}
+
+.theme-slack.dark {
+  --bg-primary: #1a1d21;
+  --bg-secondary: #2c2d30;
+  --bg-tertiary: #3f4145;
+  --bg-elevated: #2c2d30;
+  
+  --text-primary: #ffffff;
+  --text-secondary: #d1d2d3;
+  --text-tertiary: #b0b0b0;
+  --text-inverse: #1d1c1d;
+  
+  --border-light: #3f4145;
+  --border-medium: #4a4d52;
+  --border-strong: #5d6063;
+  
+  --accent-primary: #4a154b;
+  --accent-success: #2eb67d;
+  --accent-warning: #ecb22e;
+  --accent-error: #e01e5a;
+  --accent-info: #36c5f0;
+  
+  --shadow-light: rgba(0, 0, 0, 0.1);
+  --shadow-medium: rgba(0, 0, 0, 0.2);
+  --shadow-strong: rgba(0, 0, 0, 0.3);
+}
+
+/* ===== THEME 6: OBSIDIAN INSPIRED - Deep Contrast ===== */
+.theme-obsidian {
+  /* Light Mode */
+  --bg-primary: #fafafa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f5f5f5;
+  --bg-elevated: #ffffff;
+  --text-primary: #1a1a1a;
+  --text-secondary: #525252;
+  --text-tertiary: #737373;
+  --text-inverse: #ffffff;
+  --border-light: #e5e5e5;
+  --border-medium: #d4d4d4;
+  --border-strong: #a3a3a3;
+  --accent-primary: #7c3aed;
+  --accent-success: #10b981;
+  --accent-warning: #f59e0b;
+  --accent-error: #f43f5e;
+  --accent-info: #22d3ee;
+  --shadow-light: rgba(0,0,0,0.04);
+  --shadow-medium: rgba(0,0,0,0.08);
+  --shadow-strong: rgba(0,0,0,0.12);
+}
+
+.theme-obsidian.dark {
+  --bg-primary: #0b0e12;
+  --bg-secondary: #131720;
+  --bg-tertiary: #1b2230;
+  --bg-elevated: #131720;
+  --text-primary: #e6e6ea;
+  --text-secondary: #a0a3ab;
+  --text-tertiary: #7b7f86;
+  --text-inverse: #0b0e12;
+  --border-light: #232a36;
+  --border-medium: #2c3442;
+  --border-strong: #3a4354;
+  --accent-primary: #7c3aed;
+  --accent-success: #10b981;
+  --accent-warning: #f59e0b;
+  --accent-error: #f43f5e;
+  --accent-info: #22d3ee;
+  --shadow-light: rgba(0,0,0,0.2);
+  --shadow-medium: rgba(0,0,0,0.35);
+  --shadow-strong: rgba(0,0,0,0.5);
+}
+
+/* ===== THEME 7: NORD INSPIRED - Calm Arctic ===== */
+.theme-nord {
+  /* Light Mode */
+  --bg-primary: #eceff4;
+  --bg-secondary: #e5e9f0;
+  --bg-tertiary: #d8dee9;
+  --bg-elevated: #eceff4;
+  --text-primary: #2e3440;
+  --text-secondary: #4c566a;
+  --text-tertiary: #5e81ac;
+  --text-inverse: #eceff4;
+  --border-light: #d8dee9;
+  --border-medium: #c2c9d6;
+  --border-strong: #a3aab8;
+  --accent-primary: #5e81ac;
+  --accent-success: #a3be8c;
+  --accent-warning: #ebcb8b;
+  --accent-error: #bf616a;
+  --accent-info: #88c0d0;
+  --shadow-light: rgba(46,52,64,0.04);
+  --shadow-medium: rgba(46,52,64,0.08);
+  --shadow-strong: rgba(46,52,64,0.12);
+}
+
+.theme-nord.dark {
+  --bg-primary: #2e3440;
+  --bg-secondary: #3b4252;
+  --bg-tertiary: #434c5e;
+  --bg-elevated: #3b4252;
+  --text-primary: #e5e9f0;
+  --text-secondary: #d8dee9;
+  --text-tertiary: #c2c8d0;
+  --text-inverse: #2e3440;
+  --border-light: #4c566a;
+  --border-medium: #5b6572;
+  --border-strong: #6b7687;
+  --accent-primary: #88c0d0;
+  --accent-success: #a3be8c;
+  --accent-warning: #ebcb8b;
+  --accent-error: #bf616a;
+  --accent-info: #81a1c1;
+  --shadow-light: rgba(0,0,0,0.18);
+  --shadow-medium: rgba(0,0,0,0.28);
+  --shadow-strong: rgba(0,0,0,0.4);
+}
+
+/* ===== UTILITY CLASSES FOR ALL THEMES ===== */
+.bg-primary { background-color: var(--bg-primary); }
+.bg-secondary { background-color: var(--bg-secondary); }
+.bg-tertiary { background-color: var(--bg-tertiary); }
+.bg-elevated { background-color: var(--bg-elevated); }
+
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-tertiary { color: var(--text-tertiary); }
+.text-inverse { color: var(--text-inverse); }
+
+.border-light { border-color: var(--border-light); }
+.border-medium { border-color: var(--border-medium); }
+.border-strong { border-color: var(--border-strong); }
+
+.shadow-light { box-shadow: 0 1px 3px var(--shadow-light); }
+.shadow-medium { box-shadow: 0 4px 6px var(--shadow-medium); }
+.shadow-strong { box-shadow: 0 10px 15px var(--shadow-strong); }
+
+.text-accent-primary { color: var(--accent-primary); }
+.text-accent-success { color: var(--accent-success); }
+.text-accent-warning { color: var(--accent-warning); }
+.text-accent-error { color: var(--accent-error); }
+.text-accent-info { color: var(--accent-info); }
+
+.bg-accent-primary { background-color: var(--accent-primary); }
+.bg-accent-success { background-color: var(--accent-success); }
+.bg-accent-warning { background-color: var(--accent-warning); }
+.bg-accent-error { background-color: var(--accent-error); }
+.bg-accent-info { background-color: var(--accent-info); }

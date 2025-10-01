@@ -1,129 +1,128 @@
 import React, { useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  children: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
-  closeOnOverlayClick?: boolean;
-  closeOnEscape?: boolean;
-  showCloseButton?: boolean;
   title?: string;
+  children: React.ReactNode;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   className?: string;
+  showCloseButton?: boolean;
 }
 
 const sizeClasses = {
   sm: 'max-w-sm',
   md: 'max-w-md',
   lg: 'max-w-lg',
-  xl: 'max-w-2xl',
-  full: 'max-w-full mx-4'
+  xl: 'max-w-xl',
+  '2xl': 'max-w-2xl'
+};
+
+const modalVariants = {
+  hidden: {
+    opacity: 0,
+    scale: 0.8,
+    y: 20
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      type: "spring" as const,
+      damping: 20,
+      stiffness: 300
+    }
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.8,
+    y: 20,
+    transition: {
+      duration: 0.2
+    }
+  }
 };
 
 const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
-  children,
-  size = 'md',
-  closeOnOverlayClick = true,
-  closeOnEscape = true,
-  showCloseButton = true,
   title,
-  className = ''
+  children,
+  size = 'lg',
+  className = '',
+  showCloseButton = true
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
   // Handle escape key
   useEffect(() => {
-    if (!closeOnEscape || !isOpen) return;
-
     const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === 'Escape' && isOpen) {
         onClose();
       }
     };
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen, onClose, closeOnEscape]);
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+      // Prevent body scroll
+      document.body.style.overflow = 'hidden';
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen, onClose]);
 
   // Handle click outside
   const handleOverlayClick = (e: React.MouseEvent) => {
-    if (closeOnOverlayClick && e.target === e.currentTarget) {
+    if (e.target === e.currentTarget) {
       onClose();
     }
   };
 
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isOpen]);
-
   if (!isOpen) return null;
 
-  return createPortal(
+  return (
     <AnimatePresence>
-      <div
-        className="modal-overlay"
-        data-testid="modal-overlay"
+      <motion.div
+        className="fixed inset-0 min-h-screen bg-black bg-opacity-50 flex items-center justify-center z-50 px-2 sm:px-4 py-8 sm:py-12"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
         onClick={handleOverlayClick}
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100vh',
-          backgroundColor: 'rgba(0, 0, 0, 0.6)',
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)',
-          zIndex: 99999,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '1rem',
-          margin: 0,
-          overflow: 'hidden'
-        }}
       >
-        <div
+        <motion.div
           ref={modalRef}
-          className={`modal-content w-full ${sizeClasses[size]} bg-white dark:bg-slate-800 rounded-2xl shadow-2xl flex flex-col ${className}`}
+          className={`
+            relative w-full ${sizeClasses[size]} max-h-[95vh] sm:max-h-[85vh] 
+            flex flex-col rounded-xl sm:rounded-2xl shadow-2xl backdrop-blur-sm 
+            overflow-hidden mx-auto bg-elevated border border-light
+            ${className}
+          `}
+          variants={modalVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
           onClick={(e) => e.stopPropagation()}
-          style={{
-            position: 'relative',
-            zIndex: 100000,
-            margin: 'auto',
-            maxHeight: '90vh',
-            overflowY: 'auto'
-          }}
         >
           {/* Header */}
           {(title || showCloseButton) && (
-            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700">
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-light">
               {title && (
-                <h2 className="text-xl font-semibold text-slate-800 dark:text-white no-select">
+                <h2 className="text-xl sm:text-2xl font-bold text-primary">
                   {title}
                 </h2>
               )}
               {showCloseButton && (
                 <button
                   onClick={onClose}
-                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors duration-200 no-select"
+                  className="p-2 rounded-lg hover:bg-tertiary transition-colors"
                   aria-label="Close modal"
                 >
-                  <svg className="w-5 h-5 text-slate-500 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-tertiary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -132,13 +131,12 @@ const Modal: React.FC<ModalProps> = ({
           )}
 
           {/* Content */}
-          <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200/50 dark:scrollbar-thumb-slate-600 dark:scrollbar-track-slate-800/50">
+          <div className="flex-1 overflow-y-auto">
             {children}
           </div>
-        </div>
-      </div>
-    </AnimatePresence>,
-    document.body
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

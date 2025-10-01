@@ -5,12 +5,15 @@ import "../styles/modal.css";
 import useDarkMode from "../hooks/useDarkMode";
 import DateTimePicker from "./DateTimePicker";
 import { TaskPriority, TaskCategory } from "../types/Task";
+import { Project } from "../types/Project";
 import { PrioritySelector, CategorySelector } from "./ui";
 
 interface CreateTaskModalProps {
   open: boolean;
   onClose: () => void;
   onCreated: () => void;
+  projects?: Project[];
+  selectedProjectId?: number | null;
 }
 
 const recurrenceOptions = [
@@ -33,7 +36,7 @@ const predefinedCustomOptions = [
   { label: "Every 3 months", interval: 3, unit: "months" },
 ];
 
-const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCreated }) => {
+const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCreated, projects = [], selectedProjectId }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
@@ -49,6 +52,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
   const [priority, setPriority] = useState<TaskPriority>(TaskPriority.Medium);
   const [category, setCategory] = useState<TaskCategory>(TaskCategory.Other);
   const [tags, setTags] = useState<string>("");
+  const [projectId, setProjectId] = useState<number | null>(selectedProjectId || null);
 
   const handleCloseModal = useCallback(() => {
     // Check if user has actually entered any meaningful data
@@ -80,6 +84,11 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
       setShowConfirmDialog(false);
     }
   }, [open]);
+
+  // Sync projectId with selectedProjectId
+  useEffect(() => {
+    setProjectId(selectedProjectId || null);
+  }, [selectedProjectId]);
 
   // Click outside to close
   useEffect(() => {
@@ -141,6 +150,7 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
         priority,
         category,
         tags: tags || null,
+        projectId: projectId || null,
       });
       onCreated();
       onClose();
@@ -281,6 +291,31 @@ const CreateTaskModal: React.FC<CreateTaskModalProps> = ({ open, onClose, onCrea
                     label="Category"
                   />
                 </div>
+
+                {/* Project Selection */}
+                {projects.length > 0 && (
+                  <div>
+                    <label className={`block text-sm font-medium mb-1 ${isDark ? "text-gray-300" : "text-gray-700"}`}>
+                      Project (optional)
+                    </label>
+                    <select
+                      value={projectId || ''}
+                      onChange={(e) => setProjectId(e.target.value ? parseInt(e.target.value) : null)}
+                      className={`w-full px-4 py-2 rounded-xl border-2 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                        isDark 
+                          ? "bg-slate-700/50 border-slate-600/50 text-white hover:border-slate-500" 
+                          : "bg-white border-gray-300 text-gray-900 hover:border-gray-400"
+                      }`}
+                    >
+                      <option value="">No project</option>
+                      {projects.map((project) => (
+                        <option key={project.id} value={project.id}>
+                          {project.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
                 {/* Tags Input */}
                 <div>

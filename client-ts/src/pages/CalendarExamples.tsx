@@ -21,7 +21,8 @@ const fallbackTasks: Task[] = [
     category: TaskCategory.Finance,
     description: 'Pagar alquiler de casa',
     tags: 'finanzas,urgente',
-    isArchived: false
+    isArchived: false,
+    createdAt: new Date().toISOString()
   },
   {
     id: 2,
@@ -34,7 +35,8 @@ const fallbackTasks: Task[] = [
     category: TaskCategory.Work,
     description: 'Reunión semanal del equipo',
     tags: 'trabajo,equipo',
-    isArchived: false
+    isArchived: false,
+    createdAt: new Date().toISOString()
   },
   {
     id: 3,
@@ -47,7 +49,8 @@ const fallbackTasks: Task[] = [
     category: TaskCategory.Shopping,
     description: 'Hacer compras del supermercado',
     tags: 'compras,casa',
-    isArchived: false
+    isArchived: false,
+    createdAt: new Date().toISOString()
   },
   {
     id: 4,
@@ -60,7 +63,8 @@ const fallbackTasks: Task[] = [
     category: TaskCategory.Health,
     description: 'Revisión médica anual',
     tags: 'salud,medicina',
-    isArchived: false
+    isArchived: false,
+    createdAt: new Date().toISOString()
   },
   {
     id: 5,
@@ -73,7 +77,8 @@ const fallbackTasks: Task[] = [
     category: TaskCategory.Education,
     description: 'Estudiar hooks avanzados de React',
     tags: 'programación,react',
-    isArchived: false
+    isArchived: false,
+    createdAt: new Date().toISOString()
   }
 ];
 

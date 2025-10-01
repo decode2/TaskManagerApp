@@ -7,6 +7,8 @@ namespace TaskManagerApp.Models
     {
         public ICollection<TaskModel> Tasks { get; set; } = new List<TaskModel>();
         public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+        public ICollection<ProjectModel> Projects { get; set; } = new List<ProjectModel>();
+        public ICollection<TimeEntryModel> TimeEntries { get; set; } = new List<TimeEntryModel>();
     }
 }
 

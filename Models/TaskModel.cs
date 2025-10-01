@@ -58,5 +58,22 @@ namespace TaskManagerApp.Models{
         public string? Description { get; set; }
         public string? Tags { get; set; } // JSON string para múltiples etiquetas
         public bool IsArchived { get; set; } = false;
+
+        // New properties for advanced features
+        public int? ProjectId { get; set; }
+        public int? ParentTaskId { get; set; } // For subtasks
+        public int? EstimatedMinutes { get; set; } // Time estimation
+        public DateTime? DueDate { get; set; } // Separate from Date (which is start date)
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? CompletedAt { get; set; }
+
+        // Navigation properties
+        public ProjectModel? Project { get; set; }
+        public TaskModel? ParentTask { get; set; }
+        public ICollection<TaskModel> Subtasks { get; set; } = new List<TaskModel>();
+        public ICollection<TaskDependencyModel> Dependencies { get; set; } = new List<TaskDependencyModel>();
+        public ICollection<TaskDependencyModel> DependsOn { get; set; } = new List<TaskDependencyModel>();
+        public ICollection<TimeEntryModel> TimeEntries { get; set; } = new List<TimeEntryModel>();
     }
 }

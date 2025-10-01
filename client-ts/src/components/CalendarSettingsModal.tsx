@@ -24,7 +24,8 @@ const mockTasks: Task[] = [
     category: TaskCategory.Work,
     description: 'Team meeting',
     tags: 'work,meeting',
-    isArchived: false
+    isArchived: false,
+    createdAt: new Date().toISOString()
   },
   {
     id: 2,
@@ -37,7 +38,8 @@ const mockTasks: Task[] = [
     category: TaskCategory.Health,
     description: 'Workout session',
     tags: 'health,fitness',
-    isArchived: false
+    isArchived: false,
+    createdAt: new Date().toISOString()
   }
 ];
 

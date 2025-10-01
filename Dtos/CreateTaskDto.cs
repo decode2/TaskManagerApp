@@ -23,7 +23,16 @@ namespace TaskManagerApp.ViewModels
         public string? Description { get; set; }
         public string? Tags { get; set; }
 
+        // Advanced features
+        public int? ProjectId { get; set; }
+        public int? ParentTaskId { get; set; }
+        public int? EstimatedMinutes { get; set; }
+        public string? DueDate { get; set; }
+
         // Computed property to get DateTime from string
         public DateTime DateAsDateTime => DateTime.Parse(Date);
+        
+        // Computed property for due date
+        public DateTime? DueDateAsDateTime => string.IsNullOrEmpty(DueDate) ? null : DateTime.Parse(DueDate);
     }
 }

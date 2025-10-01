@@ -27,11 +27,16 @@
     <title>React App</title>
 
     <script>
-      const theme = localStorage.getItem("theme");
-      if (
-        theme === "dark" ||
-        (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches)
-      ) {
+      // Initialize theme system
+      const savedTheme = localStorage.getItem("theme") || "notion";
+      const savedDarkMode = localStorage.getItem("darkMode") === "true";
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      
+      // Apply theme class
+      document.documentElement.classList.add(`theme-${savedTheme}`);
+      
+      // Apply dark mode
+      if (savedDarkMode || (!localStorage.getItem("darkMode") && prefersDark)) {
         document.documentElement.classList.add("dark");
       }
     </script>

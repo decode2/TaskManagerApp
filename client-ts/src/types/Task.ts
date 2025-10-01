@@ -37,12 +37,21 @@ export interface Task {
   recurrenceCount?: number;
   recurrenceIndex?: number;
   
-  // Nuevas propiedades
+  // Basic properties
   priority: TaskPriority;
   category: TaskCategory;
   description?: string;
   tags?: string; // JSON string para múltiples etiquetas
   isArchived: boolean;
+
+  // Advanced properties
+  projectId?: number;
+  parentTaskId?: number;
+  estimatedMinutes?: number;
+  dueDate?: string;
+  createdAt: string;
+  updatedAt?: string;
+  completedAt?: string;
 }
 
 export const RecurrenceTypeLabelMap: Record<RecurrenceType, string> = {

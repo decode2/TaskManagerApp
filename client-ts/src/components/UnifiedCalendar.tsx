@@ -259,9 +259,16 @@ const UnifiedCalendar: React.FC<UnifiedCalendarProps> = ({
 
             <motion.button
               onClick={goToToday}
-              className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg font-medium transition-all duration-200 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm"
-              whileHover={{ scale: 1.05 }}
+              className="px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg font-medium bg-blue-600 text-white text-xs sm:text-sm"
+              style={{
+                WebkitFontSmoothing: 'antialiased',
+                MozOsxFontSmoothing: 'grayscale',
+                backfaceVisibility: 'hidden',
+                transform: 'translateZ(0)'
+              }}
+              whileHover={{ scale: 1.05, transition: { duration: 0.15, ease: [0.25, 0.46, 0.45, 0.94] } }}
               whileTap={{ scale: 0.95 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 25 }}
             >
               Today
             </motion.button>
@@ -282,16 +289,22 @@ const UnifiedCalendar: React.FC<UnifiedCalendarProps> = ({
           </div>
 
           <div className="flex-1 flex items-center justify-center min-w-0">
-            <motion.div
-              className={`text-sm sm:text-lg font-semibold px-2 sm:px-4 py-1 sm:py-2 rounded-lg transition-all duration-200 text-center truncate ${
+            <div
+              className={`text-sm sm:text-lg font-semibold px-2 sm:px-4 py-1 sm:py-2 rounded-lg text-center truncate ${
                 isDark ? 'text-white' : 'text-gray-900'
               }`}
+              style={{
+                WebkitFontSmoothing: 'antialiased',
+                MozOsxFontSmoothing: 'grayscale',
+                backfaceVisibility: 'hidden',
+                transform: 'translateZ(0)'
+              }}
             >
               {view === 'month' 
                 ? format(currentDate, 'MMM yyyy')
                 : `${format(startOfWeek(currentDate, { weekStartsOn: 1 }), 'MMM dd')} - ${format(endOfWeek(currentDate, { weekStartsOn: 1 }), 'MMM dd, yyyy')}`
               }
-            </motion.div>
+            </div>
           </div>
 
           <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">

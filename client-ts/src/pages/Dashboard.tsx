@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api';
 import { Task } from '../types/Task';
-// import useDarkMode from '../hooks/useDarkMode'; // Currently unused
 import { useCalendarSettings } from '../hooks/useCalendarSettings';
+import { useProjects } from '../hooks/useProjects';
 import CreateTaskModal from '../components/CreateTaskModal';
 import EditTaskModal from '../components/EditTaskModal';
 import ConfirmDeleteModal from '../components/ConfirmDeleteModal';
@@ -15,14 +14,34 @@ import CalendarSettingsModal from '../components/CalendarSettingsModal';
 import ModernCalendar from '../components/ModernCalendar';
 import UnifiedCalendar from '../components/UnifiedCalendar';
 import MobileOptimizedCalendar from '../components/MobileOptimizedCalendar';
-import PriorityBadge from '../components/ui/PriorityBadge';
-import CategoryBadge from '../components/ui/CategoryBadge';
+import TaskCardWithProject from '../components/TaskCardWithProject';
+import ProjectSidebar from '../components/ProjectSidebar';
+import TopNavigation from '../components/TopNavigation';
+import useDarkMode from '../hooks/useDarkMode';
 
 const Dashboard = () => {
   const { user, loadingUser } = useAuth();
   const navigate = useNavigate();
-  // const [isDark] = useDarkMode(); // Currently unused
+  const [isDark, toggleDarkMode] = useDarkMode();
   const { settings: calendarSettings } = useCalendarSettings();
+  
+  // Projects state
+  const {
+    projects,
+    loading: projectsLoading,
+    createProject,
+    updateProject,
+    deleteProject,
+    archiveProject,
+  } = useProjects();
+  
+  // Selected project state
+  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
+  
+  // Wrapper function for theme toggle
+  const handleThemeToggle = () => {
+    toggleDarkMode(!isDark);
+  };
   
   const [tasks, setTasks] = useState<Task[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -94,22 +113,36 @@ const Dashboard = () => {
     }
   };
 
+  // Filter tasks by selected project
+  const filteredTasks = useMemo(() => {
+    if (selectedProjectId === null) {
+      return tasks;
+    }
+    return tasks.filter(task => task.projectId === selectedProjectId);
+  }, [tasks, selectedProjectId]);
+
+  // Get selected project
+  const selectedProject = useMemo(() => {
+    if (selectedProjectId === null) return null;
+    return projects.find(project => project.id === selectedProjectId) || null;
+  }, [projects, selectedProjectId]);
+
   // Memoized calculations for better performance
   const taskStats = useMemo(() => {
-    const total = tasks.length;
-    const completed = tasks.filter(task => task.isCompleted).length;
+    const total = filteredTasks.length;
+    const completed = filteredTasks.filter(task => task.isCompleted).length;
     const pending = total - completed;
-    const highPriority = tasks.filter(task => task.priority === 3 || task.priority === 4).length;
+    const highPriority = filteredTasks.filter(task => task.priority === 3 || task.priority === 4).length;
     
     return { total, completed, pending, highPriority };
-  }, [tasks]);
+  }, [filteredTasks]);
 
   if (loadingUser) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-slate-600 dark:text-slate-300">Loading...</p>
+          <p className="text-gray-600 dark:text-gray-300">Loading...</p>
         </div>
       </div>
     );
@@ -117,28 +150,54 @@ const Dashboard = () => {
 
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800"
-      >
-        <div className="container mx-auto px-4 py-6 sm:py-8">
+      <div className="min-h-screen bg-primary">
+        {/* Top Navigation */}
+        <TopNavigation onThemeToggle={handleThemeToggle} isDark={isDark} />
+        
+        {/* Main Layout */}
+        <div className="flex min-h-[calc(100vh-64px)]">
+          {/* Projects Sidebar */}
+          <div className="hidden lg:block w-80 flex-shrink-0">
+            <ProjectSidebar
+              projects={projects}
+              selectedProjectId={selectedProjectId}
+              onProjectSelect={setSelectedProjectId}
+              onProjectCreate={createProject}
+              onProjectUpdate={updateProject}
+              onProjectDelete={deleteProject}
+              onProjectArchive={archiveProject}
+              loading={projectsLoading}
+            />
+          </div>
+
+          {/* Main Content */}
+          <div className="flex-1">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="container mx-auto px-4 py-6 sm:py-8"
+            >
           {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8 gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 sm:mb-12 gap-4">
             <div>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 dark:text-white mb-2">
-                Welcome back! 👋
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-primary mb-3 tracking-tight">
+                {selectedProject ? selectedProject.name : (new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 18 ? 'Good afternoon' : 'Good evening')}
               </h1>
-              <p className="text-slate-600 dark:text-slate-300">
-                Manage your tasks and stay organized
+              <p className="text-secondary text-base sm:text-lg">
+                {selectedProject ? selectedProject.description || 'Project tasks' : new Date().toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}
               </p>
             </div>
             <motion.button
               onClick={() => setShowModal(true)}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 shadow-md hover:shadow-lg"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
               <div className="flex items-center gap-2">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,24 +209,107 @@ const Dashboard = () => {
             </motion.button>
           </div>
 
+          {/* Statistics Overview */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <motion.div 
+              className="bg-elevated rounded-xl p-6 border border-light transition-colors duration-200 hover:shadow-light"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-secondary text-sm font-medium mb-1">Total Tasks</p>
+                  <p className="text-3xl font-semibold text-primary">{taskStats.total}</p>
+                </div>
+                <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                  <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              className="bg-elevated rounded-xl p-6 border border-light transition-colors duration-200 hover:shadow-light"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm font-medium mb-1">Completed</p>
+                  <p className="text-3xl font-semibold text-green-600 dark:text-green-400">{taskStats.completed}</p>
+                </div>
+                <div className="p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                  <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              className="bg-elevated rounded-xl p-6 border border-light transition-colors duration-200 hover:shadow-light"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm font-medium mb-1">Pending</p>
+                  <p className="text-3xl font-semibold text-gray-900 dark:text-white">{taskStats.pending}</p>
+                </div>
+                <div className="p-3 bg-orange-100 dark:bg-orange-900/30 rounded-lg">
+                  <svg className="w-6 h-6 text-orange-500 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div 
+              className="bg-elevated rounded-xl p-6 border border-light transition-colors duration-200 hover:shadow-light"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm font-medium mb-1">High Priority</p>
+                  <p className="text-3xl font-semibold text-red-600 dark:text-red-400">{taskStats.highPriority}</p>
+                </div>
+                <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
+                  <svg className="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
             {/* Tasks Section */}
             <div className="lg:col-span-2 space-y-6">
               {/* Today's Tasks */}
-              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+                         <div className="bg-elevated rounded-xl shadow-medium border border-light overflow-hidden">
                 <div className="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700">
-                  <h2 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">Today's Tasks</h2>
+                             <h2 className="text-xl sm:text-2xl font-bold text-primary">Today's Tasks</h2>
                 </div>
                 <div className="p-4 sm:p-6">
-                  {tasks.length === 0 ? (
+                  {filteredTasks.length === 0 ? (
                     <div className="text-center py-8">
                       <div className="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
                         <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                         </svg>
                       </div>
-                      <h3 className="text-lg font-medium text-slate-600 dark:text-slate-300 mb-2">No tasks yet</h3>
-                      <p className="text-slate-500 dark:text-slate-400 mb-4">Create your first task to get started</p>
+                      <h3 className="text-lg font-medium text-slate-600 dark:text-slate-300 mb-2">
+                        {selectedProject ? `No tasks in ${selectedProject.name}` : 'No tasks yet'}
+                      </h3>
+                      <p className="text-slate-500 dark:text-slate-400 mb-4">
+                        {selectedProject ? 'Create your first task for this project' : 'Create your first task to get started'}
+                      </p>
                       <motion.button
                         onClick={() => setShowModal(true)}
                         className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
@@ -176,103 +318,28 @@ const Dashboard = () => {
                       >
                         Create Task
                       </motion.button>
-              </div>
+                    </div>
                   ) : (
                     <div className="space-y-4">
-                      {tasks.map((task) => (
-                        <motion.div
-                      key={task.id}
-                      layout
-                          className="group relative backdrop-blur-sm rounded-xl p-3 sm:p-4 border transition-all duration-300 hover:shadow-lg border-slate-200/50 dark:border-slate-700/30 bg-white/50 dark:bg-slate-800/50"
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, scale: 0.95 }}
-                      transition={{ duration: 0.25, ease: [0.25, 0.8, 0.25, 1] }}
-                          whileHover={{ y: -1 }}
-                        >
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-2">
-                                <PriorityBadge priority={task.priority} size="sm" />
-                                <CategoryBadge category={task.category} size="sm" />
-                              </div>
-                              <h3 className="text-sm sm:text-base font-medium text-slate-800 dark:text-white line-clamp-2 mb-2">
-                                {task.title}
-                              </h3>
-                              {task.description && (
-                                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 line-clamp-2 mb-2">
-                                  {task.description}
-                                </p>
-                              )}
-                              <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                                <span>{format(new Date(task.date), 'MMM d, yyyy')}</span>
-                                <span className="mx-1">•</span>
-                                <span>{format(new Date(task.date), 'h:mm a')}</span>
-                              </div>
-                              {task.tags && (
-                                <div className="flex flex-wrap gap-1 mb-2">
-                                  {task.tags.split(',').map((tag: string, index: number) => (
-                                    <span
-                                      key={index}
-                                      className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-800/50 text-blue-700 dark:text-blue-300 rounded-full"
-                                    >
-                                      {tag.trim()}
-                                    </span>
-                                  ))}
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex items-center gap-1 ml-2">
-                              <motion.button
-                                onClick={() => toggleCompletion(task)}
-                                className={`p-3 sm:p-2 rounded-xl sm:rounded-lg transition-all duration-200 shadow-sm hover:shadow-md min-h-[48px] min-w-[48px] sm:min-h-[40px] sm:min-w-[40px] touch-manipulation flex items-center justify-center ${
-                                  task.isCompleted
-                                    ? 'bg-green-50 hover:bg-green-100 dark:bg-green-900/30 dark:hover:bg-green-900/50 text-green-600 hover:text-green-700 dark:text-green-400 dark:hover:text-green-300'
-                                    : 'bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300'
-                                }`}
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                              >
-                                <svg className="w-5 h-5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-                                  {task.isCompleted ? (
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                  ) : (
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                  )}
-                                </svg>
-                              </motion.button>
-                              <motion.button
-                          onClick={() => setEditTask(task)}
-                                className="p-3 sm:p-2 rounded-xl sm:rounded-lg bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-all duration-200 shadow-sm hover:shadow-md min-h-[48px] min-w-[48px] sm:min-h-[40px] sm:min-w-[40px] touch-manipulation flex items-center justify-center"
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                              >
-                                <svg className="w-5 h-5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                </svg>
-                              </motion.button>
-                              <motion.button
-                          onClick={() => {
-                            setTaskToDelete(task);
-                            setShowDeleteModal(true);
-                          }}
-                                className="p-3 sm:p-2 rounded-xl sm:rounded-lg bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-all duration-200 shadow-sm hover:shadow-md min-h-[48px] min-w-[48px] sm:min-h-[40px] sm:min-w-[40px] touch-manipulation flex items-center justify-center"
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                              >
-                                <svg className="w-5 h-5 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                              </motion.button>
-                            </div>
-                      </div>
-                        </motion.div>
-                  ))}
+                      {filteredTasks.map((task) => {
+                        const taskProject = projects.find(p => p.id === task.projectId);
+                        return (
+                          <TaskCardWithProject
+                            key={task.id}
+                            task={task}
+                            project={taskProject}
+                            onToggleComplete={toggleCompletion}
+                            onEdit={setEditTask}
+                            onDelete={(task) => {
+                              setTaskToDelete(task);
+                              setShowDeleteModal(true);
+                            }}
+                            animated={true}
+                          />
+                        );
+                      })}
                     </div>
-              )}
+                  )}
                 </div>
               </div>
             </div>
@@ -280,7 +347,7 @@ const Dashboard = () => {
             {/* Calendar and Stats Section */}
             <div className="space-y-6">
               {/* Calendar Section */}
-              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden">
+                         <div className="bg-elevated rounded-xl shadow-medium border border-light overflow-hidden">
                 <div className="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700">
                   <div className="flex items-center justify-between">
                     <h2 className="text-xl sm:text-2xl font-bold text-slate-800 dark:text-white">Calendar</h2>
@@ -327,70 +394,20 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              {/* Statistics Section */}
-              <div className="grid grid-cols-1 gap-4 sm:gap-6">
-                <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 sm:p-6 text-white">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-blue-100 text-sm sm:text-base">Total Tasks</p>
-                      <p className="text-2xl sm:text-3xl font-bold">{taskStats.total}</p>
-                    </div>
-                    <div className="p-3 bg-blue-400/20 rounded-lg">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-4 sm:p-6 text-white">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-green-100 text-sm sm:text-base">Completed</p>
-                      <p className="text-2xl sm:text-3xl font-bold">{taskStats.completed}</p>
-                    </div>
-                    <div className="p-3 bg-green-400/20 rounded-lg">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-4 sm:p-6 text-white">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-orange-100 text-sm sm:text-base">Pending</p>
-                      <p className="text-2xl sm:text-3xl font-bold">{taskStats.pending}</p>
-                    </div>
-                    <div className="p-3 bg-orange-400/20 rounded-lg">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-4 sm:p-6 text-white">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-purple-100 text-sm sm:text-base">High Priority</p>
-                      <p className="text-2xl sm:text-3xl font-bold">{taskStats.highPriority}</p>
-                    </div>
-                    <div className="p-3 bg-purple-400/20 rounded-lg">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
+          </div>
+            </motion.div>
           </div>
         </div>
 
         {/* Modals */}
-        <CreateTaskModal open={showModal} onClose={() => setShowModal(false)} onCreated={handleTaskCreated} />
+        <CreateTaskModal 
+          open={showModal} 
+          onClose={() => setShowModal(false)} 
+          onCreated={handleTaskCreated}
+          projects={projects}
+          selectedProjectId={selectedProjectId}
+        />
         <EditTaskModal task={editTask} onClose={() => setEditTask(null)} onUpdated={handleTaskUpdated} />
         <ConfirmDeleteModal
           isOpen={showDeleteModal}
@@ -402,7 +419,7 @@ const Dashboard = () => {
           isOpen={showCalendarSettings}
           onClose={() => setShowCalendarSettings(false)}
         />
-      </motion.div>
+      </div>
     </AnimatePresence>
   );
 };

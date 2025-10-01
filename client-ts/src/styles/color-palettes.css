@@ -1,0 +1,146 @@
+/* Elegant Color Palettes for TaskManagerApp */
+
+/* ===== LIGHT MODE - Elegant & Clean ===== */
+:root {
+  /* Primary Colors - Sophisticated Blue */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+
+  /* Background Colors - Warm & Inviting */
+  --color-bg-primary: #fafbfc;      /* Soft warm white */
+  --color-bg-secondary: #ffffff;    /* Pure white */
+  --color-bg-tertiary: #f8fafc;     /* Very light blue-gray */
+  --color-bg-elevated: #ffffff;     /* Cards and modals */
+
+  /* Surface Colors - Subtle & Refined */
+  --color-surface-50: #f8fafc;
+  --color-surface-100: #f1f5f9;
+  --color-surface-200: #e2e8f0;
+  --color-surface-300: #cbd5e1;
+  --color-surface-400: #94a3b8;
+  --color-surface-500: #64748b;
+  --color-surface-600: #475569;
+  --color-surface-700: #334155;
+  --color-surface-800: #1e293b;
+  --color-surface-900: #0f172a;
+
+  /* Text Colors - Perfect Contrast */
+  --color-text-primary: #0f172a;    /* Almost black */
+  --color-text-secondary: #475569;  /* Medium gray */
+  --color-text-tertiary: #64748b;   /* Light gray */
+  --color-text-inverse: #ffffff;    /* White */
+
+  /* Accent Colors - Vibrant & Purposeful */
+  --color-accent-success: #10b981;  /* Emerald */
+  --color-accent-warning: #f59e0b;  /* Amber */
+  --color-accent-error: #ef4444;    /* Red */
+  --color-accent-info: #06b6d4;     /* Cyan */
+
+  /* Border Colors - Subtle & Clean */
+  --color-border-light: #e2e8f0;
+  --color-border-medium: #cbd5e1;
+  --color-border-strong: #94a3b8;
+
+  /* Shadow Colors - Soft & Natural */
+  --color-shadow-light: rgba(15, 23, 42, 0.04);
+  --color-shadow-medium: rgba(15, 23, 42, 0.08);
+  --color-shadow-strong: rgba(15, 23, 42, 0.12);
+}
+
+/* ===== DARK MODE - Rich & Sophisticated ===== */
+.dark {
+  /* Primary Colors - Deep & Rich */
+  --color-primary-50: #1e3a8a;
+  --color-primary-100: #1e40af;
+  --color-primary-200: #1d4ed8;
+  --color-primary-300: #2563eb;
+  --color-primary-400: #3b82f6;
+  --color-primary-500: #60a5fa;
+  --color-primary-600: #93c5fd;
+  --color-primary-700: #bfdbfe;
+  --color-primary-800: #dbeafe;
+  --color-primary-900: #eff6ff;
+
+  /* Background Colors - Deep & Rich */
+  --color-bg-primary: #0f172a;      /* Deep navy */
+  --color-bg-secondary: #1e293b;    /* Dark slate */
+  --color-bg-tertiary: #334155;     /* Medium slate */
+  --color-bg-elevated: #1e293b;     /* Cards and modals */
+
+  /* Surface Colors - Rich & Layered */
+  --color-surface-50: #0f172a;
+  --color-surface-100: #1e293b;
+  --color-surface-200: #334155;
+  --color-surface-300: #475569;
+  --color-surface-400: #64748b;
+  --color-surface-500: #94a3b8;
+  --color-surface-600: #cbd5e1;
+  --color-surface-700: #e2e8f0;
+  --color-surface-800: #f1f5f9;
+  --color-surface-900: #f8fafc;
+
+  /* Text Colors - Perfect for Dark */
+  --color-text-primary: #f8fafc;    /* Almost white */
+  --color-text-secondary: #cbd5e1;  /* Light gray */
+  --color-text-tertiary: #94a3b8;   /* Medium gray */
+  --color-text-inverse: #0f172a;    /* Dark */
+
+  /* Accent Colors - Vibrant & Purposeful */
+  --color-accent-success: #34d399;  /* Bright emerald */
+  --color-accent-warning: #fbbf24;  /* Bright amber */
+  --color-accent-error: #f87171;    /* Bright red */
+  --color-accent-info: #22d3ee;     /* Bright cyan */
+
+  /* Border Colors - Subtle & Clean */
+  --color-border-light: #334155;
+  --color-border-medium: #475569;
+  --color-border-strong: #64748b;
+
+  /* Shadow Colors - Deep & Rich */
+  --color-shadow-light: rgba(0, 0, 0, 0.1);
+  --color-shadow-medium: rgba(0, 0, 0, 0.2);
+  --color-shadow-strong: rgba(0, 0, 0, 0.3);
+}
+
+/* ===== UTILITY CLASSES ===== */
+
+/* Background Classes */
+.bg-elegant-primary { background-color: var(--color-bg-primary); }
+.bg-elegant-secondary { background-color: var(--color-bg-secondary); }
+.bg-elegant-tertiary { background-color: var(--color-bg-tertiary); }
+.bg-elegant-elevated { background-color: var(--color-bg-elevated); }
+
+/* Text Classes */
+.text-elegant-primary { color: var(--color-text-primary); }
+.text-elegant-secondary { color: var(--color-text-secondary); }
+.text-elegant-tertiary { color: var(--color-text-tertiary); }
+.text-elegant-inverse { color: var(--color-text-inverse); }
+
+/* Border Classes */
+.border-elegant-light { border-color: var(--color-border-light); }
+.border-elegant-medium { border-color: var(--color-border-medium); }
+.border-elegant-strong { border-color: var(--color-border-strong); }
+
+/* Shadow Classes */
+.shadow-elegant-light { box-shadow: 0 1px 3px var(--color-shadow-light); }
+.shadow-elegant-medium { box-shadow: 0 4px 6px var(--color-shadow-medium); }
+.shadow-elegant-strong { box-shadow: 0 10px 15px var(--color-shadow-strong); }
+
+/* Accent Classes */
+.text-accent-success { color: var(--color-accent-success); }
+.text-accent-warning { color: var(--color-accent-warning); }
+.text-accent-error { color: var(--color-accent-error); }
+.text-accent-info { color: var(--color-accent-info); }
+
+.bg-accent-success { background-color: var(--color-accent-success); }
+.bg-accent-warning { background-color: var(--color-accent-warning); }
+.bg-accent-error { background-color: var(--color-accent-error); }
+.bg-accent-info { background-color: var(--color-accent-info); }

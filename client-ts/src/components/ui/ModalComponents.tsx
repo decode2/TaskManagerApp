@@ -7,7 +7,7 @@ interface ModalHeaderProps {
 }
 
 export const ModalHeader: React.FC<ModalHeaderProps> = ({ children, className = '' }) => (
-  <div className={`p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700 ${className}`}>
+  <div className={`p-4 sm:p-6 border-b border-light ${className}`}>
     {children}
   </div>
 );
@@ -31,7 +31,7 @@ export const ModalBody: React.FC<ModalBodyProps> = ({
   className = '', 
   padding = 'md' 
 }) => (
-  <div className={`flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200/50 dark:scrollbar-thumb-slate-600 dark:scrollbar-track-slate-800/50 ${paddingClasses[padding]} ${className}`}>
+  <div className={`flex-1 overflow-y-auto ${paddingClasses[padding]} ${className}`}>
     {children}
   </div>
 );
@@ -55,7 +55,7 @@ export const ModalFooter: React.FC<ModalFooterProps> = ({
   className = '', 
   align = 'right' 
 }) => (
-  <div className={`flex items-center space-x-3 p-4 sm:p-6 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 ${alignClasses[align]} ${className}`}>
+  <div className={`flex items-center space-x-3 p-4 sm:p-6 border-t border-light bg-tertiary ${alignClasses[align]} ${className}`}>
     {children}
   </div>
 );
@@ -72,7 +72,7 @@ export const ModalTitle: React.FC<ModalTitleProps> = ({
   className = '', 
   as: Component = 'h2' 
 }) => (
-  <Component className={`text-xl font-semibold text-slate-800 dark:text-white no-select ${className}`}>
+  <Component className={`text-xl font-semibold text-primary no-select ${className}`}>
     {children}
   </Component>
 );
@@ -84,7 +84,7 @@ interface ModalDescriptionProps {
 }
 
 export const ModalDescription: React.FC<ModalDescriptionProps> = ({ children, className = '' }) => (
-  <p className={`text-sm text-slate-600 dark:text-slate-400 mt-1 ${className}`}>
+  <p className={`text-sm text-secondary mt-1 ${className}`}>
     {children}
   </p>
 );
@@ -109,10 +109,10 @@ export const ModalCloseButton: React.FC<ModalCloseButtonProps> = ({
 }) => (
   <button
     onClick={onClose}
-    className={`p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors duration-200 no-select ${className}`}
+    className={`p-2 hover:bg-tertiary rounded-lg transition-colors duration-200 no-select ${className}`}
     aria-label="Close modal"
   >
-    <svg className={`${sizeClasses[size]} text-slate-500 dark:text-slate-400`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className={`${sizeClasses[size]} text-tertiary`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
     </svg>
   </button>

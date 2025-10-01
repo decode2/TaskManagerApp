@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import ProfileModal from "./ProfileModalNew";
+import ThemeSelector from "./ThemeSelector";
 
 interface TopNavigationProps {
   onThemeToggle: () => void;
@@ -12,6 +13,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onThemeToggle, isDark }) 
   const { user, logout } = useAuth();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isThemeSelectorOpen, setIsThemeSelectorOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   // Close user menu when clicking outside
@@ -54,54 +56,52 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onThemeToggle, isDark }) 
   if (!user) return null;
 
   return (
-    <nav className="bg-white/80 backdrop-blur-md border-b border-slate-200/50 dark:bg-slate-900/20 dark:border-slate-700/30 relative" style={{ zIndex: 1000 }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700 relative" style={{ zIndex: 1000 }}>
+      <div className="max-w-7xl mx-auto px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo/Brand */}
           <div className="flex items-center">
-            <h1 className="text-2xl font-bold text-slate-800 dark:text-white no-select">
-              🎯 TaskManager
+            <h1 className="text-2xl font-semibold text-gray-900 dark:text-white no-select">
+              TaskManager
             </h1>
           </div>
 
           {/* Right side actions */}
           <div className="flex items-center space-x-4">
-            {/* Theme Toggle */}
+            {/* Theme Selector */}
             <button
-              onClick={onThemeToggle}
-              className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors duration-200 no-select"
-              aria-label="Toggle theme"
+              onClick={() => setIsThemeSelectorOpen(true)}
+              className="p-3 rounded-lg bg-secondary hover:bg-tertiary border border-light transition-colors duration-200 no-select"
+              aria-label="Open theme selector"
             >
-              <span className="text-lg no-select">
-                {isDark ? "🌕" : "🌙"}
-              </span>
+              <span className="text-lg no-select">🎨</span>
             </button>
 
             {/* User Menu */}
             <div className="relative" ref={userMenuRef}>
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center space-x-3 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900 no-select"
+                className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900 no-select"
                 aria-label="User menu"
               >
                 {/* User Avatar */}
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-medium no-select">
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-medium no-select">
                   {getUserInitials(user.email)}
                 </div>
                 
                 {/* User Info */}
                 <div className="hidden sm:block text-left">
-                  <p className="text-sm font-medium text-slate-800 dark:text-white">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
                     {user.email.split("@")[0]}
                   </p>
-                  <p className="text-xs text-slate-500 dark:text-gray-400">
+                  <p className="text-xs text-gray-600 dark:text-gray-300">
                     {user.email}
                   </p>
                 </div>
 
                 {/* Dropdown Arrow */}
                 <svg
-                  className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${
+                  className={`w-4 h-4 text-apple-secondary transition-apple ${
                     isUserMenuOpen ? "rotate-180" : ""
                   }`}
                   fill="none"
@@ -119,15 +119,15 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onThemeToggle, isDark }) 
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.15, ease: "easeOut" }}
-                    className="absolute right-0 mt-2 w-64 bg-white/95 dark:bg-slate-800/95 rounded-xl shadow-xl border border-slate-200/50 dark:border-slate-600/50 py-2 backdrop-blur-md user-dropdown"
+                    transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+                    className="absolute right-0 mt-2 w-64 bg-apple-secondary/95 rounded-apple-xl shadow-apple-xl border border-apple py-2 backdrop-blur-md user-dropdown"
                   >
                     {/* User Info Header */}
-                    <div className="px-4 py-3 border-b border-slate-200/50 dark:border-slate-700/50">
-                      <p className="text-sm font-medium text-slate-800 dark:text-white">
+                    <div className="px-4 py-3 border-b border-apple">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
                         {user.email.split("@")[0]}
                       </p>
-                      <p className="text-xs text-slate-600 dark:text-gray-300">
+                      <p className="text-xs text-gray-600 dark:text-gray-300">
                         {user.email}
                       </p>
                     </div>
@@ -136,7 +136,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onThemeToggle, isDark }) 
                     <div className="py-2">
                       <button 
                         onClick={handleProfileClick}
-                        className="w-full px-4 py-2 text-left text-sm text-slate-700 dark:text-gray-100 hover:bg-slate-100/80 dark:hover:bg-slate-700/80 transition-colors duration-150 no-select"
+                        className="w-full px-4 py-3 text-left text-sm text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 no-select"
                       >
                         <div className="flex items-center space-x-3">
                           <svg className="w-4 h-4 no-select" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -149,7 +149,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onThemeToggle, isDark }) 
 
                       <button 
                         onClick={handleSettingsClick}
-                        className="w-full px-4 py-2 text-left text-sm text-slate-700 dark:text-gray-100 hover:bg-slate-100/80 dark:hover:bg-slate-700/80 transition-colors duration-150 no-select"
+                        className="w-full px-4 py-3 text-left text-sm text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 no-select"
                       >
                         <div className="flex items-center space-x-3">
                           <svg className="w-4 h-4 no-select" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,7 +160,7 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onThemeToggle, isDark }) 
                         </div>
                       </button>
 
-                      <button className="w-full px-4 py-2 text-left text-sm text-slate-700 dark:text-gray-100 hover:bg-slate-100/80 dark:hover:bg-slate-700/80 transition-colors duration-150 no-select">
+                      <button className="w-full px-4 py-3 text-left text-sm text-apple-primary hover:bg-apple-secondary/60 transition-apple no-select">
                         <div className="flex items-center space-x-3">
                           <svg className="w-4 h-4 no-select" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -194,9 +194,14 @@ const TopNavigation: React.FC<TopNavigationProps> = ({ onThemeToggle, isDark }) 
       </div>
       
       {/* Profile Modal */}
-      <ProfileModal 
-        isOpen={isProfileModalOpen} 
-        onClose={() => setIsProfileModalOpen(false)} 
+      <ProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+      />
+      
+      <ThemeSelector
+        isOpen={isThemeSelectorOpen}
+        onClose={() => setIsThemeSelectorOpen(false)}
       />
     </nav>
   );
